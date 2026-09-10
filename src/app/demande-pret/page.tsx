@@ -25,11 +25,11 @@ const TAUX_ESTIME_PAR_DUREE: Record<number, number> = { 2: 5, 4: 10 };
 const FRAIS_DE_TRAITEMENT = 1000;
 
 type ResultatDemande = {
-  credit_score: number | null;
-  risk_level: string | null;
-  recommended_amount: number | null;
-  rate_percent_applied: number | null;
-  total_to_repay: number | null;
+  credit_score?: number | null;
+  risk_level?: string | null;
+  recommended_amount?: number | null;
+  rate_percent_applied?: number | null;
+  total_to_repay?: number | null;
   status: string;
   approved_amount?: number | null;
   facilite_paiement?: boolean;

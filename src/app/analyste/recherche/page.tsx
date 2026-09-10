@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   recupererMonProfilUtilisateur,
   obtenirConversations,
@@ -111,6 +111,7 @@ const LIENS_NAV = [
 
 function PageRechercheContenu() {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const requeteInitiale = searchParams.get("q") || "";
 
@@ -204,7 +205,7 @@ function PageRechercheContenu() {
               title={sidebarReduite ? lien.label : undefined}
               className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#B8BAC4] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
             >
-                            <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
+                            <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={pathname === lien.href}>
                 {(() => {
                   const IconeRiche = ICONES_RICHES[lien.icone];
                   return IconeRiche ? <IconeRiche size={16} /> : Ic(lien.icone, "w-4 h-4");

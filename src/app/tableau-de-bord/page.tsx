@@ -90,7 +90,6 @@ const ICONES = {
   check: "M5 12l4 4 10-10",
   percent: "M19 5 5 19 M7.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z M16.5 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z",
   chevronLeft: "M15 5l-7 7 7 7",
-  chevronRight: "M9 5l7 7-7 7",
   gift: "M20 12v10H4V12 M2 7h20v5H2V7Z M12 22V7 M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7Z M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z",
 };
 function Ic(name: keyof typeof ICONES, className?: string) {

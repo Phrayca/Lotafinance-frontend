@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, usePathname } from "next/navigation";
 import {
   obtenirDossier,
   obtenirDocumentsDuClient,
@@ -158,6 +158,7 @@ const LIENS_NAV = [
 
 export default function PageDossierAnalyste() {
   const router = useRouter();
+  const pathname = usePathname();
   const [sidebarReduite, setSidebarReduite] = useState(false);
   const [utilisateur, setUtilisateur] = useState<{ id: string; email: string; role: string } | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -407,7 +408,7 @@ export default function PageDossierAnalyste() {
               title={sidebarReduite ? lien.label : undefined}
               className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#B8BAC4] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
             >
-                            <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
+                            <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={pathname === lien.href}>
                 {(() => {
                   const IconeRiche = ICONES_RICHES[lien.icone];
                   return IconeRiche ? <IconeRiche size={16} /> : Ic(lien.icone, "w-4 h-4");
