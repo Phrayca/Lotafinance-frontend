@@ -403,8 +403,8 @@ export default function TableauDeBord() {
       </aside>
 
       {/* Contenu */}
-      <div className="flex-1 px-8 py-6 overflow-x-auto">
-        <div className="flex items-center justify-between mb-6">
+      <div className="flex-1 px-4 py-4 md:px-8 md:py-6 overflow-x-auto max-w-full">
+        <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
           <div>
             <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Bonjour {profilClient?.first_name || ""} 👋</h1>
             <p className="text-[#7C8494] text-sm mt-1">Voici l&apos;état de votre compte chez Lotafinance.</p>
@@ -479,9 +479,9 @@ export default function TableauDeBord() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Colonne principale */}
-          <div className="col-span-2 space-y-4">
+          <div className="col-span-1 md:col-span-2 space-y-4">
             {/* Compte */}
             <div className="bg-[#12151C] border border-[#232733] rounded-lg px-5 py-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -638,7 +638,7 @@ export default function TableauDeBord() {
             </div>
 
             {/* 3 cartes */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="bg-[#12151C] border border-[#232733] rounded-lg px-4 py-4">
                 <p className="flex items-center gap-2 text-xs text-[#7C8494] mb-2">{Ic("coins", "w-4 h-4")} Prêt en cours</p>
                 <p className="text-lg font-mono font-medium text-[#E8E6DE]">{formaterMontant(totalEmprunte)}</p>
