@@ -350,8 +350,8 @@ export default function TableauDeBord() {
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      {/* Sidebar */}
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      {/* Sidebar — visible seulement à partir de tablette/desktop */}
+      <aside className={`hidden md:flex ${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
           <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
           {!sidebarReduite && (
@@ -403,7 +403,7 @@ export default function TableauDeBord() {
       </aside>
 
       {/* Contenu */}
-      <div className="flex-1 px-4 py-4 md:px-8 md:py-6 overflow-x-auto max-w-full">
+      <div className="flex-1 px-4 py-4 md:px-8 md:py-6 overflow-x-auto max-w-full pb-24 md:pb-6">
         <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
           <div>
             <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Bonjour {profilClient?.first_name || ""} 👋</h1>
@@ -615,9 +615,9 @@ export default function TableauDeBord() {
                 <p className="text-sm text-[#5A6070] py-4 text-center">Aucun prêt approuvé pour le moment.</p>
               ) : (
                 <>
-                  <div className="flex items-center gap-6 flex-wrap">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
                     <AnneauProgression pourcentage={tauxProgression} />
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 flex-1">
+                    <div className="grid grid-cols-2 gap-x-4 sm:gap-x-8 gap-y-4 flex-1 w-full">
                       <StatPortefeuille icone="layers" label="Montant emprunté" valeur={formaterMontant(totalEmprunte)} sousTexte={`Reçu : ${formaterMontant(Math.max(totalEmprunte - FRAIS_DE_TRAITEMENT, 0))} (frais : ${formaterMontant(FRAIS_DE_TRAITEMENT)})`} />
                       <StatPortefeuille icone="percent" label="Total à rembourser" valeur={formaterMontant(totalARembourser)} sousTexte={`Taux : ${libelleTaux}`} />
                       <StatPortefeuille icone="wallet" label="Total remboursé" valeur={formaterMontant(totalRembourseDuPret)} />
@@ -720,6 +720,32 @@ export default function TableauDeBord() {
 
         <p className="text-center text-xs text-[#5A6070] mt-8">Lotafinance – Plus qu&apos;un prêt, un partenaire pour votre avenir.</p>
       </div>
+
+      {/* Barre de navigation mobile — visible seulement en dessous de md */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0B0E14]/95 backdrop-blur border-t border-[#1B1F29] flex items-center justify-around py-2 px-1">
+        {[
+          { href: "/tableau-de-bord", label: "Accueil", icone: "home" as const },
+          { href: "/mes-demandes", label: "Mes prêts", icone: "loans" as const },
+          { href: "/demande-pret", label: "Demander", icone: "plus" as const },
+          { href: "/remboursements", label: "Rembours.", icone: "calendarCheck" as const },
+          { href: "/profil", label: "Profil", icone: "user" as const },
+        ].map((lien) => {
+          const IconeRiche = ICONES_RICHES[lien.icone];
+          const estActif = lien.href === "/tableau-de-bord";
+          return (
+            <button
+              key={lien.href}
+              onClick={() => router.push(lien.href)}
+              className="flex flex-col items-center gap-0.5 flex-1 py-1"
+            >
+              <span className={estActif ? "text-[#C9A227]" : "text-[#7C8494]"}>
+                {IconeRiche ? <IconeRiche size={20} /> : Ic(lien.icone, "w-5 h-5")}
+              </span>
+              <span className={`text-[9px] ${estActif ? "text-[#C9A227] font-medium" : "text-[#7C8494]"}`}>{lien.label}</span>
+            </button>
+          );
+        })}
+      </nav>
     </main>
   );
 }
