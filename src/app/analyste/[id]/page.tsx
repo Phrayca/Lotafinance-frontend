@@ -92,6 +92,46 @@ const SEUIL_RETARD_CRITIQUE = 3;
 // Frais de traitement fixes, encaissés dès le déboursement (n'affectent pas le total à rembourser)
 const FRAIS_DE_TRAITEMENT = 1000;
 
+// Mêmes libellés que côté profil client, pour afficher la vraie catégorie déclarée (pas un code technique)
+const LIBELLES_CATEGORIE_PRO: Record<string, string> = {
+  fonctionnaire: "Fonctionnaire",
+  cdi: "CDI",
+  cdd_plus_2ans: "CDD (plus de 2 ans)",
+  cdd_moins_2ans: "CDD (moins de 2 ans)",
+  interimaire: "Intérimaire",
+};
+const LIBELLES_RESIDENCE: Record<string, string> = {
+  plus_3ans: "Plus de 3 ans à la même adresse",
+  "1_a_3ans": "1 à 3 ans à la même adresse",
+  nouvelle: "Nouvelle résidence",
+};
+// Mêmes taux que côté backend (app/main.py : loan_rate_config) — utilisés comme valeur par défaut du simulateur
+const TAUX_PAR_DUREE: Record<number, number> = { 2: 5, 4: 10 };
+
+function formaterAnciennete(mois?: number | null) {
+  if (mois == null) return "Non renseignée";
+  if (mois < 12) return `${mois} mois`;
+  const annees = Math.floor(mois / 12);
+  const reste = mois % 12;
+  return reste > 0 ? `${annees} an${annees > 1 ? "s" : ""} et ${reste} mois` : `${annees} an${annees > 1 ? "s" : ""}`;
+}
+
+// Barème réel du score Lotafinance (app/scoring.py) — utilisé pour afficher chaque critère sur son vrai total
+const BAREME_SCORE = {
+  profession: 30,
+  anciennete: 20,
+  capacite: 30,
+  residence: 10,
+  historique: 10,
+};
+
+function niveauDeRisque(score?: number | null): { libelle: string; emoji: string; couleur: string; bg: string } {
+  if (score == null) return { libelle: "Non calculé", emoji: "⚪", couleur: "#7C8494", bg: "#1B1F29" };
+  if (score >= 80) return { libelle: "Risque faible", emoji: "🟢", couleur: "#3DDC97", bg: "#0F2420" };
+  if (score >= 60) return { libelle: "Risque moyen — vérification", emoji: "🟠", couleur: "#C9A227", bg: "#2A2312" };
+  return { libelle: "Risque élevé", emoji: "🔴", couleur: "#F0A0A0", bg: "#2A1414" };
+}
+
 function Icon({ path, className }: { path: string; className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} width="20" height="20">
@@ -186,6 +226,9 @@ export default function PageDossierAnalyste() {
   const [totalNonLus, setTotalNonLus] = useState(0);
   const [demandeSuppression, setDemandeSuppression] = useState(false);
   const [suppressionEnCours, setSuppressionEnCours] = useState(false);
+  const [simMontant, setSimMontant] = useState("");
+  const [simDuree, setSimDuree] = useState(2);
+  const [simTaux, setSimTaux] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -199,6 +242,9 @@ export default function PageDossierAnalyste() {
         const d = await obtenirDossier(token, loanId);
         setDossier(d);
         setMontantApprouve(String(d.amount_requested));
+        setSimMontant(String(d.amount_requested));
+        setSimDuree(d.duration_weeks);
+        setSimTaux(String(d.rate_percent_applied ?? TAUX_PAR_DUREE[d.duration_weeks] ?? 0));
         const docs = await obtenirDocumentsDuClient(token, d.client_id);
         setDocuments(docs);
         if (d.status === "approuve") {
@@ -387,6 +433,28 @@ export default function PageDossierAnalyste() {
   const dejaEncaisse = echeances.filter((e) => e.payee).reduce((s, e) => s + e.montant, 0);
   const resteAPercevoir = Math.max(totalPrevu - dejaEncaisse, 0);
 
+  // ---- Résumé client & aide à la décision ----
+  const capaciteDisponible = Math.max(
+    (dossier.monthly_income ?? 0) - (dossier.monthly_expenses ?? 0) - (dossier.client_autres_credits_mensuels ?? 0),
+    0
+  );
+  const libelleCategoriePro = dossier.client_categorie_professionnelle
+    ? LIBELLES_CATEGORIE_PRO[dossier.client_categorie_professionnelle] || dossier.client_categorie_professionnelle
+    : "Non renseignée";
+  const libelleResidence = dossier.client_anciennete_residence
+    ? LIBELLES_RESIDENCE[dossier.client_anciennete_residence] || dossier.client_anciennete_residence
+    : "Non renseignée";
+  const infosRisque = niveauDeRisque(dossier.credit_score);
+  const montantCoherent =
+    dossier.recommended_amount != null && dossier.amount_requested <= dossier.recommended_amount * 1.05;
+
+  // ---- Simulateur de prêt (aide à la décision, ne modifie rien tant que l'analyste n'applique pas) ----
+  const simMontantNombre = Number(simMontant) || 0;
+  const simTauxNombre = Number(simTaux) || 0;
+  const simInterets = Math.round((simMontantNombre * simTauxNombre) / 100);
+  const simTotal = simMontantNombre + simInterets;
+  const simMarge = capaciteDisponible - simTotal;
+
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
       <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
@@ -570,23 +638,66 @@ export default function PageDossierAnalyste() {
               <Ligne label="Montant demandé" valeur={formaterMontant(dossier.amount_requested)} />
               <Ligne label="Durée" valeur={formaterDuree(dossier.duration_weeks)} />
               <Ligne label="Motif" valeur={dossier.purpose || "—"} />
-              <Ligne label="Statut" valeur={dossier.status} />
+              <Ligne label="Statut" valeur={LIBELLES_STATUT[dossier.status] || dossier.status} />
+              <Ligne label="Total à rembourser" valeur={formaterMontant(dossier.total_to_repay)} />
+              <Ligne label="Situation professionnelle" valeur={libelleCategoriePro} />
+              <Ligne label="Ancienneté" valeur={formaterAnciennete(dossier.client_activity_seniority_months)} />
+              <Ligne label="Ancienneté à la résidence" valeur={libelleResidence} />
               <Ligne label="Revenu mensuel" valeur={formaterMontant(dossier.monthly_income)} />
               <Ligne label="Charges mensuelles" valeur={formaterMontant(dossier.monthly_expenses)} />
+              <Ligne label="Autres crédits mensuels" valeur={formaterMontant(dossier.client_autres_credits_mensuels)} />
+              <Ligne label="Capacité disponible" valeur={formaterMontant(capaciteDisponible)} />
             </div>
 
             <div className="border-t border-[#232733] pt-4 mb-2">
-              <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Score de solvabilité</h2>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <Ligne label="Score total" valeur={dossier.credit_score?.toString() ?? "—"} />
-                <Ligne label="Niveau de risque" valeur={dossier.risk_level ?? "—"} />
-                <Ligne label="Situation professionnelle" valeur={dossier.profession_score?.toString() ?? "—"} />
-                <Ligne label="Ancienneté" valeur={dossier.anciennete_score?.toString() ?? "—"} />
-                <Ligne label="Capacité de remboursement" valeur={dossier.capacity_score?.toString() ?? "—"} />
-                <Ligne label="Résidence" valeur={dossier.residence_score?.toString() ?? "—"} />
-                <Ligne label="Historique Lotafinance" valeur={dossier.history_score?.toString() ?? "—"} />
-                <Ligne label="Montant recommandé" valeur={formaterMontant(dossier.recommended_amount)} />
+              <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+                <h2 className="text-sm font-medium text-[#E8E6DE]">Score de risque automatique</h2>
+                <span
+                  className="inline-flex items-center gap-1.5 text-xs font-medium rounded-full px-3 py-1"
+                  style={{ backgroundColor: infosRisque.bg, color: infosRisque.couleur }}
+                >
+                  {infosRisque.emoji} {infosRisque.libelle}
+                </span>
               </div>
+
+              <div className="flex items-baseline gap-2 mb-4">
+                <span className="text-3xl font-mono font-semibold text-[#E8E6DE]">{dossier.credit_score ?? "—"}</span>
+                <span className="text-sm text-[#5A6070]">/100</span>
+              </div>
+
+              <div className="space-y-3">
+                <BarreScore label="Situation professionnelle" valeur={dossier.profession_score} max={BAREME_SCORE.profession} />
+                <BarreScore label="Ancienneté" valeur={dossier.anciennete_score} max={BAREME_SCORE.anciennete} />
+                <BarreScore label="Capacité de remboursement" valeur={dossier.capacity_score} max={BAREME_SCORE.capacite} />
+                <BarreScore label="Résidence" valeur={dossier.residence_score} max={BAREME_SCORE.residence} />
+                <BarreScore label="Historique Lotafinance" valeur={dossier.history_score} max={BAREME_SCORE.historique} />
+              </div>
+
+              <div className="flex items-center justify-between gap-3 flex-wrap mt-4 text-sm bg-[#0B0E14] border border-[#1B1F29] rounded-md px-4 py-3">
+                <span className="text-[#7C8494]">Montant recommandé</span>
+                <span className="font-mono text-[#E8E6DE] font-medium">{formaterMontant(dossier.recommended_amount)}</span>
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${montantCoherent ? "bg-[#0F2420] text-[#3DDC97]" : "bg-[#2A2312] text-[#C9A227]"}`}>
+                  {montantCoherent ? "Demande cohérente" : "Supérieur à la recommandation"}
+                </span>
+              </div>
+            </div>
+
+            {/* Analyse Lotafinance — texte généré à partir des données réelles du dossier */}
+            <div className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-4 mt-4">
+              <p className="text-xs text-[#C9A227] uppercase tracking-wide font-medium mb-2">Analyse Lotafinance</p>
+              <p className="text-sm text-[#B8BAC4] leading-relaxed">
+                Client {libelleCategoriePro !== "Non renseignée" ? `en situation de « ${libelleCategoriePro.toLowerCase()} »` : "à la situation professionnelle non renseignée"}
+                {dossier.client_activity_seniority_months != null ? `, ${formaterAnciennete(dossier.client_activity_seniority_months).toLowerCase()} d'ancienneté` : ""}.{" "}
+                Revenu déclaré de {formaterMontant(dossier.monthly_income)} pour {formaterMontant(dossier.monthly_expenses)} de charges
+                {dossier.client_autres_credits_mensuels ? ` et ${formaterMontant(dossier.client_autres_credits_mensuels)} d'autres crédits en cours` : ", sans autre crédit déclaré"}
+                , soit une capacité disponible d&apos;environ {formaterMontant(capaciteDisponible)}.{" "}
+                {dossier.client_nombre_echeances_en_retard_historique > 0
+                  ? `Le client a un historique avec ${dossier.client_nombre_echeances_en_retard_historique} échéance${dossier.client_nombre_echeances_en_retard_historique > 1 ? "s" : ""} en retard chez Lotafinance.`
+                  : dossier.client_nombre_prets_reussis > 0
+                  ? `Aucun retard sur ${dossier.client_nombre_prets_reussis} prêt${dossier.client_nombre_prets_reussis > 1 ? "s" : ""} déjà remboursé${dossier.client_nombre_prets_reussis > 1 ? "s" : ""} chez Lotafinance.`
+                  : "Aucun historique de remboursement chez Lotafinance (premier dossier)."}{" "}
+                La demande de {formaterMontant(dossier.amount_requested)} est {montantCoherent ? "cohérente avec sa capacité financière estimée" : "supérieure au montant recommandé par le système au vu de son profil"}.
+              </p>
             </div>
 
             {dossier.facilite_paiement && (scoreFaible || risqueEleve) && (
@@ -604,6 +715,12 @@ export default function PageDossierAnalyste() {
           {/* Historique du client */}
           <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
             <h2 className="text-sm font-medium text-[#E8E6DE] mb-1">Historique de ce client</h2>
+            <p className="text-sm text-[#E8E6DE] mb-3 font-medium">
+              {dossier.client_nombre_prets_reussis} prêt{dossier.client_nombre_prets_reussis > 1 ? "s" : ""} réussi{dossier.client_nombre_prets_reussis > 1 ? "s" : ""}
+              {" — "}
+              {dossier.client_nombre_echeances_en_retard_historique} retard{dossier.client_nombre_echeances_en_retard_historique > 1 ? "s" : ""}
+              {" — défauts non suivis actuellement"}
+            </p>
             <p className="text-xs text-[#7C8494] mb-3">
               {pretsPrecedents.length === 0
                 ? "Aucun autre dossier chez Lotafinance."
@@ -633,6 +750,74 @@ export default function PageDossierAnalyste() {
               </div>
             )}
           </div>
+
+          {/* Simulateur de prêt — outil d'aide à la décision, ne modifie rien tant que l'analyste n'applique pas */}
+          {!dejaDecide && (
+            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
+              <h2 className="text-sm font-medium text-[#E8E6DE] mb-1">Simulateur de prêt</h2>
+              <p className="text-xs text-[#7C8494] mb-4">
+                Ajustez librement le montant, la durée ou le taux pour comparer différents scénarios avant de décider. Rien n&apos;est enregistré ici.
+              </p>
+
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <div>
+                  <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Montant (F)</label>
+                  <input
+                    type="number" min={0}
+                    value={simMontant}
+                    onChange={(e) => setSimMontant(e.target.value)}
+                    className={CHAMP_CLASSES}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Durée</label>
+                  <select
+                    value={simDuree}
+                    onChange={(e) => {
+                      const nouvelleDuree = Number(e.target.value);
+                      setSimDuree(nouvelleDuree);
+                      setSimTaux(String(TAUX_PAR_DUREE[nouvelleDuree] ?? 0));
+                    }}
+                    className={CHAMP_CLASSES}
+                  >
+                    <option value={2}>2 semaines</option>
+                    <option value={4}>1 mois</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Taux (%)</label>
+                  <input
+                    type="number" min={0} step={0.1}
+                    value={simTaux}
+                    onChange={(e) => setSimTaux(e.target.value)}
+                    className={CHAMP_CLASSES}
+                  />
+                </div>
+              </div>
+
+              <div className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-4 space-y-1.5 text-sm font-mono mb-4">
+                <LigneCout label="Intérêts" valeur={formaterMontant(simInterets)} />
+                <LigneCout label="Total à rembourser (échéance)" valeur={formaterMontant(simTotal)} gras />
+                <LigneCout label="Capacité disponible" valeur={formaterMontant(capaciteDisponible)} />
+                <LigneCout label="Marge restante après remboursement" valeur={formaterMontant(simMarge)} accent={simMarge >= 0} />
+              </div>
+
+              <div
+                className={`flex items-center gap-2 rounded-md px-4 py-3 mb-4 text-sm ${
+                  simMarge >= 0 ? "bg-[#0F2420] border border-[#1E4A3D] text-[#3DDC97]" : "bg-[#2A1414] border border-[#4A2222] text-[#F0A0A0]"
+                }`}
+              >
+                {simMarge >= 0 ? "🟢" : "🔴"} {simMarge >= 0 ? "Capacité suffisante pour ce scénario" : "Capacité insuffisante — l'échéance dépasse la capacité disponible"}
+              </div>
+
+              <button
+                onClick={() => setMontantApprouve(simMontant)}
+                className="w-full text-sm font-medium bg-[#1B1706] border border-[#3A3013] text-[#C9A227] py-2.5 rounded-md hover:bg-[#241E09] transition"
+              >
+                Appliquer ce montant ({formaterMontant(simMontantNombre)}) à la décision ci-dessous
+              </button>
+            </div>
+          )}
 
           {journal.length > 0 && (
             <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
@@ -860,6 +1045,32 @@ function Ligne({ label, valeur }: { label: string; valeur: string }) {
     <div>
       <p className="text-[#7C8494] text-xs">{label}</p>
       <p className="font-medium text-[#E8E6DE] font-mono">{valeur}</p>
+    </div>
+  );
+}
+
+function LigneCout({ label, valeur, gras, accent }: { label: string; valeur: string; gras?: boolean; accent?: boolean }) {
+  return (
+    <div className={`flex justify-between ${gras ? "border-t border-[#232733] pt-1.5 mt-1.5" : ""}`}>
+      <span className={gras ? "text-[#E8E6DE] font-medium" : "text-[#7C8494]"}>{label}</span>
+      <span className={accent ? "text-[#3DDC97] font-medium" : gras ? "text-[#E8E6DE] font-medium" : "text-[#E8E6DE]"}>{valeur}</span>
+    </div>
+  );
+}
+
+function BarreScore({ label, valeur, max }: { label: string; valeur?: number | null; max: number }) {
+  const v = valeur ?? 0;
+  const pourcentage = max > 0 ? Math.min(100, Math.round((v / max) * 100)) : 0;
+  const couleur = pourcentage >= 70 ? "#3DDC97" : pourcentage >= 40 ? "#C9A227" : "#F0A0A0";
+  return (
+    <div>
+      <div className="flex items-center justify-between text-xs mb-1">
+        <span className="text-[#B8BAC4]">{label}</span>
+        <span className="text-[#7C8494] font-mono">{valeur != null ? valeur : "—"}/{max}</span>
+      </div>
+      <div className="h-1.5 bg-[#0B0E14] border border-[#1B1F29] rounded-full overflow-hidden">
+        <div className="h-full rounded-full" style={{ width: `${pourcentage}%`, backgroundColor: couleur }} />
+      </div>
     </div>
   );
 }

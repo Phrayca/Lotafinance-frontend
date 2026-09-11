@@ -201,6 +201,17 @@ export type LoanDetailOut = LoanOut & {
   capacity_score?: number;
   residence_score?: number;
   history_score?: number;
+  // Situation du client, pour l'outil d'aide à la décision de l'analyste
+  client_profession?: string;
+  client_employer?: string;
+  client_employment_type?: string;
+  client_categorie_professionnelle?: string;
+  client_anciennete_residence?: string;
+  client_activity_seniority_months?: number;
+  client_autres_credits_mensuels?: number;
+  // Historique réel du client chez Lotafinance (tous prêts confondus)
+  client_nombre_prets_reussis: number;
+  client_nombre_echeances_en_retard_historique: number;
 };
 
 export async function soumettreDemandeDePret(token: string, demande: DemandePret) {
