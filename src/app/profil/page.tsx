@@ -468,6 +468,14 @@ function PageProfilClientContenu() {
             </div>
           </div>
 
+          {/* Déconnexion — visible sur mobile seulement (la sidebar desktop a déjà ce bouton) */}
+          <button
+            onClick={seDeconnecter}
+            className="md:hidden w-full flex items-center justify-center gap-2 bg-[#12151C] border border-[#232733] text-[#F0A0A0] text-sm font-medium py-2.5 rounded-lg mb-4 hover:bg-[#171B24] transition"
+          >
+            {Ic("logout", "w-4 h-4")} Déconnexion
+          </button>
+
           {/* Infos personnelles et professionnelles */}
           <form onSubmit={gererEnregistrementProfil} className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
             <h2 className="text-sm font-medium text-[#E8E6DE] mb-4">Informations personnelles</h2>

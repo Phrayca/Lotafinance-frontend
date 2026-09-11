@@ -334,9 +334,10 @@ export default function TableauDeBord() {
     router.push("/assistance");
   }
 
-  // Ouvre/ferme la cloche. À l'ouverture, marque toutes les échéances actuellement listées comme "vues"
-  // afin qu'elles ne soient plus comptées dans le badge la prochaine fois (tant qu'elles ne sont pas payées,
-  // elles restent visibles dans la liste, mais ne re-déclenchent plus le badge).
+  // Ouvre/ferme la cloche. À l'ouverture, marque toutes les échéances ET tous les messages
+  // actuellement listés comme "vus" afin qu'ils ne soient plus comptés dans le badge la
+  // prochaine fois (les échéances restent visibles dans la liste tant qu'elles ne sont pas
+  // payées, mais ne re-déclenchent plus le badge ; idem pour les messages déjà affichés ici).
   function ouvrirNotifications() {
     const nouvelEtat = !notifOuvertes;
     setNotifOuvertes(nouvelEtat);
@@ -345,6 +346,9 @@ export default function TableauDeBord() {
       const fusion = Array.from(new Set([...echeancesVues, ...idsActuels]));
       setEcheancesVues(fusion);
       localStorage.setItem(CLE_ECHEANCES_VUES, JSON.stringify(fusion));
+    }
+    if (nouvelEtat && messagesNonLus.length > 0) {
+      localStorage.setItem("assistance_derniere_vue", new Date().toISOString());
     }
   }
 
@@ -404,12 +408,12 @@ export default function TableauDeBord() {
 
       {/* Contenu */}
       <div className="flex-1 px-4 py-4 md:px-8 md:py-6 overflow-x-auto max-w-full pb-24 md:pb-6">
-        <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-          <div>
-            <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Bonjour {profilClient?.first_name || ""} 👋</h1>
-            <p className="text-[#7C8494] text-sm mt-1">Voici l&apos;état de votre compte chez Lotafinance.</p>
+        <div className="flex items-start justify-between gap-3 mb-6">
+          <div className="min-w-0">
+            <h1 className="font-['Source_Serif_4',serif] text-lg sm:text-2xl text-[#E8E6DE]">Bonjour {profilClient?.first_name || ""} 👋</h1>
+            <p className="text-[#7C8494] text-xs sm:text-sm mt-1">Voici l&apos;état de votre compte chez Lotafinance.</p>
           </div>
-          <div className="flex items-center gap-3 text-[#7C8494]">
+          <div className="flex items-center gap-2 sm:gap-3 text-[#7C8494] shrink-0">
             <div className="relative">
               <button
                 onClick={ouvrirNotifications}
