@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { obtenirToutesLesDemandes, obtenirConversations, recupererMonProfilUtilisateur, urlPhotoDeProfil, LoanOut } from "@/lib/api";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { obtenirConversations, recupererMonProfilUtilisateur, urlPhotoDeProfil, ConversationApercu } from "@/lib/api";
 import {
   HomeIcon,
   LoanIcon,
@@ -24,21 +24,8 @@ const FOND_TEXTURE_STYLE: React.CSSProperties = {
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
 
-const LIBELLES_STATUT: Record<string, string> = {
-  soumis: "En attente",
-  approuve: "Approuvé",
-  refuse: "Refusé",
-  infos_demandees: "Infos demandées",
-};
-
-function couleurStatut(statut: string): { bg: string; text: string } {
-  if (statut === "approuve") return { bg: "#0F2420", text: "#3DDC97" };
-  if (statut === "refuse") return { bg: "#2A1414", text: "#F0A0A0" };
-  return { bg: "#2A2312", text: "#C9A227" };
-}
-function formaterDuree(semaines: number) {
-  if (semaines === 4) return "1 mois";
-  return `${semaines} semaine${semaines > 1 ? "s" : ""}`;
+function formaterDate(iso: string) {
+  return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
 }
 
 function Icon({ path, className }: { path: string; className?: string }) {
@@ -55,10 +42,10 @@ const ICONES = {
   home: "M4 11 12 4l8 7M6 10v9h12v-9",
   loans: "M7 4h10v16l-5-3-5 3V4Z M9 9h6 M9 12h6",
   users: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z M2.5 20a5.5 5.5 0 0 1 11 0 M16 11a3.5 3.5 0 1 0 0-7 M21.5 20a5.5 5.5 0 0 0-5-5.48",
-  logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9",
   mail: "M4 6h16v12H4V6Z M4 6l8 7 8-7",
   calendarCheck: "M4 6h16v14H4V6Z M4 10h16 M8 3v4 M16 3v4 M9 15l2 2 4-4",
   chart: "M4 20V10 M10 20V4 M16 20v-7 M22 20H2",
+  logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9",
   user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M4 20c1.5-4 5-6 8-6s6.5 2 8 6",
   chevronLeft: "M15 5l-7 7 7 7",
   chevronRight: "M9 5l7 7-7 7",
@@ -83,11 +70,9 @@ const ICONES_RICHES: Record<string, React.ComponentType<{ className?: string; si
 };
 const COULEURS_NAV: CouleurLotafinance[] = ["gold", "blue", "purple", "green", "orange", "red"];
 
-const COULEURS_ICONES = ["#F4C95D", "#C9A6F0", "#8FD9A8", "#7DBEF0", "#F4A5C9", "#F4956D", "#F0D96A", "#9AD1E8", "#D9A6F0", "#8FE0C4", "#F0C08A", "#A8C9F0", "#F0A6B8"];
-
 const LIENS_NAV = [
   { href: "/analyste", label: "Tableau de bord", icone: "home" as const },
-  { href: "/analyste/toutes", label: "Toutes les demandes", icone: "loans" as const, actif: true },
+  { href: "/analyste/toutes", label: "Toutes les demandes", icone: "loans" as const },
   { href: "/analyste/toutes?statut=approuve", label: "Dossiers approuvés", icone: "loans" as const },
   { href: "/analyste/toutes?statut=refuse", label: "Dossiers refusés", icone: "loans" as const },
   { href: "/analyste/remboursements", label: "Remboursements", icone: "calendarCheck" as const },
@@ -97,35 +82,20 @@ const LIENS_NAV = [
   { href: "/analyste/audit", label: "Audit & Logs", icone: "history" as const },
   { href: "/analyste/parametres", label: "Paramètres", icone: "gear" as const },
   { href: "/analyste/utilisateurs", label: "Gestion des utilisateurs", icone: "users" as const },
-  { href: "/analyste/messages", label: "Messages", icone: "mail" as const },
+  { href: "/analyste/messages", label: "Messages", icone: "mail" as const, actif: true },
   { href: "/analyste/profil", label: "Mon profil", icone: "user" as const },
 ];
 
-const FILTRES = [
-  { valeur: "tous", label: "Tous" },
-  { valeur: "soumis", label: "En attente" },
-  { valeur: "approuve", label: "Approuvés" },
-  { valeur: "refuse", label: "Refusés" },
-];
-
-function PageToutesLesDemandesContenu() {
+export default function PageMessagesAnalyste() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const statutInitial = searchParams.get("statut") || "tous";
   const [sidebarReduite, setSidebarReduite] = useState(false);
   const [utilisateur, setUtilisateur] = useState<{ id: string; email: string; role: string } | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [recherche, setRecherche] = useState("");
   const [menuProfilOuvert, setMenuProfilOuvert] = useState(false);
-  const [demandes, setDemandes] = useState<LoanOut[]>([]);
-  const [filtre, setFiltre] = useState(statutInitial);
+  const [conversations, setConversations] = useState<ConversationApercu[]>([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
-  const [totalNonLus, setTotalNonLus] = useState(0);
-
-  useEffect(() => {
-    setFiltre(searchParams.get("statut") || "tous");
-  }, [searchParams]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -143,19 +113,14 @@ function PageToutesLesDemandesContenu() {
         }
         setUtilisateur(profil);
         setAvatarUrl(urlPhotoDeProfil(profil.id));
-        const liste = await obtenirToutesLesDemandes(token);
-        setDemandes(liste);
+        const liste = await obtenirConversations(token);
+        setConversations(liste);
       } catch (err) {
         setErreur(err instanceof Error ? err.message : "Une erreur est survenue");
       } finally {
         setChargement(false);
       }
     })();
-
-    // Badge Messages
-    obtenirConversations(token)
-      .then((liste) => setTotalNonLus(liste.reduce((somme, c) => somme + c.non_lus, 0)))
-      .catch(() => {});
   }, [router]);
 
 
@@ -181,7 +146,8 @@ function PageToutesLesDemandesContenu() {
     if (recherche.trim()) router.push(`/analyste/recherche?q=${encodeURIComponent(recherche.trim())}`);
   }
 
-  const demandesFiltrees = filtre === "tous" ? demandes : demandes.filter((d) => d.status === filtre);
+  // Total des messages non lus, toutes conversations confondues (pour le badge sur l'icône Messages)
+  const totalNonLus = conversations.reduce((somme, c) => somme + c.non_lus, 0);
 
   if (chargement) {
     return (
@@ -214,7 +180,7 @@ function PageToutesLesDemandesContenu() {
                 lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
               }`}
             >
-                            <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
+              <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
                 {(() => {
                   const IconeRiche = ICONES_RICHES[lien.icone];
                   return IconeRiche ? <IconeRiche size={16} /> : Ic(lien.icone, "w-4 h-4");
@@ -245,7 +211,7 @@ function PageToutesLesDemandesContenu() {
       </aside>
 
       <div className="flex-1 px-8 py-6">
-        <div className="max-w-3xl">
+        <div className="max-w-2xl">
           <div className="flex items-center gap-3 mb-6">
             <form onSubmit={gererRecherche} className="flex-1 relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6070]">{Ic("search", "w-4 h-4")}</span>
@@ -291,69 +257,46 @@ function PageToutesLesDemandesContenu() {
           </div>
 
           <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
-            <h1 className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE] mb-1">Toutes les demandes</h1>
-            <p className="text-[#7C8494] text-sm mb-4">
-              {demandesFiltrees.length} dossier{demandesFiltrees.length > 1 ? "s" : ""}
+            <h1 className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE] mb-1">Messages</h1>
+            <p className="text-[#7C8494] text-sm mb-6">
+              {conversations.length} conversation{conversations.length > 1 ? "s" : ""}
             </p>
-
-            <div className="flex gap-2 mb-5">
-              {FILTRES.map((f) => (
-                <button
-                  key={f.valeur}
-                  onClick={() => setFiltre(f.valeur)}
-                  className={`text-xs font-medium px-3 py-1.5 rounded-full transition ${
-                    filtre === f.valeur ? "bg-[#C9A227] text-[#0B0E14]" : "bg-[#0B0E14] border border-[#232733] text-[#7C8494] hover:text-[#E8E6DE]"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
-            </div>
 
             {erreur && (
               <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
             )}
 
-            {demandesFiltrees.length === 0 && !erreur && (
-              <p className="text-sm text-[#5A6070] py-8 text-center">Aucun dossier pour ce filtre.</p>
+            {conversations.length === 0 && !erreur && (
+              <p className="text-sm text-[#5A6070] py-8 text-center">Aucun message pour le moment.</p>
             )}
 
-            <div className="space-y-3">
-              {demandesFiltrees.map((d) => {
-                const couleur = couleurStatut(d.status);
-                return (
-                  <button
-                    key={d.id}
-                    onClick={() => router.push(`/analyste/${d.id}`)}
-                    className="w-full text-left border border-[#232733] rounded-md p-4 hover:border-[#3A4050] transition flex items-center justify-between gap-4"
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-[#E8E6DE] font-mono">
-                        {d.amount_requested.toLocaleString("fr-FR")} F — {formaterDuree(d.duration_weeks)}
-                      </p>
-                      {d.purpose && <p className="text-xs text-[#7C8494] mt-0.5">{d.purpose}</p>}
-                    </div>
-                    <span
-                      className="text-xs font-medium px-2.5 py-1 rounded-full shrink-0"
-                      style={{ backgroundColor: couleur.bg, color: couleur.text }}
-                    >
-                      {LIBELLES_STATUT[d.status] || d.status}
-                    </span>
-                  </button>
-                );
-              })}
+            <div className="space-y-2">
+              {conversations.map((c) => (
+                <button
+                  key={c.client_id}
+                  onClick={() => router.push(`/analyste/messages/${c.client_id}`)}
+                  className="w-full text-left border border-[#232733] rounded-md p-4 hover:border-[#3A4050] transition flex items-center justify-between gap-4"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-[#E8E6DE]">
+                      {c.client_first_name} {c.client_last_name}
+                    </p>
+                    <p className="text-xs text-[#7C8494] truncate mt-0.5">{c.dernier_message}</p>
+                  </div>
+                  <div className="flex flex-col items-end gap-1 shrink-0">
+                    <span className="text-[11px] text-[#5A6070]">{formaterDate(c.dernier_message_le)}</span>
+                    {c.non_lus > 0 && (
+                      <span className="w-5 h-5 rounded-full bg-[#C24545] text-white text-[10px] flex items-center justify-center">
+                        {c.non_lus}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         </div>
       </div>
     </main>
-  );
-}
-
-export default function PageToutesLesDemandes() {
-  return (
-    <Suspense fallback={null}>
-      <PageToutesLesDemandesContenu />
-    </Suspense>
   );
 }

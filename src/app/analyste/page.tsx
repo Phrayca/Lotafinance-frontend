@@ -548,13 +548,13 @@ export default function PageEspaceAnalyste() {
                 <div className="px-4 py-3 border-b border-[#1B1F29] text-sm font-medium text-[#E8E6DE]">Notifications</div>
                 <div className="max-h-96 overflow-y-auto divide-y divide-[#1B1F29]">
                   {demandes.length > 0 && (
-                    <button onClick={() => { router.push("/analyste"); setNotifOuvertes(false); }} className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
+                    <button onClick={() => { router.push("/analyste/toutes?statut=soumis"); setNotifOuvertes(false); }} className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
                       <span className="w-2 h-2 rounded-full bg-[#5B8DEF] mt-1.5 shrink-0" />
                       <span className="text-xs text-[#B8BAC4]">{demandes.length} dossier{demandes.length > 1 ? "s" : ""} à traiter</span>
                     </button>
                   )}
                   {clientsARetard.map((c) => (
-                    <button key={c.client_id} onClick={() => { router.push("/analyste/clients"); setNotifOuvertes(false); }} className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
+                    <button key={c.client_id} onClick={() => { router.push(`/analyste/clients/${c.client_id}`); setNotifOuvertes(false); }} className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
                       <span className="w-2 h-2 rounded-full bg-[#F0A0A0] mt-1.5 shrink-0" />
                       <span className="text-xs text-[#B8BAC4]">{c.client_first_name} {c.client_last_name} — retard de paiement</span>
                     </button>
@@ -748,7 +748,11 @@ export default function PageEspaceAnalyste() {
                 <p className="text-xs text-[#7C8494] mb-3">Historique de retard sur l&apos;ensemble de leurs prêts, même déjà soldés</p>
                 <div className="space-y-2">
                   {clientsARetard.slice(0, 5).map((c) => (
-                    <div key={c.client_id} className="flex items-center justify-between border border-[#4A2222] bg-[#1A0F0F] rounded-md p-3">
+                    <button
+                      key={c.client_id}
+                      onClick={() => router.push(`/analyste/clients/${c.client_id}`)}
+                      className="w-full text-left flex items-center justify-between border border-[#4A2222] bg-[#1A0F0F] rounded-md p-3 hover:border-[#6B2E2E] transition"
+                    >
                       <div>
                         <p className="text-sm font-medium text-[#E8E6DE]">{c.client_first_name} {c.client_last_name}</p>
                         <p className="text-xs text-[#7C8494] mt-0.5">
@@ -758,7 +762,7 @@ export default function PageEspaceAnalyste() {
                       <span className="text-xs font-medium text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-full px-2.5 py-1 shrink-0">
                         {c.echeances_en_retard} retard{c.echeances_en_retard > 1 ? "s" : ""}
                       </span>
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -771,7 +775,7 @@ export default function PageEspaceAnalyste() {
             <div className="bg-[#12151C] border border-[#232733] rounded-lg px-5 py-4">
               <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Actions rapides</p>
               <div className="grid grid-cols-2 gap-2">
-                <ActionRapide icone="target" label="Évaluer un dossier" couleur="gold" onClick={() => router.push("/analyste")} />
+                <ActionRapide icone="target" label="Évaluer un dossier" couleur="gold" onClick={() => router.push("/analyste/toutes?statut=soumis")} />
                 <ActionRapide icone="chart" label="Générer un rapport" couleur="blue" onClick={() => router.push("/analyste/rapports")} />
                 <ActionRapide icone="users" label="Gestion des utilisateurs" couleur="purple" onClick={() => router.push("/analyste/utilisateurs")} />
                 <ActionRapide icone="gear" label="Paramètres système" couleur="green" onClick={() => router.push("/analyste/parametres")} />
@@ -798,13 +802,13 @@ export default function PageEspaceAnalyste() {
               </div>
               <div className="divide-y divide-[#1B1F29]">
                 {demandes.length > 0 && (
-                  <button onClick={() => router.push("/analyste")} className="w-full text-left px-5 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
+                  <button onClick={() => router.push("/analyste/toutes?statut=soumis")} className="w-full text-left px-5 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#5B8DEF] mt-1.5 shrink-0" />
                     <span className="text-xs text-[#B8BAC4]">{demandes.length} dossier{demandes.length > 1 ? "s" : ""} à traiter</span>
                   </button>
                 )}
                 {clientsARetard.map((c) => (
-                  <button key={c.client_id} onClick={() => router.push("/analyste/clients")} className="w-full text-left px-5 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
+                  <button key={c.client_id} onClick={() => router.push(`/analyste/clients/${c.client_id}`)} className="w-full text-left px-5 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#F0A0A0] mt-1.5 shrink-0" />
                     <span className="text-xs text-[#B8BAC4]">{c.client_first_name} {c.client_last_name} — retard de paiement</span>
                   </button>
