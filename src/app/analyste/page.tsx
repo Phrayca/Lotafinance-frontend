@@ -311,7 +311,7 @@ export default function PageEspaceAnalyste() {
   const [recherche, setRecherche] = useState("");
   const [menuProfilOuvert, setMenuProfilOuvert] = useState(false);
   const [notifOuvertes, setNotifOuvertes] = useState(false);
-  const [notifVues, setNotifVues] = useState(false);
+  const [alertesVuesCompte, setAlertesVuesCompte] = useState(0);
   const [demandes, setDemandes] = useState<LoanOut[]>([]);
   const [toutesDemandes, setToutesDemandes] = useState<LoanOut[]>([]);
   const [echeancesToutes, setEcheancesToutes] = useState<Echeance[]>([]);
@@ -381,6 +381,8 @@ export default function PageEspaceAnalyste() {
 
   useEffect(() => {
     setSidebarReduite(localStorage.getItem("sidebar_reduite") === "1");
+    const stocke = localStorage.getItem("analyste_alertes_vues_compte");
+    if (stocke) setAlertesVuesCompte(Number(stocke) || 0);
   }, []);
 
   function basculerSidebar() {
@@ -534,12 +536,19 @@ export default function PageEspaceAnalyste() {
 
           <div className="relative shrink-0">
             <button
-              onClick={() => { setNotifOuvertes((v) => !v); setNotifVues(true); }}
+              onClick={() => {
+                const nouvelEtat = !notifOuvertes;
+                setNotifOuvertes(nouvelEtat);
+                if (nouvelEtat) {
+                  setAlertesVuesCompte(totalAlertes);
+                  localStorage.setItem("analyste_alertes_vues_compte", String(totalAlertes));
+                }
+              }}
               title="Notifications"
               className="relative text-[#7C8494] hover:text-[#E8E6DE] transition p-2"
             >
               <NotificationIcon size={20} />
-              {totalAlertes > 0 && !notifVues && (
+              {totalAlertes > alertesVuesCompte && (
                 <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#C24545] text-white text-[9px] flex items-center justify-center">{totalAlertes}</span>
               )}
             </button>
@@ -796,7 +805,7 @@ export default function PageEspaceAnalyste() {
             <div className="bg-[#12151C] border border-[#232733] rounded-lg overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4 border-b border-[#232733]">
                 <p className="flex items-center gap-2 text-sm font-medium text-[#E8E6DE]">{Ic("bell", "w-4 h-4")} Alertes & Notifications</p>
-                {totalAlertes > 0 && !notifVues && (
+                {totalAlertes > alertesVuesCompte && (
                   <span className="w-5 h-5 rounded-full bg-[#C24545] text-white text-[10px] flex items-center justify-center">{totalAlertes}</span>
                 )}
               </div>
