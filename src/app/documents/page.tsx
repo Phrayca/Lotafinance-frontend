@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { envoyerDocument, obtenirMesDocuments, DocumentClient, TypeDocument } from "@/lib/api";
-import { DocumentIcon, IconCircle } from "@/components/icons";
+import { DocumentIcon, HomeIcon, LoanIcon, LoanRequestIcon, RepaymentIcon, ProfileIcon, IconCircle } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
   backgroundColor: "#0B0E14",
@@ -16,6 +16,14 @@ const TYPES_DOCUMENTS: { valeur: TypeDocument; libelle: string; note?: string }[
   { valeur: "carte_residence", libelle: "Carte de résidence (Dakar)" },
   { valeur: "contrat_travail", libelle: "Contrat de travail" },
   { valeur: "certificat_travail", libelle: "Certificat de travail", note: "Idéalement daté de moins de 3 mois" },
+];
+
+const LIENS_NAV_MOBILE = [
+  { href: "/tableau-de-bord", label: "Accueil", Icone: HomeIcon },
+  { href: "/mes-demandes", label: "Mes prêts", Icone: LoanIcon },
+  { href: "/demande-pret", label: "Demander", Icone: LoanRequestIcon },
+  { href: "/remboursements", label: "Rembours.", Icone: RepaymentIcon },
+  { href: "/profil", label: "Profil", Icone: ProfileIcon },
 ];
 
 function PageDocumentsContenu() {
@@ -87,7 +95,7 @@ function PageDocumentsContenu() {
   const nombreEnvoyes = TYPES_DOCUMENTS.filter((t) => documentDejaEnvoye(t.valeur)).length;
 
   return (
-    <main style={FOND_TEXTURE_STYLE} className="min-h-screen px-4 py-10">
+    <main style={FOND_TEXTURE_STYLE} className="min-h-screen px-4 py-10 pb-28 md:pb-10">
       <div className="max-w-xl mx-auto">
         {!modeOnboarding && (
           <button onClick={() => router.push("/tableau-de-bord")} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] mb-4 transition">
@@ -122,7 +130,7 @@ function PageDocumentsContenu() {
               const enCours = envoiEnCours === type.valeur;
 
               return (
-                <div key={type.valeur} className="border border-[#232733] rounded-md p-4 flex items-center justify-between gap-4">
+                <div key={type.valeur} className="border border-[#232733] rounded-md p-4 flex items-center justify-between gap-4 flex-wrap">
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-[#E8E6DE]">{type.libelle}</p>
                     {type.note && <p className="text-[11px] text-[#7C8494] mt-0.5">{type.note}</p>}
@@ -165,6 +173,28 @@ function PageDocumentsContenu() {
           )}
         </div>
       </div>
+
+      {/* Barre de navigation mobile — masquée pendant l'onboarding pour ne pas distraire du parcours */}
+      {!modeOnboarding && (
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0B0E14]/95 backdrop-blur border-t border-[#1B1F29] flex items-center justify-around py-2 px-1">
+          {LIENS_NAV_MOBILE.map((lien) => {
+            const estActif = false;
+            const Icone = lien.Icone;
+            return (
+              <button
+                key={lien.href}
+                onClick={() => router.push(lien.href)}
+                className="flex flex-col items-center gap-0.5 flex-1 py-1"
+              >
+                <span className={estActif ? "text-[#C9A227]" : "text-[#7C8494]"}>
+                  <Icone size={20} />
+                </span>
+                <span className={`text-[9px] ${estActif ? "text-[#C9A227] font-medium" : "text-[#7C8494]"}`}>{lien.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      )}
     </main>
   );
 }

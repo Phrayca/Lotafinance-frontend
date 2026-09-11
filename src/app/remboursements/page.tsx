@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { obtenirMesDemandesDePret, obtenirEcheances, declarerPaiementEcheance, LoanOut, Echeance } from "@/lib/api";
-import { RepaymentIcon, IconCircle } from "@/components/icons";
+import { RepaymentIcon, HomeIcon, LoanIcon, LoanRequestIcon, ProfileIcon, IconCircle } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
   backgroundColor: "#0B0E14",
@@ -26,6 +26,14 @@ function formaterDate(iso?: string | null) {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 }
+
+const LIENS_NAV_MOBILE = [
+  { href: "/tableau-de-bord", label: "Accueil", Icone: HomeIcon },
+  { href: "/mes-demandes", label: "Mes prêts", Icone: LoanIcon },
+  { href: "/demande-pret", label: "Demander", Icone: LoanRequestIcon },
+  { href: "/remboursements", label: "Rembours.", Icone: RepaymentIcon },
+  { href: "/profil", label: "Profil", Icone: ProfileIcon },
+];
 
 export default function PageRemboursements() {
   const router = useRouter();
@@ -108,7 +116,7 @@ export default function PageRemboursements() {
   }
 
   return (
-    <main style={FOND_TEXTURE_STYLE} className="min-h-screen px-4 py-10">
+    <main style={FOND_TEXTURE_STYLE} className="min-h-screen px-4 py-10 pb-28 md:pb-10">
       <div className="max-w-xl mx-auto">
         <button onClick={() => router.push("/tableau-de-bord")} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] mb-4 transition">
           ← Retour au tableau de bord
@@ -236,6 +244,26 @@ export default function PageRemboursements() {
           )}
         </div>
       </div>
+
+      {/* Barre de navigation mobile */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0B0E14]/95 backdrop-blur border-t border-[#1B1F29] flex items-center justify-around py-2 px-1">
+        {LIENS_NAV_MOBILE.map((lien) => {
+          const estActif = lien.href === "/remboursements";
+          const Icone = lien.Icone;
+          return (
+            <button
+              key={lien.href}
+              onClick={() => router.push(lien.href)}
+              className="flex flex-col items-center gap-0.5 flex-1 py-1"
+            >
+              <span className={estActif ? "text-[#C9A227]" : "text-[#7C8494]"}>
+                <Icone size={20} />
+              </span>
+              <span className={`text-[9px] ${estActif ? "text-[#C9A227] font-medium" : "text-[#7C8494]"}`}>{lien.label}</span>
+            </button>
+          );
+        })}
+      </nav>
     </main>
   );
 }

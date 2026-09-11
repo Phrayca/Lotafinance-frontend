@@ -122,6 +122,14 @@ const LIENS_NAV = [
   { href: "/profil", label: "Mon profil", icone: "user" as const, actif: true },
 ];
 
+const LIENS_NAV_MOBILE = [
+  { href: "/tableau-de-bord", label: "Accueil", Icone: HomeIcon },
+  { href: "/mes-demandes", label: "Mes prêts", Icone: LoanIcon },
+  { href: "/demande-pret", label: "Demander", Icone: LoanRequestIcon },
+  { href: "/remboursements", label: "Rembours.", Icone: RepaymentIcon },
+  { href: "/profil", label: "Profil", Icone: ProfileIcon },
+];
+
 const PROFIL_VIDE: ProfilClient = {
   first_name: "",
   last_name: "",
@@ -325,7 +333,8 @@ function PageProfilClientContenu() {
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      {/* Sidebar — visible seulement à partir de tablette/desktop */}
+      <aside className={`hidden md:flex ${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
           <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
           {!sidebarReduite && (
@@ -376,7 +385,7 @@ function PageProfilClientContenu() {
         </button>
       </aside>
 
-      <div className="flex-1 px-8 py-6 overflow-y-auto">
+      <div className="flex-1 px-4 py-4 md:px-8 md:py-6 overflow-y-auto pb-28 md:pb-6">
         <div className="max-w-xl">
           <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE] mb-1">{modeOnboarding ? "Complétez votre profil (étape 2/3)" : "Mon profil"}</h1>
           <p className="text-[#7C8494] text-sm mb-6">
@@ -390,7 +399,7 @@ function PageProfilClientContenu() {
           )}
 
           {/* Photo + identité */}
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4 flex items-center gap-4">
+          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4 flex items-center gap-4 flex-wrap">
             <label className="relative w-14 h-14 shrink-0 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center overflow-hidden cursor-pointer group">
               {statutCompte?.has_avatar && avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -470,7 +479,7 @@ function PageProfilClientContenu() {
               <p className="text-sm text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-md px-3 py-2 mb-3">Profil mis à jour avec succès.</p>
             )}
 
-            <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
                 <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Prénom *</label>
                 <input required value={profil.first_name} onChange={(e) => majChamp("first_name", e.target.value)} className={CHAMP_CLASSES} />
@@ -481,7 +490,7 @@ function PageProfilClientContenu() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
                 <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Téléphone *</label>
                 <input required value={profil.phone} onChange={(e) => majChamp("phone", e.target.value)} className={CHAMP_CLASSES} />
@@ -504,7 +513,7 @@ function PageProfilClientContenu() {
 
             <h2 className="text-sm font-medium text-[#E8E6DE] mb-4 border-t border-[#232733] pt-4">Informations professionnelles</h2>
 
-            <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
                 <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Profession</label>
                 <input value={profil.profession || ""} onChange={(e) => majChamp("profession", e.target.value)} className={CHAMP_CLASSES} />
@@ -515,7 +524,7 @@ function PageProfilClientContenu() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
                 <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Type d'emploi</label>
                 <select value={profil.employment_type || ""} onChange={(e) => majChamp("employment_type", e.target.value)} className={CHAMP_CLASSES}>
@@ -535,7 +544,7 @@ function PageProfilClientContenu() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
                 <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Catégorie professionnelle</label>
                 <select value={profil.categorie_professionnelle || ""} onChange={(e) => majChamp("categorie_professionnelle", e.target.value)} className={CHAMP_CLASSES}>
@@ -555,7 +564,7 @@ function PageProfilClientContenu() {
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 mb-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
               <div>
                 <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Revenu mensuel (F)</label>
                 <input
@@ -691,6 +700,28 @@ function PageProfilClientContenu() {
           )}
         </div>
       </div>
+
+      {/* Barre de navigation mobile — masquée pendant l'onboarding */}
+      {!modeOnboarding && (
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0B0E14]/95 backdrop-blur border-t border-[#1B1F29] flex items-center justify-around py-2 px-1">
+          {LIENS_NAV_MOBILE.map((lien) => {
+            const estActif = lien.href === "/profil";
+            const Icone = lien.Icone;
+            return (
+              <button
+                key={lien.href}
+                onClick={() => router.push(lien.href)}
+                className="flex flex-col items-center gap-0.5 flex-1 py-1"
+              >
+                <span className={estActif ? "text-[#C9A227]" : "text-[#7C8494]"}>
+                  <Icone size={20} />
+                </span>
+                <span className={`text-[9px] ${estActif ? "text-[#C9A227] font-medium" : "text-[#7C8494]"}`}>{lien.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+      )}
     </main>
   );
 }

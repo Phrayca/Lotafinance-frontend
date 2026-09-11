@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { obtenirMesDemandesDePret, obtenirEcheances, LoanOut, Echeance } from "@/lib/api";
-import { LoanIcon, IconCircle } from "@/components/icons";
+import { LoanIcon, HomeIcon, LoanRequestIcon, RepaymentIcon, ProfileIcon, IconCircle } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
   backgroundColor: "#0B0E14",
@@ -66,6 +66,14 @@ function estimerCreditPotentiel(score: number, dernierMontant: number) {
   return Math.max(10000, Math.round(brut / 5000) * 5000);
 }
 
+const LIENS_NAV_MOBILE = [
+  { href: "/tableau-de-bord", label: "Accueil", Icone: HomeIcon },
+  { href: "/mes-demandes", label: "Mes prêts", Icone: LoanIcon },
+  { href: "/demande-pret", label: "Demander", Icone: LoanRequestIcon },
+  { href: "/remboursements", label: "Rembours.", Icone: RepaymentIcon },
+  { href: "/profil", label: "Profil", Icone: ProfileIcon },
+];
+
 export default function PageMesDemandes() {
   const router = useRouter();
   const [demandes, setDemandes] = useState<LoanOut[]>([]);
@@ -122,14 +130,14 @@ export default function PageMesDemandes() {
     .sort((a, b) => (b.payee_le || "").localeCompare(a.payee_le || ""));
 
   return (
-    <main style={FOND_TEXTURE_STYLE} className="min-h-screen px-4 py-10">
+    <main style={FOND_TEXTURE_STYLE} className="min-h-screen px-4 py-10 pb-28 md:pb-10">
       <div className="max-w-2xl mx-auto">
         <button onClick={() => router.push("/tableau-de-bord")} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] mb-4 transition">
           ← Retour au tableau de bord
         </button>
 
         {/* Score Lotafinance + Crédit potentiel */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
             <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-2">Score Lotafinance</p>
             {score != null && infosScore ? (
@@ -216,7 +224,7 @@ export default function PageMesDemandes() {
 
               return (
                 <div key={d.id} className="border border-[#232733] rounded-md p-4">
-                  <div className="flex items-start justify-between gap-4 mb-3">
+                  <div className="flex items-start justify-between gap-4 mb-3 flex-wrap">
                     <div>
                       <p className="text-sm font-medium text-[#E8E6DE] font-mono">
                         {formaterMontant(d.amount_requested)} — {formaterDuree(d.duration_weeks)}
@@ -338,6 +346,26 @@ export default function PageMesDemandes() {
           </div>
         )}
       </div>
+
+      {/* Barre de navigation mobile */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0B0E14]/95 backdrop-blur border-t border-[#1B1F29] flex items-center justify-around py-2 px-1">
+        {LIENS_NAV_MOBILE.map((lien) => {
+          const estActif = lien.href === "/mes-demandes";
+          const Icone = lien.Icone;
+          return (
+            <button
+              key={lien.href}
+              onClick={() => router.push(lien.href)}
+              className="flex flex-col items-center gap-0.5 flex-1 py-1"
+            >
+              <span className={estActif ? "text-[#C9A227]" : "text-[#7C8494]"}>
+                <Icone size={20} />
+              </span>
+              <span className={`text-[9px] ${estActif ? "text-[#C9A227] font-medium" : "text-[#7C8494]"}`}>{lien.label}</span>
+            </button>
+          );
+        })}
+      </nav>
     </main>
   );
 }
