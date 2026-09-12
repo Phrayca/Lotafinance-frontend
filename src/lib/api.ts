@@ -2,11 +2,11 @@
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function inscrire(email: string, password: string) {
+export async function inscrire(email: string, phone: string, password: string) {
   const reponse = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, phone, password }),
   });
   const donnees = await reponse.json();
   if (!reponse.ok) {
@@ -15,15 +15,30 @@ export async function inscrire(email: string, password: string) {
   return donnees;
 }
 
-export async function seConnecter(email: string, password: string) {
+// Étape 1 : identifiant (email ou téléphone) + mot de passe → envoie un code par email
+export async function demanderConnexion(identifiant: string, password: string) {
   const reponse = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ identifiant, password }),
   });
   const donnees = await reponse.json();
   if (!reponse.ok) {
-    throw new Error(donnees.detail || "Email ou mot de passe incorrect");
+    throw new Error(donnees.detail || "Aucun compte ne correspond à cet identifiant, ou mot de passe incorrect");
+  }
+  return donnees as { message: string };
+}
+
+// Étape 2 : identifiant + code reçu par email → jeton d'accès
+export async function verifierCodeConnexion(identifiant: string, code: string) {
+  const reponse = await fetch(`${API_URL}/auth/login/verifier`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ identifiant, code }),
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Code invalide ou expiré");
   }
   return donnees as { access_token: string; token_type: string };
 }
@@ -166,6 +181,8 @@ export type DemandePret = {
   duration_weeks: number;
   purpose?: string;
   facilite_paiement?: boolean;
+  payout_channel: "wave" | "orange_money";
+  payout_phone: string;
 };
 
 export type StatutDemande = "soumis" | "approuve" | "refuse" | "infos_demandees";
@@ -183,6 +200,8 @@ export type LoanOut = {
   risk_level?: string;
   recommended_amount?: number;
   facilite_paiement?: boolean;
+  payout_channel?: string;
+  payout_phone?: string;
   decision?: string;
   decision_reason?: string;
   approved_amount?: number;

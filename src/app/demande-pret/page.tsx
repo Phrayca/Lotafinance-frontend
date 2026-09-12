@@ -60,6 +60,8 @@ export default function PageDemandePret() {
   const [pretEnCours, setPretEnCours] = useState<boolean | null>(null);
   const [plafond, setPlafond] = useState<number | null>(null);
   const [nombrePretsReussis, setNombrePretsReussis] = useState(0);
+  const [canalVersement, setCanalVersement] = useState<"wave" | "orange_money">("wave");
+  const [numeroVersement, setNumeroVersement] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -104,6 +106,11 @@ export default function PageDemandePret() {
       return;
     }
 
+    if (!numeroVersement.trim()) {
+      setErreur("Merci d'indiquer le numéro Wave ou Orange Money qui recevra les fonds.");
+      return;
+    }
+
     setEtape("recap");
   }
 
@@ -119,6 +126,8 @@ export default function PageDemandePret() {
       duration_weeks: duree,
       purpose: motif || undefined,
       facilite_paiement: false,
+      payout_channel: canalVersement,
+      payout_phone: numeroVersement.trim(),
     };
 
     setEnvoi(true);
@@ -198,6 +207,43 @@ export default function PageDemandePret() {
                   <input value={motif} onChange={(e) => setMotif(e.target.value)} className={CHAMP_CLASSES} placeholder="Ex: achat de marchandises" />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-[#B8BAC4] mb-1">
+                    Où souhaitez-vous recevoir les fonds ? <span className="text-[#C24545]">*</span>
+                  </label>
+                  <div className="flex gap-2 mb-2">
+                    <button
+                      type="button"
+                      onClick={() => setCanalVersement("wave")}
+                      className={`flex-1 text-sm font-medium py-2 rounded-md transition ${
+                        canalVersement === "wave" ? "bg-[#C9A227] text-[#0B0E14]" : "bg-[#0B0E14] border border-[#232733] text-[#7C8494]"
+                      }`}
+                    >
+                      🌊 Wave
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCanalVersement("orange_money")}
+                      className={`flex-1 text-sm font-medium py-2 rounded-md transition ${
+                        canalVersement === "orange_money" ? "bg-[#C9A227] text-[#0B0E14]" : "bg-[#0B0E14] border border-[#232733] text-[#7C8494]"
+                      }`}
+                    >
+                      🟠 Orange Money
+                    </button>
+                  </div>
+                  <input
+                    type="tel"
+                    required
+                    value={numeroVersement}
+                    onChange={(e) => setNumeroVersement(e.target.value)}
+                    className={CHAMP_CLASSES}
+                    placeholder="Ex: 77 123 45 67"
+                  />
+                  <p className="text-[10px] text-[#5A6070] mt-1">
+                    C&apos;est ce numéro qui recevra le montant si votre demande est approuvée.
+                  </p>
+                </div>
+
                 {erreur && (
                   <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2">{erreur}</p>
                 )}
@@ -221,6 +267,7 @@ export default function PageDemandePret() {
                 <LigneResultat label="Montant demandé" valeur={formaterMontant(montantNombre)} />
                 <LigneResultat label="Durée" valeur={DUREES_DISPONIBLES.find((d) => d.valeur === duree)?.libelle || ""} />
                 <LigneResultat label="Motif" valeur={motif || "—"} />
+                <LigneResultat label="Versement des fonds" valeur={`${canalVersement === "wave" ? "Wave" : "Orange Money"} — ${numeroVersement}`} />
                 <LigneResultat label="Taux estimé" valeur={`${tauxEstime}%`} />
                 <LigneResultat label="Intérêts estimés" valeur={formaterMontant(interetEstime)} />
                 <LigneResultat label="Total estimé à rembourser" valeur={formaterMontant(totalEstime)} />
@@ -301,6 +348,7 @@ export default function PageDemandePret() {
                 {resultat.status === "approuve" ? "Prêt approuvé !" : resultat.status === "refuse" ? "Demande refusée" : "Demande envoyée"}
               </h1>
               <p className="text-[#7C8494] text-sm mb-4">Voici le résultat définitif calculé par Lotafinance.</p>
+              <p className="text-xs text-[#5A6070] mb-4">📧 Un récapitulatif de votre contrat a été envoyé à votre adresse email.</p>
 
               {resultat.status === "approuve" && (
                 <div className="bg-[#0F2420] border border-[#1E4A3D] rounded-md px-4 py-3 mb-5 text-sm text-[#3DDC97]">
