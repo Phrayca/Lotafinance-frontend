@@ -128,6 +128,7 @@ export default function PageDemandePret() {
       facilite_paiement: false,
       payout_channel: canalVersement,
       payout_phone: numeroVersement.trim(),
+      signature: signature.trim(),
     };
 
     setEnvoi(true);

@@ -2,7 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { recupererMonProfilUtilisateur, obtenirConversations, changerMonMotDePasse, envoyerMaPhotoDeProfil, urlPhotoDeProfil, obtenirStatutDeMonCompte, StatutCompte } from "@/lib/api";
+import {
+  recupererMonProfilUtilisateur,
+  obtenirConversations,
+  changerMonMotDePasse,
+  envoyerMaPhotoDeProfil,
+  urlPhotoDeProfil,
+  obtenirStatutDeMonCompte,
+  StatutCompte,
+  enregistrerMesInformations,
+  envoyerMonDocumentAnalyste,
+  obtenirMesDocumentsAnalyste,
+  telechargerMonDocumentAnalyste,
+  DocumentAnalyste,
+  TypeDocumentAnalyste,
+} from "@/lib/api";
 import {
   HomeIcon,
   LoanIcon,
@@ -24,7 +38,16 @@ const FOND_TEXTURE_STYLE: React.CSSProperties = {
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
 
-type Utilisateur = { id: string; email: string; role: string; created_at?: string };
+const CHAMP_CLASSES =
+  "w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition";
+
+type Utilisateur = { id: string; email: string; role: string; first_name?: string; last_name?: string; created_at?: string };
+
+const TYPES_DOCUMENTS_ANALYSTE: { valeur: TypeDocumentAnalyste; libelle: string }[] = [
+  { valeur: "piece_identite", libelle: "Pièce d'identité" },
+  { valeur: "diplome", libelle: "Diplôme" },
+  { valeur: "cv", libelle: "CV" },
+];
 
 function formaterDate(iso?: string | null) {
   if (!iso) return "—";
@@ -62,6 +85,7 @@ const ICONES = {
   camera: "M4 8h3l2-2h6l2 2h3v12H4V8Z M12 12a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z",
   mailCheck: "M4 6h16v12H4V6Z M4 6l8 7 8-7 M17 14l2 2 3-3",
   mailX: "M4 6h16v12H4V6Z M4 6l8 7 8-7 M17.5 15.5l3 3 M20.5 15.5l-3 3",
+  document: "M6 3h8l4 4v14H6V3Z M14 3v4h4 M9 12h6 M9 16h6",
   chevronLeft: "M15 5l-7 7 7 7",
   chevronRight: "M9 5l7 7-7 7",
   search: "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z M21 21l-4.3-4.3",
@@ -84,8 +108,6 @@ const ICONES_RICHES: Record<string, React.ComponentType<{ className?: string; si
   user: ProfileIcon,
 };
 const COULEURS_NAV: CouleurLotafinance[] = ["gold", "blue", "purple", "green", "orange", "red"];
-
-const COULEURS_ICONES = ["#F4C95D", "#C9A6F0", "#8FD9A8", "#7DBEF0", "#F4A5C9", "#F4956D", "#F0D96A", "#9AD1E8", "#D9A6F0", "#8FE0C4", "#F0C08A", "#A8C9F0", "#F0A6B8"];
 
 const LIENS_NAV = [
   { href: "/analyste", label: "Tableau de bord", icone: "home" as const },
@@ -117,6 +139,16 @@ export default function PageProfilAnalyste() {
   const [recherche, setRecherche] = useState("");
   const [menuProfilOuvert, setMenuProfilOuvert] = useState(false);
 
+  const [prenom, setPrenom] = useState("");
+  const [nom, setNom] = useState("");
+  const [enregistrementInfosEnCours, setEnregistrementInfosEnCours] = useState(false);
+  const [erreurInfos, setErreurInfos] = useState("");
+  const [succesInfos, setSuccesInfos] = useState(false);
+
+  const [documents, setDocuments] = useState<DocumentAnalyste[]>([]);
+  const [envoiDocEnCours, setEnvoiDocEnCours] = useState<TypeDocumentAnalyste | null>(null);
+  const [erreurDoc, setErreurDoc] = useState("");
+
   const [motDePasseActuel, setMotDePasseActuel] = useState("");
   const [nouveauMotDePasse, setNouveauMotDePasse] = useState("");
   const [confirmationMotDePasse, setConfirmationMotDePasse] = useState("");
@@ -139,8 +171,11 @@ export default function PageProfilAnalyste() {
           return;
         }
         setUtilisateur(profil);
+        setPrenom(profil.first_name || "");
+        setNom(profil.last_name || "");
         setAvatarUrl(urlPhotoDeProfil(profil.id));
         obtenirStatutDeMonCompte(token).then(setStatutCompte).catch(() => {});
+        obtenirMesDocumentsAnalyste(token).then(setDocuments).catch(() => {});
       } catch (err) {
         setErreur(err instanceof Error ? err.message : "Une erreur est survenue");
       } finally {
@@ -186,7 +221,6 @@ export default function PageProfilAnalyste() {
     setEnvoiPhotoEnCours(true);
     try {
       await envoyerMaPhotoDeProfil(token, fichier);
-      // On force le rechargement de l'image affichée
       setAvatarUrl(`${urlPhotoDeProfil(utilisateur.id)}?t=${Date.now()}`);
       setStatutCompte((precedent) => (precedent ? { ...precedent, has_avatar: true } : precedent));
     } catch (err) {
@@ -195,6 +229,59 @@ export default function PageProfilAnalyste() {
       setEnvoiPhotoEnCours(false);
       e.target.value = "";
     }
+  }
+
+  async function gererEnregistrementInfos(e: React.FormEvent) {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setErreurInfos("");
+    setSuccesInfos(false);
+    setEnregistrementInfosEnCours(true);
+    try {
+      const misAJour = await enregistrerMesInformations(token, prenom.trim(), nom.trim());
+      setUtilisateur((precedent) => (precedent ? { ...precedent, first_name: misAJour.first_name, last_name: misAJour.last_name } : precedent));
+      setSuccesInfos(true);
+    } catch (err) {
+      setErreurInfos(err instanceof Error ? err.message : "Erreur lors de l'enregistrement");
+    } finally {
+      setEnregistrementInfosEnCours(false);
+    }
+  }
+
+  async function gererSelectionDocument(type: TypeDocumentAnalyste, e: React.ChangeEvent<HTMLInputElement>) {
+    const fichier = e.target.files?.[0];
+    if (!fichier) return;
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    setErreurDoc("");
+    setEnvoiDocEnCours(type);
+    try {
+      await envoyerMonDocumentAnalyste(token, type, fichier);
+      const liste = await obtenirMesDocumentsAnalyste(token);
+      setDocuments(liste);
+    } catch (err) {
+      setErreurDoc(err instanceof Error ? err.message : "Une erreur est survenue");
+    } finally {
+      setEnvoiDocEnCours(null);
+      e.target.value = "";
+    }
+  }
+
+  async function gererTelechargementDocument(doc: DocumentAnalyste) {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      await telechargerMonDocumentAnalyste(token, doc.id, doc.original_file_name);
+    } catch (err) {
+      setErreurDoc(err instanceof Error ? err.message : "Erreur de téléchargement");
+    }
+  }
+
+  function documentDejaEnvoye(type: TypeDocumentAnalyste): DocumentAnalyste | undefined {
+    return documents.find((d) => d.document_type === type);
   }
 
   async function gererChangementMotDePasse(e: React.FormEvent) {
@@ -285,7 +372,7 @@ export default function PageProfilAnalyste() {
         </button>
       </aside>
 
-      <div className="flex-1 px-8 py-6">
+      <div className="flex-1 px-8 py-6 overflow-y-auto">
         <div className="max-w-xl">
           <div className="flex items-center gap-3 mb-6">
             <form onSubmit={gererRecherche} className="flex-1 relative">
@@ -354,7 +441,9 @@ export default function PageProfilAnalyste() {
                   <input type="file" accept="image/*" className="hidden" onChange={gererEnvoiPhoto} disabled={envoiPhotoEnCours} />
                 </label>
                 <div className="min-w-0">
-                  <p className="text-base font-medium text-[#E8E6DE] truncate">{utilisateur.email}</p>
+                  <p className="text-base font-medium text-[#E8E6DE] truncate">
+                    {utilisateur.first_name || utilisateur.last_name ? `${utilisateur.first_name || ""} ${utilisateur.last_name || ""}`.trim() : utilisateur.email}
+                  </p>
                   <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#C9A227] bg-[#1B1706] border border-[#3A3013] rounded-full px-2.5 py-1 mt-1.5">
                     {Ic("badge", "w-3.5 h-3.5")} {libelleRole(utilisateur.role)}
                   </span>
@@ -363,21 +452,78 @@ export default function PageProfilAnalyste() {
                 </div>
               </div>
 
+              {/* Informations personnelles */}
+              <form onSubmit={gererEnregistrementInfos} className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
+                <h2 className="text-sm font-medium text-[#E8E6DE] mb-4">Informations personnelles</h2>
+
+                {erreurInfos && (
+                  <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-3">{erreurInfos}</p>
+                )}
+                {succesInfos && (
+                  <p className="text-sm text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-md px-3 py-2 mb-3">Informations mises à jour.</p>
+                )}
+
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div>
+                    <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Prénom</label>
+                    <input required value={prenom} onChange={(e) => setPrenom(e.target.value)} className={CHAMP_CLASSES} />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Nom</label>
+                    <input required value={nom} onChange={(e) => setNom(e.target.value)} className={CHAMP_CLASSES} />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={enregistrementInfosEnCours}
+                  className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+                >
+                  {enregistrementInfosEnCours ? "Enregistrement..." : "Enregistrer"}
+                </button>
+              </form>
+
+              {/* Mes documents */}
               <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-                <h2 className="text-sm font-medium text-[#E8E6DE] mb-4">Détails du compte</h2>
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center justify-between border-b border-[#1B1F29] pb-3">
-                    <span className="flex items-center gap-2 text-[#7C8494]">{Ic("mail", "w-4 h-4")} Adresse email</span>
-                    <span className="text-[#E8E6DE] font-mono">{utilisateur.email}</span>
-                  </div>
-                  <div className="flex items-center justify-between border-b border-[#1B1F29] pb-3">
-                    <span className="flex items-center gap-2 text-[#7C8494]">{Ic("badge", "w-4 h-4")} Rôle</span>
-                    <span className="text-[#E8E6DE]">{libelleRole(utilisateur.role)}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="flex items-center gap-2 text-[#7C8494]">{Ic("calendar", "w-4 h-4")} Membre depuis</span>
-                    <span className="text-[#E8E6DE]">{formaterDate(utilisateur.created_at)}</span>
-                  </div>
+                <h2 className="text-sm font-medium text-[#E8E6DE] mb-1 flex items-center gap-2">{Ic("document", "w-4 h-4")} Mes documents</h2>
+                <p className="text-xs text-[#7C8494] mb-4">Pièces justificatives de ton compte analyste, à usage interne.</p>
+
+                {erreurDoc && (
+                  <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-3">{erreurDoc}</p>
+                )}
+
+                <div className="space-y-3">
+                  {TYPES_DOCUMENTS_ANALYSTE.map((type) => {
+                    const existant = documentDejaEnvoye(type.valeur);
+                    const enCours = envoiDocEnCours === type.valeur;
+                    return (
+                      <div key={type.valeur} className="border border-[#232733] rounded-md p-3 flex items-center justify-between gap-3 flex-wrap">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-[#E8E6DE]">{type.libelle}</p>
+                          {existant ? (
+                            <button
+                              onClick={() => gererTelechargementDocument(existant)}
+                              className="text-xs text-[#3DDC97] mt-0.5 truncate hover:underline"
+                            >
+                              ✓ {existant.original_file_name}
+                            </button>
+                          ) : (
+                            <p className="text-xs text-[#5A6070] mt-0.5">Aucun fichier envoyé</p>
+                          )}
+                        </div>
+                        <label className="shrink-0 cursor-pointer text-xs font-semibold bg-[#C9A227] text-[#0B0E14] px-3 py-1.5 rounded-md hover:bg-[#DDB63A] transition">
+                          {enCours ? "Envoi..." : existant ? "Remplacer" : "Choisir un fichier"}
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept="image/*,application/pdf"
+                            disabled={enCours}
+                            onChange={(e) => gererSelectionDocument(type.valeur, e)}
+                          />
+                        </label>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

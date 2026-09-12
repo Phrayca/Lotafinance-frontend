@@ -184,6 +184,7 @@ export type DemandePret = {
   facilite_paiement?: boolean;
   payout_channel: "wave" | "orange_money";
   payout_phone: string;
+  signature: string;
 };
 
 export type StatutDemande = "soumis" | "approuve" | "refuse" | "infos_demandees";
@@ -203,6 +204,7 @@ export type LoanOut = {
   facilite_paiement?: boolean;
   payout_channel?: string;
   payout_phone?: string;
+  signature?: string;
   decision?: string;
   decision_reason?: string;
   approved_amount?: number;
@@ -987,4 +989,96 @@ export async function repondreAUnClient(token: string, clientId: string, contenu
     throw new Error(donnees.detail || "Erreur lors de l'envoi de la réponse");
   }
   return donnees as MessageAssistance;
+}
+
+// ---------------------- Contrat PDF (côté analyste) ----------------------
+
+export async function telechargerContratPdf(token: string, loanId: string, nomClient: string) {
+  const reponse = await fetch(`${API_URL}/analyst/loans/${loanId}/contrat.pdf`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors du téléchargement du contrat");
+  }
+  const blob = await reponse.blob();
+  const url = window.URL.createObjectURL(blob);
+  const lien = document.createElement("a");
+  lien.href = url;
+  lien.download = `contrat-lotafinance-${nomClient}.pdf`;
+  document.body.appendChild(lien);
+  lien.click();
+  lien.remove();
+  window.URL.revokeObjectURL(url);
+}
+
+// ---------------------- Informations et documents de l'analyste ----------------------
+
+export async function enregistrerMesInformations(token: string, firstName: string, lastName: string) {
+  const reponse = await fetch(`${API_URL}/users/me/informations`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ first_name: firstName, last_name: lastName }),
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors de l'enregistrement");
+  }
+  return donnees;
+}
+
+export type TypeDocumentAnalyste = "piece_identite" | "diplome" | "cv";
+
+export type DocumentAnalyste = {
+  id: string;
+  document_type: TypeDocumentAnalyste;
+  original_file_name: string;
+  uploaded_at: string;
+};
+
+export async function envoyerMonDocumentAnalyste(token: string, type: TypeDocumentAnalyste, fichier: File) {
+  const formData = new FormData();
+  formData.append("document_type", type);
+  formData.append("fichier", fichier);
+
+  const reponse = await fetch(`${API_URL}/users/me/documents`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors de l'envoi du document");
+  }
+  return donnees as DocumentAnalyste;
+}
+
+export async function obtenirMesDocumentsAnalyste(token: string) {
+  const reponse = await fetch(`${API_URL}/users/me/documents`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération des documents");
+  }
+  return reponse.json() as Promise<DocumentAnalyste[]>;
+}
+
+export async function telechargerMonDocumentAnalyste(token: string, documentId: string, nomFichier: string) {
+  const reponse = await fetch(`${API_URL}/users/me/documents/${documentId}/download`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors du téléchargement du document");
+  }
+  const blob = await reponse.blob();
+  const url = window.URL.createObjectURL(blob);
+  const lien = document.createElement("a");
+  lien.href = url;
+  lien.download = nomFichier;
+  document.body.appendChild(lien);
+  lien.click();
+  lien.remove();
+  window.URL.revokeObjectURL(url);
 }
