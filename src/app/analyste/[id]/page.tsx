@@ -19,6 +19,8 @@ import {
   recupererMonProfilUtilisateur,
   urlPhotoDeProfil,
   telechargerContratPdf,
+  lancerVerificationAutomatique,
+  VerificationAuto,
   LoanDetailOut,
   LoanOut,
   DocumentClient,
@@ -216,6 +218,9 @@ export default function PageDossierAnalyste() {
   const [monRole, setMonRole] = useState<string>("");
   const [statutIdentite, setStatutIdentite] = useState<IdentityStatus>({ identity_verified: false, identity_rejected: false });
   const [verificationIdentiteEnCours, setVerificationIdentiteEnCours] = useState(false);
+  const [verificationAutoEnCours, setVerificationAutoEnCours] = useState(false);
+  const [resultatVerificationAuto, setResultatVerificationAuto] = useState<VerificationAuto | null>(null);
+  const [erreurVerificationAuto, setErreurVerificationAuto] = useState("");
   const [motifRejetOuvert, setMotifRejetOuvert] = useState(false);
   const [motifRejet, setMotifRejet] = useState("");
   const [chargement, setChargement] = useState(true);
@@ -369,6 +374,23 @@ export default function PageDossierAnalyste() {
       setErreur(err instanceof Error ? err.message : "Erreur lors de la vérification");
     } finally {
       setVerificationIdentiteEnCours(false);
+    }
+  }
+
+  async function gererVerificationAutomatique() {
+    const token = localStorage.getItem("token");
+    if (!token || !dossier) return;
+
+    setErreurVerificationAuto("");
+    setResultatVerificationAuto(null);
+    setVerificationAutoEnCours(true);
+    try {
+      const resultat = await lancerVerificationAutomatique(token, dossier.client_id);
+      setResultatVerificationAuto(resultat);
+    } catch (err) {
+      setErreurVerificationAuto(err instanceof Error ? err.message : "Erreur lors de la vérification automatique");
+    } finally {
+      setVerificationAutoEnCours(false);
     }
   }
 
@@ -629,8 +651,41 @@ export default function PageDossierAnalyste() {
                     Rejeter
                   </button>
                 )}
+                <button
+                  onClick={gererVerificationAutomatique}
+                  disabled={verificationAutoEnCours}
+                  className="text-xs font-medium text-[#7DBEF0] border border-[#2A4A6B] rounded-full px-2.5 py-1 hover:bg-[#0F1F2A] transition disabled:opacity-50"
+                >
+                  {verificationAutoEnCours ? "Analyse..." : "🔍 Vérification automatique"}
+                </button>
               </div>
             </div>
+
+            {erreurVerificationAuto && (
+              <p className="text-xs text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-3">{erreurVerificationAuto}</p>
+            )}
+
+            {resultatVerificationAuto && (
+              <div className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-3 mb-3 text-xs">
+                {!resultatVerificationAuto.texte_lisible ? (
+                  <p className="text-[#7C8494]">
+                    ⚪ Le texte du document n&apos;a pas pu être lu automatiquement (photo floue, format non pris en charge, ou service indisponible). Vérifie le document manuellement.
+                  </p>
+                ) : (
+                  <>
+                    <p className="text-[#B8BAC4] mb-2 font-medium">Résultat de la lecture automatique — à vérifier avant de confirmer :</p>
+                    <div className="space-y-1">
+                      <LigneCorrespondance label="Prénom" trouve={resultatVerificationAuto.prenom_trouve} />
+                      <LigneCorrespondance label="Nom" trouve={resultatVerificationAuto.nom_trouve} />
+                      <LigneCorrespondance label="Numéro de pièce" trouve={resultatVerificationAuto.numero_piece_trouve} />
+                    </div>
+                    {resultatVerificationAuto.extrait_texte && (
+                      <p className="text-[#5A6070] mt-2 italic">Extrait lu : « {resultatVerificationAuto.extrait_texte.slice(0, 150)}{resultatVerificationAuto.extrait_texte.length > 150 ? "…" : ""} »</p>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
             {statutIdentite.identity_rejected && statutIdentite.identity_rejection_reason && (
               <p className="text-xs text-[#F0A0A0] mb-2">Motif du rejet : {statutIdentite.identity_rejection_reason}</p>
             )}
@@ -1064,6 +1119,18 @@ function Ligne({ label, valeur }: { label: string; valeur: string }) {
     <div>
       <p className="text-[#7C8494] text-xs">{label}</p>
       <p className="font-medium text-[#E8E6DE] font-mono">{valeur}</p>
+    </div>
+  );
+}
+
+function LigneCorrespondance({ label, trouve }: { label: string; trouve: boolean | null }) {
+  const etat = trouve === true ? { emoji: "✅", texte: "correspond", couleur: "text-[#3DDC97]" }
+    : trouve === false ? { emoji: "⚠️", texte: "ne correspond pas au document", couleur: "text-[#F0A0A0]" }
+    : { emoji: "⚪", texte: "non renseigné dans le profil", couleur: "text-[#7C8494]" };
+  return (
+    <div className={`flex items-center gap-2 ${etat.couleur}`}>
+      <span>{etat.emoji}</span>
+      <span>{label} : {etat.texte}</span>
     </div>
   );
 }

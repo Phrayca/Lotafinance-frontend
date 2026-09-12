@@ -1082,3 +1082,25 @@ export async function telechargerMonDocumentAnalyste(token: string, documentId: 
   lien.remove();
   window.URL.revokeObjectURL(url);
 }
+
+// ---------------------- Vérification automatique d'identité (OCR) ----------------------
+
+export type VerificationAuto = {
+  texte_lisible: boolean;
+  prenom_trouve: boolean | null;
+  nom_trouve: boolean | null;
+  numero_piece_trouve: boolean | null;
+  extrait_texte: string;
+};
+
+export async function lancerVerificationAutomatique(token: string, clientId: string) {
+  const reponse = await fetch(`${API_URL}/analyst/clients/${clientId}/verification-auto`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors de la vérification automatique");
+  }
+  return donnees as VerificationAuto;
+}
