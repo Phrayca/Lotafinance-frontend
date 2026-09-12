@@ -85,13 +85,23 @@ export default function PageConnexion() {
     try {
       if (mode === "inscription") {
         await inscrire(email, telephone, motDePasse);
-        await demanderConnexion(email, motDePasse);
+        const reponse = await demanderConnexion(email, motDePasse);
+        if (reponse.access_token) {
+          localStorage.setItem("token", reponse.access_token);
+          router.push("/profil?onboarding=1");
+          return;
+        }
         setIdentifiantPourCode(email);
         setEtape("code");
         return;
       }
 
-      await demanderConnexion(identifiant, motDePasse);
+      const reponse = await demanderConnexion(identifiant, motDePasse);
+      if (reponse.access_token) {
+        localStorage.setItem("token", reponse.access_token);
+        router.push("/tableau-de-bord");
+        return;
+      }
       setIdentifiantPourCode(identifiant);
       setEtape("code");
     } catch (err) {

@@ -15,7 +15,8 @@ export async function inscrire(email: string, phone: string, password: string) {
   return donnees;
 }
 
-// Étape 1 : identifiant (email ou téléphone) + mot de passe → envoie un code par email
+// Étape 1 : identifiant (email ou téléphone) + mot de passe → envoie un code par email,
+// SAUF pour les comptes de test qui reçoivent directement le jeton d'accès (access_token présent)
 export async function demanderConnexion(identifiant: string, password: string) {
   const reponse = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
@@ -26,7 +27,7 @@ export async function demanderConnexion(identifiant: string, password: string) {
   if (!reponse.ok) {
     throw new Error(donnees.detail || "Aucun compte ne correspond à cet identifiant, ou mot de passe incorrect");
   }
-  return donnees as { message: string };
+  return donnees as { message: string; access_token?: string };
 }
 
 // Étape 2 : identifiant + code reçu par email → jeton d'accès
