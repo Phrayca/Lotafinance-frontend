@@ -1,45 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, useParams, usePathname } from "next/navigation";
-import {
-  obtenirDossier,
-  obtenirDocumentsDuClient,
-  telechargerDocument,
-  deciderDossier,
-  obtenirEcheancesAnalyste,
-  confirmerPaiementEcheance,
-  obtenirConversations,
-  obtenirPretsDuClient,
-  supprimerDossier,
-  obtenirJournalDecisions,
-  verifierIdentiteClient,
-  rejeterIdentiteClient,
-  obtenirStatutIdentiteClient,
-  recupererMonProfilUtilisateur,
-  urlPhotoDeProfil,
-  telechargerContratPdf,
-  LoanDetailOut,
-  LoanOut,
-  DocumentClient,
-  Echeance,
-  DecisionLog,
-  IdentityStatus,
-} from "@/lib/api";
-import {
-  HomeIcon,
-  LoanIcon,
-  RepaymentIcon,
-  ClientsIcon,
-  ScoreIcon,
-  ReportsIcon,
-  AuditIcon,
-  SettingsIcon,
-  MessagesIcon,
-  ProfileIcon,
-  IconCircle,
-  CouleurLotafinance,
-} from "@/components/icons";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { inscrire, demanderConnexion, verifierCodeConnexion } from "@/lib/api";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
   backgroundColor: "#0B0E14",
@@ -48,1048 +11,343 @@ const FOND_TEXTURE_STYLE: React.CSSProperties = {
 };
 
 const CHAMP_CLASSES =
-  "w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition";
+  "w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2.5 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition";
 
-const LIBELLES_DOCUMENTS: Record<string, string> = {
-  piece_identite: "Pièce d'identité",
-  carte_residence: "Carte de résidence (Dakar)",
-  contrat_travail: "Contrat de travail",
-  certificat_travail: "Certificat de travail",
-};
-
-const LIBELLES_STATUT: Record<string, string> = {
-  soumis: "En attente",
-  approuve: "Approuvé",
-  refuse: "Refusé",
-  infos_demandees: "Infos demandées",
-};
-
-function couleurStatut(statut: string): { bg: string; text: string } {
-  if (statut === "approuve") return { bg: "#0F2420", text: "#3DDC97" };
-  if (statut === "refuse") return { bg: "#2A1414", text: "#F0A0A0" };
-  return { bg: "#2A2312", text: "#C9A227" };
-}
-
-function formaterDate(iso?: string | null) {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
-}
-function formaterMontant(m?: number | null) {
-  if (m == null) return "—";
-  return `${m.toLocaleString("fr-FR")} F`;
-}
-function formaterDuree(semaines: number) {
-  if (semaines === 4) return "1 mois";
-  return `${semaines} semaine${semaines > 1 ? "s" : ""}`;
-}
-function estEnRetard(e: Echeance) {
-  return !e.payee && new Date(e.date_echeance).getTime() < Date.now();
-}
-function joursDeRetard(e: Echeance) {
-  const diff = Date.now() - new Date(e.date_echeance).getTime();
-  return Math.max(Math.floor(diff / (1000 * 60 * 60 * 24)), 0);
-}
-const SEUIL_RETARD_CRITIQUE = 3;
-// Frais de traitement fixes, encaissés dès le déboursement (n'affectent pas le total à rembourser)
-const FRAIS_DE_TRAITEMENT = 1000;
-
-// Mêmes libellés que côté profil client, pour afficher la vraie catégorie déclarée (pas un code technique)
-const LIBELLES_CATEGORIE_PRO: Record<string, string> = {
-  fonctionnaire: "Fonctionnaire",
-  cdi: "CDI",
-  cdd_plus_2ans: "CDD (plus de 2 ans)",
-  cdd_moins_2ans: "CDD (moins de 2 ans)",
-  interimaire: "Intérimaire",
-};
-const LIBELLES_RESIDENCE: Record<string, string> = {
-  plus_3ans: "Plus de 3 ans à la même adresse",
-  "1_a_3ans": "1 à 3 ans à la même adresse",
-  nouvelle: "Nouvelle résidence",
-};
-// Mêmes taux que côté backend (app/main.py : loan_rate_config) — utilisés comme valeur par défaut du simulateur
-const TAUX_PAR_DUREE: Record<number, number> = { 2: 5, 4: 10 };
-
-function formaterAnciennete(mois?: number | null) {
-  if (mois == null) return "Non renseignée";
-  if (mois < 12) return `${mois} mois`;
-  const annees = Math.floor(mois / 12);
-  const reste = mois % 12;
-  return reste > 0 ? `${annees} an${annees > 1 ? "s" : ""} et ${reste} mois` : `${annees} an${annees > 1 ? "s" : ""}`;
-}
-
-// Barème réel du score Lotafinance (app/scoring.py) — utilisé pour afficher chaque critère sur son vrai total
-const BAREME_SCORE = {
-  profession: 30,
-  anciennete: 20,
-  capacite: 30,
-  residence: 10,
-  historique: 10,
-};
-
-function niveauDeRisque(score?: number | null): { libelle: string; emoji: string; couleur: string; bg: string } {
-  if (score == null) return { libelle: "Non calculé", emoji: "⚪", couleur: "#7C8494", bg: "#1B1F29" };
-  if (score >= 80) return { libelle: "Risque faible", emoji: "🟢", couleur: "#3DDC97", bg: "#0F2420" };
-  if (score >= 60) return { libelle: "Risque moyen — vérification", emoji: "🟠", couleur: "#C9A227", bg: "#2A2312" };
-  return { libelle: "Risque élevé", emoji: "🔴", couleur: "#F0A0A0", bg: "#2A1414" };
-}
-
-function Icon({ path, className }: { path: string; className?: string }) {
+function IllustrationFinance() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} width="20" height="20">
-      <path d={path} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    <svg viewBox="0 0 400 400" className="w-full max-w-sm mx-auto">
+      <ellipse cx="90" cy="300" rx="55" ry="16" fill="#C9A227" opacity="0.9" />
+      <rect x="35" y="272" width="110" height="28" fill="#C9A227" opacity="0.9" />
+      <ellipse cx="90" cy="272" rx="55" ry="16" fill="#DDB63A" />
+      <ellipse cx="90" cy="272" rx="40" ry="10" fill="none" stroke="#0B0E14" strokeWidth="1.5" opacity="0.4" />
+
+      <rect x="45" y="244" width="90" height="24" fill="#C9A227" opacity="0.85" />
+      <ellipse cx="90" cy="244" rx="45" ry="13" fill="#DDB63A" />
+      <ellipse cx="90" cy="244" rx="32" ry="8" fill="none" stroke="#0B0E14" strokeWidth="1.5" opacity="0.4" />
+
+      <rect x="55" y="220" width="70" height="22" fill="#C9A227" />
+      <ellipse cx="90" cy="220" rx="35" ry="11" fill="#E8C34A" />
+      <ellipse cx="90" cy="220" rx="24" ry="6" fill="none" stroke="#0B0E14" strokeWidth="1.5" opacity="0.4" />
+
+      <g transform="translate(160,130) rotate(-8)">
+        <rect x="0" y="0" width="150" height="80" rx="6" fill="#12151C" stroke="#C9A227" strokeWidth="2" />
+        <circle cx="38" cy="40" r="20" fill="none" stroke="#C9A227" strokeWidth="1.5" opacity="0.7" />
+        <text x="38" y="46" textAnchor="middle" fill="#C9A227" fontSize="14" fontFamily="serif" opacity="0.9">F</text>
+        <line x1="75" y1="14" x2="140" y2="14" stroke="#C9A227" strokeWidth="1.5" opacity="0.5" />
+        <line x1="75" y1="24" x2="130" y2="24" stroke="#C9A227" strokeWidth="1.5" opacity="0.35" />
+        <text x="120" y="66" textAnchor="end" fill="#C9A227" fontSize="16" fontWeight="bold" fontFamily="serif">10 000</text>
+      </g>
+
+      <g transform="translate(180,175) rotate(4)">
+        <rect x="0" y="0" width="150" height="80" rx="6" fill="#171B24" stroke="#DDB63A" strokeWidth="2" />
+        <circle cx="38" cy="40" r="20" fill="none" stroke="#DDB63A" strokeWidth="1.5" opacity="0.7" />
+        <text x="38" y="46" textAnchor="middle" fill="#DDB63A" fontSize="14" fontFamily="serif" opacity="0.9">F</text>
+        <line x1="75" y1="14" x2="140" y2="14" stroke="#DDB63A" strokeWidth="1.5" opacity="0.5" />
+        <line x1="75" y1="24" x2="130" y2="24" stroke="#DDB63A" strokeWidth="1.5" opacity="0.35" />
+        <text x="120" y="66" textAnchor="end" fill="#DDB63A" fontSize="16" fontWeight="bold" fontFamily="serif">5 000</text>
+      </g>
+
+      <path
+        d="M60 190c40-60 90-70 130-40 35 26 70 20 95-10"
+        fill="none" stroke="#3DDC97" strokeWidth="2.5" strokeLinecap="round" opacity="0.8"
+      />
+      <circle cx="285" cy="140" r="5" fill="#3DDC97" />
+      <path d="M270 130l15 10 15-18" fill="none" stroke="#3DDC97" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
     </svg>
   );
 }
-const ICONES = {
-  home: "M4 11 12 4l8 7M6 10v9h12v-9",
-  loans: "M7 4h10v16l-5-3-5 3V4Z M9 9h6 M9 12h6",
-  users: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z M2.5 20a5.5 5.5 0 0 1 11 0 M16 11a3.5 3.5 0 1 0 0-7 M21.5 20a5.5 5.5 0 0 0-5-5.48",
-  logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9",
-  mail: "M4 6h16v12H4V6Z M4 6l8 7 8-7",
-  calendarCheck: "M4 6h16v14H4V6Z M4 10h16 M8 3v4 M16 3v4 M9 15l2 2 4-4",
-  chart: "M4 20V10 M10 20V4 M16 20v-7 M22 20H2",
-  alert: "M12 9v4 M12 17h.01 M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z",
-  user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M4 20c1.5-4 5-6 8-6s6.5 2 8 6",
-  trash: "M4 7h16 M9 7V4h6v3 M6 7l1 13h10l1-13 M10 11v6 M14 11v6",
-  idCheck: "M4 4h16v16H4V4Z M8 9h1 M8 12h1 M12 9h4 M12 12h4 M8 16l1.5 1.5L12 15",
-  idX: "M4 4h16v16H4V4Z M8 9h1 M8 12h1 M12 9h4 M12 12h4 M8.5 15.5l3 3 M11.5 15.5l-3 3",
-  history: "M3 3v5h5 M3.05 13a9 9 0 1 0 2.13-7.36L3 8",
-  gear: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z M19 12a7 7 0 0 0-.2-1.6l2-1.5-2-3.4-2.3.9a7 7 0 0 0-2.7-1.6L13.4 2h-2.8l-.4 2.8a7 7 0 0 0-2.7 1.6l-2.3-.9-2 3.4 2 1.5A7 7 0 0 0 5 12c0 .5.06 1 .2 1.6l-2 1.5 2 3.4 2.3-.9a7 7 0 0 0 2.7 1.6l.4 2.8h2.8l.4-2.8a7 7 0 0 0 2.7-1.6l2.3.9 2-3.4-2-1.5c.14-.5.2-1 .2-1.6Z",
-  target: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M12 12h.01",
-  chevronLeft: "M15 5l-7 7 7 7",
-  chevronRight: "M9 5l7 7-7 7",
-  search: "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z M21 21l-4.3-4.3",
-  chevronDown: "M6 9l6 6 6-6",
-};
-function Ic(name: keyof typeof ICONES, className?: string) {
-  return <Icon path={ICONES[name]} className={className} />;
-}
 
-const ICONES_RICHES: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
-  home: HomeIcon,
-  loans: LoanIcon,
-  calendarCheck: RepaymentIcon,
-  users: ClientsIcon,
-  target: ScoreIcon,
-  chart: ReportsIcon,
-  history: AuditIcon,
-  gear: SettingsIcon,
-  mail: MessagesIcon,
-  user: ProfileIcon,
-};
-const COULEURS_NAV: CouleurLotafinance[] = ["gold", "blue", "purple", "green", "orange", "red"];
+type Etape = "identifiants" | "code";
 
-const COULEURS_ICONES = ["#F4C95D", "#C9A6F0", "#8FD9A8", "#7DBEF0", "#F4A5C9", "#F4956D", "#F0D96A", "#9AD1E8", "#D9A6F0", "#8FE0C4", "#F0C08A", "#A8C9F0", "#F0A6B8"];
-
-const LIENS_NAV = [
-  { href: "/analyste", label: "Tableau de bord", icone: "home" as const },
-  { href: "/analyste/toutes", label: "Toutes les demandes", icone: "loans" as const },
-  { href: "/analyste/toutes?statut=approuve", label: "Dossiers approuvés", icone: "loans" as const },
-  { href: "/analyste/toutes?statut=refuse", label: "Dossiers refusés", icone: "loans" as const },
-  { href: "/analyste/remboursements", label: "Remboursements", icone: "calendarCheck" as const },
-  { href: "/analyste/clients", label: "Clients", icone: "users" as const },
-  { href: "/analyste/analyse-scoring", label: "Analyse & Scoring", icone: "target" as const },
-  { href: "/analyste/rapports", label: "Rapports & Statistiques", icone: "chart" as const },
-  { href: "/analyste/audit", label: "Audit & Logs", icone: "history" as const },
-  { href: "/analyste/parametres", label: "Paramètres", icone: "gear" as const },
-  { href: "/analyste/utilisateurs", label: "Gestion des utilisateurs", icone: "users" as const },
-  { href: "/analyste/messages", label: "Messages", icone: "mail" as const },
-  { href: "/analyste/profil", label: "Mon profil", icone: "user" as const },
-];
-
-export default function PageDossierAnalyste() {
+export default function PageConnexion() {
   const router = useRouter();
-  const pathname = usePathname();
-  const [sidebarReduite, setSidebarReduite] = useState(false);
-  const [utilisateur, setUtilisateur] = useState<{ id: string; email: string; role: string } | null>(null);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [recherche, setRecherche] = useState("");
-  const [menuProfilOuvert, setMenuProfilOuvert] = useState(false);
-  const params = useParams();
-  const loanId = params.id as string;
+  const [mode, setMode] = useState<"connexion" | "inscription">("connexion");
+  const [etape, setEtape] = useState<Etape>("identifiants");
 
-  const [dossier, setDossier] = useState<LoanDetailOut | null>(null);
-  const [documents, setDocuments] = useState<DocumentClient[]>([]);
-  const [echeances, setEcheances] = useState<Echeance[]>([]);
-  const [pretsPrecedents, setPretsPrecedents] = useState<LoanOut[]>([]);
-  const [journal, setJournal] = useState<DecisionLog[]>([]);
-  const [monRole, setMonRole] = useState<string>("");
-  const [statutIdentite, setStatutIdentite] = useState<IdentityStatus>({ identity_verified: false, identity_rejected: false });
-  const [verificationIdentiteEnCours, setVerificationIdentiteEnCours] = useState(false);
-  const [motifRejetOuvert, setMotifRejetOuvert] = useState(false);
-  const [motifRejet, setMotifRejet] = useState("");
-  const [chargement, setChargement] = useState(true);
+  const [identifiant, setIdentifiant] = useState("");
+  const [email, setEmail] = useState("");
+  const [telephone, setTelephone] = useState("");
+  const [motDePasse, setMotDePasse] = useState("");
+  const [motDePasseVisible, setMotDePasseVisible] = useState(false);
+  const [code, setCode] = useState("");
+
   const [erreur, setErreur] = useState("");
-  const [decisionEnCours, setDecisionEnCours] = useState(false);
-  const [commentaire, setCommentaire] = useState("");
-  const [montantApprouve, setMontantApprouve] = useState("");
-  const [confirmationEnCours, setConfirmationEnCours] = useState<string | null>(null);
-  const [totalNonLus, setTotalNonLus] = useState(0);
-  const [demandeSuppression, setDemandeSuppression] = useState(false);
-  const [suppressionEnCours, setSuppressionEnCours] = useState(false);
-  const [simMontant, setSimMontant] = useState("");
-  const [simDuree, setSimDuree] = useState(2);
-  const [simTaux, setSimTaux] = useState("");
+  const [chargement, setChargement] = useState(false);
+  const [aideMotDePasseOuverte, setAideMotDePasseOuverte] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/");
-      return;
-    }
+  const [identifiantPourCode, setIdentifiantPourCode] = useState("");
 
-    (async () => {
-      try {
-        const d = await obtenirDossier(token, loanId);
-        setDossier(d);
-        setMontantApprouve(String(d.amount_requested));
-        setSimMontant(String(d.amount_requested));
-        setSimDuree(d.duration_weeks);
-        setSimTaux(String(d.rate_percent_applied ?? TAUX_PAR_DUREE[d.duration_weeks] ?? 0));
-        const docs = await obtenirDocumentsDuClient(token, d.client_id);
-        setDocuments(docs);
-        if (d.status === "approuve") {
-          const ech = await obtenirEcheancesAnalyste(token, loanId);
-          setEcheances(ech);
-        }
-        const prets = await obtenirPretsDuClient(token, d.client_id);
-        setPretsPrecedents(prets.filter((p) => p.id !== loanId));
-
-        const j = await obtenirJournalDecisions(token, loanId);
-        setJournal(j);
-
-        const statutIdentiteRecu = await obtenirStatutIdentiteClient(token, d.client_id);
-        setStatutIdentite(statutIdentiteRecu);
-
-        const monProfil = await recupererMonProfilUtilisateur(token);
-        setMonRole(monProfil.role);
-        setUtilisateur(monProfil);
-        setAvatarUrl(urlPhotoDeProfil(monProfil.id));
-      } catch (err) {
-        setErreur(err instanceof Error ? err.message : "Une erreur est survenue");
-      } finally {
-        setChargement(false);
-      }
-    })();
-
-    obtenirConversations(token)
-      .then((liste) => setTotalNonLus(liste.reduce((somme, c) => somme + c.non_lus, 0)))
-      .catch(() => {});
-  }, [router, loanId]);
-
-
-  useEffect(() => {
-    setSidebarReduite(localStorage.getItem("sidebar_reduite") === "1");
-  }, []);
-
-  function basculerSidebar() {
-    setSidebarReduite((v) => {
-      const nouveau = !v;
-      localStorage.setItem("sidebar_reduite", nouveau ? "1" : "0");
-      return nouveau;
-    });
-  }
-
-  function seDeconnecter() {
-    localStorage.removeItem("token");
-    router.push("/");
-  }
-
-  function gererRecherche(e: React.FormEvent) {
+  async function gererEnvoi(e: React.FormEvent) {
     e.preventDefault();
-    if (recherche.trim()) router.push(`/analyste/recherche?q=${encodeURIComponent(recherche.trim())}`);
-  }
-
-  async function gererTelechargement(doc: DocumentClient) {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-    try {
-      await telechargerDocument(token, doc.id, doc.original_file_name);
-    } catch (err) {
-      setErreur(err instanceof Error ? err.message : "Erreur de téléchargement");
-    }
-  }
-
-  async function gererTelechargementContrat() {
-    const token = localStorage.getItem("token");
-    if (!token || !dossier) return;
-    try {
-      await telechargerContratPdf(token, loanId, `${dossier.client_last_name}-${dossier.client_first_name}`);
-    } catch (err) {
-      setErreur(err instanceof Error ? err.message : "Erreur lors du téléchargement du contrat");
-    }
-  }
-
-  async function gererDecision(decision: "approuve" | "refuse" | "infos_demandees") {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
     setErreur("");
-    setDecisionEnCours(true);
+    setChargement(true);
+
     try {
-      const montant = decision === "approuve" && montantApprouve ? Number(montantApprouve) : undefined;
-      const misAJour = await deciderDossier(token, loanId, decision, commentaire, montant);
-      setDossier((precedent) => (precedent ? { ...precedent, ...misAJour } : null));
-      if (decision === "approuve") {
-        const ech = await obtenirEcheancesAnalyste(token, loanId);
-        setEcheances(ech);
+      if (mode === "inscription") {
+        await inscrire(email, telephone, motDePasse);
+        const reponse = await demanderConnexion(email, motDePasse);
+        if (reponse.access_token) {
+          localStorage.setItem("token", reponse.access_token);
+          router.push("/profil?onboarding=1");
+          return;
+        }
+        setIdentifiantPourCode(email);
+        setEtape("code");
+        return;
+      }
+
+      const reponse = await demanderConnexion(identifiant, motDePasse);
+      if (reponse.access_token) {
+        localStorage.setItem("token", reponse.access_token);
+        router.push("/tableau-de-bord");
+        return;
+      }
+      setIdentifiantPourCode(identifiant);
+      setEtape("code");
+    } catch (err) {
+      setErreur(err instanceof Error ? err.message : "Une erreur est survenue");
+    } finally {
+      setChargement(false);
+    }
+  }
+
+  async function gererVerificationCode(e: React.FormEvent) {
+    e.preventDefault();
+    setErreur("");
+    setChargement(true);
+
+    try {
+      const { access_token } = await verifierCodeConnexion(identifiantPourCode, code);
+      localStorage.setItem("token", access_token);
+      if (mode === "inscription") {
+        router.push("/profil?onboarding=1");
+      } else {
+        router.push("/tableau-de-bord");
       }
     } catch (err) {
       setErreur(err instanceof Error ? err.message : "Une erreur est survenue");
     } finally {
-      setDecisionEnCours(false);
+      setChargement(false);
     }
   }
 
-  async function gererConfirmationPaiement(installmentId: string) {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    setConfirmationEnCours(installmentId);
-    try {
-      const misAJour = await confirmerPaiementEcheance(token, loanId, installmentId);
-      setEcheances((precedent) => precedent.map((e) => (e.id === misAJour.id ? misAJour : e)));
-    } catch (err) {
-      setErreur(err instanceof Error ? err.message : "Une erreur est survenue");
-    } finally {
-      setConfirmationEnCours(null);
-    }
-  }
-
-  async function gererVerificationIdentite() {
-    const token = localStorage.getItem("token");
-    if (!token || !dossier) return;
-
-    setVerificationIdentiteEnCours(true);
-    try {
-      const resultat = await verifierIdentiteClient(token, dossier.client_id);
-      setStatutIdentite(resultat);
-      setMotifRejetOuvert(false);
-    } catch (err) {
-      setErreur(err instanceof Error ? err.message : "Erreur lors de la vérification");
-    } finally {
-      setVerificationIdentiteEnCours(false);
-    }
-  }
-
-  async function gererRejetIdentite() {
-    const token = localStorage.getItem("token");
-    if (!token || !dossier) return;
-    if (!motifRejet.trim()) {
-      setErreur("Merci d'indiquer un motif de rejet.");
-      return;
-    }
-
-    setVerificationIdentiteEnCours(true);
-    try {
-      const resultat = await rejeterIdentiteClient(token, dossier.client_id, motifRejet.trim());
-      setStatutIdentite(resultat);
-      setMotifRejetOuvert(false);
-      setMotifRejet("");
-    } catch (err) {
-      setErreur(err instanceof Error ? err.message : "Erreur lors du rejet");
-    } finally {
-      setVerificationIdentiteEnCours(false);
-    }
-  }
-
-  async function gererSuppression() {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    if (!demandeSuppression) {
-      setDemandeSuppression(true);
-      return;
-    }
-
-    setSuppressionEnCours(true);
+  function revenirAuxIdentifiants() {
+    setEtape("identifiants");
+    setCode("");
     setErreur("");
-    try {
-      await supprimerDossier(token, loanId);
-      router.push("/analyste/toutes");
-    } catch (err) {
-      setErreur(err instanceof Error ? err.message : "Erreur lors de la suppression");
-      setSuppressionEnCours(false);
-      setDemandeSuppression(false);
-    }
   }
-
-  if (chargement) {
-    return (
-      <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
-      </main>
-    );
-  }
-
-  if (!dossier) {
-    return (
-      <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#F0A0A0]">{erreur || "Dossier introuvable"}</p>
-      </main>
-    );
-  }
-
-  const dejaDecide = dossier.status !== "soumis";
-  const scoreFaible = (dossier.credit_score ?? 100) < 50;
-  const risqueEleve = (dossier.risk_level || "").toLowerCase().includes("élev") || (dossier.risk_level || "").toLowerCase().includes("risqu");
-
-  // Retards
-  const echeancesEnRetard = echeances.filter(estEnRetard);
-
-  // Rentabilité
-  const capital = dossier.approved_amount ?? dossier.amount_requested;
-  const totalPrevu = dossier.total_to_repay ?? 0;
-  const interetsPrevus = Math.max(totalPrevu - capital, 0);
-  const dejaEncaisse = echeances.filter((e) => e.payee).reduce((s, e) => s + e.montant, 0);
-  const resteAPercevoir = Math.max(totalPrevu - dejaEncaisse, 0);
-
-  // ---- Résumé client & aide à la décision ----
-  const capaciteDisponible = Math.max(
-    (dossier.monthly_income ?? 0) - (dossier.monthly_expenses ?? 0) - (dossier.client_autres_credits_mensuels ?? 0),
-    0
-  );
-  const libelleCategoriePro = dossier.client_categorie_professionnelle
-    ? LIBELLES_CATEGORIE_PRO[dossier.client_categorie_professionnelle] || dossier.client_categorie_professionnelle
-    : "Non renseignée";
-  const libelleResidence = dossier.client_anciennete_residence
-    ? LIBELLES_RESIDENCE[dossier.client_anciennete_residence] || dossier.client_anciennete_residence
-    : "Non renseignée";
-  const infosRisque = niveauDeRisque(dossier.credit_score);
-  const montantCoherent =
-    dossier.recommended_amount != null && dossier.amount_requested <= dossier.recommended_amount * 1.05;
-
-  // ---- Simulateur de prêt (aide à la décision, ne modifie rien tant que l'analyste n'applique pas) ----
-  const simMontantNombre = Number(simMontant) || 0;
-  const simTauxNombre = Number(simTaux) || 0;
-  const simInterets = Math.round((simMontantNombre * simTauxNombre) / 100);
-  const simTotal = simMontantNombre + simInterets;
-  const simMarge = capaciteDisponible - simTotal;
 
   return (
-    <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
-        <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
-          {!sidebarReduite && (
-            <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Espace analyste</p>
-            </div>
-          )}
+    <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-4xl grid md:grid-cols-2 gap-10 items-center">
+        <div className="hidden md:flex flex-col items-center text-center">
+          <IllustrationFinance />
+          <p className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE] mt-4">
+            Plus qu&apos;un prêt, un partenaire pour votre avenir.
+          </p>
+          <p className="text-sm text-[#7C8494] mt-2 max-w-xs">
+            Des solutions de financement rapides et transparentes, pensées pour vous.
+          </p>
         </div>
 
-        <nav className="flex-1 space-y-1">
-          {LIENS_NAV.map((lien, i) => (
-            <button
-              key={lien.href}
-              onClick={() => router.push(lien.href)}
-              title={sidebarReduite ? lien.label : undefined}
-              className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#B8BAC4] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
-            >
-                            <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={pathname === lien.href}>
-                {(() => {
-                  const IconeRiche = ICONES_RICHES[lien.icone];
-                  return IconeRiche ? <IconeRiche size={16} /> : Ic(lien.icone, "w-4 h-4");
-                })()}
-              </IconCircle>
-              {!sidebarReduite && <span className="flex-1 text-left">{lien.label}</span>}
-              {lien.href === "/analyste/messages" && totalNonLus > 0 && (
-                <span className={`${sidebarReduite ? "absolute translate-x-3 -translate-y-3" : ""} w-5 h-5 rounded-full bg-[#C24545] text-white text-[10px] flex items-center justify-center shrink-0`}>
-                  {totalNonLus}
-                </span>
-              )}
-            </button>
-          ))}
-        </nav>
+        <div className="w-full max-w-sm mx-auto">
+          <div className="flex flex-col items-center text-center mb-6">
+            <span className="w-14 h-14 rounded-xl bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold text-2xl font-['Source_Serif_4',serif] mb-3 shadow-lg shadow-[#C9A227]/20">
+              L
+            </span>
+            <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Lotafinance</h1>
+            <p className="text-[#7C8494] mt-1 text-sm">
+              {etape === "code"
+                ? "Vérification de votre identité"
+                : mode === "connexion"
+                ? "Connectez-vous à votre compte"
+                : "Créez votre compte"}
+            </p>
+          </div>
 
-        <button
-          onClick={basculerSidebar}
-          title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
-        >
-          {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
-          {!sidebarReduite && "Réduire"}
-        </button>
-      </aside>
+          <div className="bg-[#12151C] border border-[#232733] rounded-lg shadow-xl p-6">
+            {etape === "identifiants" ? (
+              <>
+                <div className="flex mb-6 bg-[#0B0E14] border border-[#232733] rounded-md p-1">
+                  <button
+                    type="button"
+                    onClick={() => setMode("connexion")}
+                    className={`flex-1 py-2 text-sm font-medium rounded-md transition ${
+                      mode === "connexion" ? "bg-[#C9A227] text-[#0B0E14]" : "text-[#7C8494] hover:text-[#E8E6DE]"
+                    }`}
+                  >
+                    Connexion
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMode("inscription")}
+                    className={`flex-1 py-2 text-sm font-medium rounded-md transition ${
+                      mode === "inscription" ? "bg-[#C9A227] text-[#0B0E14]" : "text-[#7C8494] hover:text-[#E8E6DE]"
+                    }`}
+                  >
+                    Inscription
+                  </button>
+                </div>
 
-      <div className="flex-1 px-8 py-6 overflow-x-auto">
-        <div className="max-w-2xl">
-          <div className="flex items-center gap-3 mb-4">
-            <form onSubmit={gererRecherche} className="flex-1 relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6070]">{Ic("search", "w-4 h-4")}</span>
-              <input
-                value={recherche}
-                onChange={(e) => setRecherche(e.target.value)}
-                placeholder="Rechercher un dossier, client, numéro de téléphone..."
-                className="w-full bg-[#12151C] border border-[#232733] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition"
-              />
-            </form>
-
-            <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#7C8494] hover:text-[#E8E6DE] transition p-2">
-              {Ic("mail", "w-5 h-5")}
-              {totalNonLus > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#C24545] text-white text-[9px] flex items-center justify-center">{totalNonLus}</span>
-              )}
-            </button>
-
-            <div className="relative shrink-0">
-              <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[#232733] hover:border-[#3A4050] transition">
-                <span className="w-7 h-7 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center overflow-hidden shrink-0">
-                  {utilisateur && avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={avatarUrl} alt="" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
+                <form onSubmit={gererEnvoi} className="space-y-4">
+                  {mode === "connexion" ? (
+                    <div>
+                      <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Email ou téléphone</label>
+                      <input
+                        type="text"
+                        required
+                        value={identifiant}
+                        onChange={(e) => setIdentifiant(e.target.value)}
+                        placeholder="vous@exemple.com ou 77 123 45 67"
+                        className={CHAMP_CLASSES}
+                      />
+                    </div>
                   ) : (
-                    Ic("user", "w-3.5 h-3.5")
+                    <>
+                      <div>
+                        <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Email</label>
+                        <input
+                          type="email"
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="vous@exemple.com"
+                          className={CHAMP_CLASSES}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Téléphone</label>
+                        <input
+                          type="tel"
+                          required
+                          value={telephone}
+                          onChange={(e) => setTelephone(e.target.value)}
+                          placeholder="77 123 45 67"
+                          className={CHAMP_CLASSES}
+                        />
+                      </div>
+                    </>
                   )}
-                </span>
-                <span className="text-xs text-[#B8BAC4] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
-                {Ic("chevronDown", "w-3 h-3 text-[#7C8494]")}
-              </button>
-              {menuProfilOuvert && (
-                <div className="absolute right-0 top-10 w-44 bg-[#12151C] border border-[#232733] rounded-md shadow-xl z-10 overflow-hidden">
-                  <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#B8BAC4] hover:bg-[#171B24] transition">
-                    Mon profil
-                  </button>
-                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#F0A0A0] hover:bg-[#171B24] transition">
-                    Déconnexion
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
 
-          <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
-            <button onClick={() => router.back()} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] transition">
-              ← Retour
-            </button>
-            <button
-              onClick={gererTelechargementContrat}
-              className="text-sm font-medium text-[#C9A227] border border-[#3A3013] bg-[#1B1706] rounded-md px-3 py-1.5 hover:bg-[#241E09] transition flex items-center gap-1.5"
-            >
-              📄 Télécharger le contrat (PDF)
-            </button>
-          </div>
-
-          {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
-          )}
-
-          {echeancesEnRetard.length > 0 && (() => {
-            const critiques = echeancesEnRetard.filter((e) => joursDeRetard(e) >= SEUIL_RETARD_CRITIQUE);
-            const critique = critiques.length > 0;
-            const pireRetard = Math.max(...echeancesEnRetard.map(joursDeRetard));
-            return (
-              <div
-                className={`flex items-center gap-2 rounded-md px-4 py-3 mb-4 text-sm ${
-                  critique ? "bg-[#3A1010] border border-[#7A2E2E] text-[#FFB3B3]" : "bg-[#2A1414] border border-[#4A2222] text-[#F0A0A0]"
-                }`}
-              >
-                {Ic("alert", "w-4 h-4 shrink-0")}
-                {echeancesEnRetard.length} échéance{echeancesEnRetard.length > 1 ? "s" : ""} en retard sur ce dossier
-                {critique ? ` — dont ${critiques.length} en retard critique (${pireRetard} jours)` : ` (jusqu'à ${pireRetard} jour${pireRetard > 1 ? "s" : ""})`}.
-              </div>
-            );
-          })()}
-
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-            <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
-              <h1 className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE]">
-                {dossier.client_first_name} {dossier.client_last_name}
-              </h1>
-              <div className="flex items-center gap-2">
-                {statutIdentite.identity_verified ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-full px-2.5 py-1">
-                    {Ic("idCheck", "w-3.5 h-3.5")} Identité vérifiée
-                  </span>
-                ) : statutIdentite.identity_rejected ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-full px-2.5 py-1">
-                    {Ic("idX", "w-3.5 h-3.5")} Identité rejetée
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#C9A227] bg-[#1B1706] border border-[#3A3013] rounded-full px-2.5 py-1">
-                    {Ic("idCheck", "w-3.5 h-3.5")} Identité en attente
-                  </span>
-                )}
-                {!statutIdentite.identity_verified && (
-                  <button
-                    onClick={gererVerificationIdentite}
-                    disabled={verificationIdentiteEnCours}
-                    className="text-xs font-medium text-[#3DDC97] border border-[#2A6B57] rounded-full px-2.5 py-1 hover:bg-[#0F2420] transition disabled:opacity-50"
-                  >
-                    Vérifier
-                  </button>
-                )}
-                {!statutIdentite.identity_rejected && (
-                  <button
-                    onClick={() => setMotifRejetOuvert((v) => !v)}
-                    disabled={verificationIdentiteEnCours}
-                    className="text-xs font-medium text-[#F0A0A0] border border-[#6B2E2E] rounded-full px-2.5 py-1 hover:bg-[#2A1414] transition disabled:opacity-50"
-                  >
-                    Rejeter
-                  </button>
-                )}
-              </div>
-            </div>
-            {statutIdentite.identity_rejected && statutIdentite.identity_rejection_reason && (
-              <p className="text-xs text-[#F0A0A0] mb-2">Motif du rejet : {statutIdentite.identity_rejection_reason}</p>
-            )}
-            {motifRejetOuvert && (
-              <div className="flex gap-2 mb-3">
-                <input
-                  value={motifRejet}
-                  onChange={(e) => setMotifRejet(e.target.value)}
-                  placeholder="Motif du rejet (ex: photo illisible)"
-                  className="flex-1 bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-1.5 text-xs text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition"
-                />
-                <button
-                  onClick={gererRejetIdentite}
-                  disabled={verificationIdentiteEnCours}
-                  className="text-xs font-medium bg-[#4A2222] text-[#F0A0A0] border border-[#6B2E2E] rounded-md px-3 py-1.5 hover:bg-[#5A2828] transition disabled:opacity-50"
-                >
-                  Confirmer
-                </button>
-              </div>
-            )}
-            <p className="text-[#7C8494] text-sm mb-6 font-mono">{dossier.client_phone}</p>
-
-            <div className="grid grid-cols-2 gap-4 text-sm mb-6">
-              <Ligne label="Montant demandé" valeur={formaterMontant(dossier.amount_requested)} />
-              <Ligne label="Durée" valeur={formaterDuree(dossier.duration_weeks)} />
-              <Ligne label="Motif" valeur={dossier.purpose || "—"} />
-              <Ligne label="Statut" valeur={LIBELLES_STATUT[dossier.status] || dossier.status} />
-              <Ligne label="Total à rembourser" valeur={formaterMontant(dossier.total_to_repay)} />
-              <Ligne label="Situation professionnelle" valeur={libelleCategoriePro} />
-              <Ligne label="Ancienneté" valeur={formaterAnciennete(dossier.client_activity_seniority_months)} />
-              <Ligne label="Ancienneté à la résidence" valeur={libelleResidence} />
-              <Ligne label="Revenu mensuel" valeur={formaterMontant(dossier.monthly_income)} />
-              <Ligne label="Charges mensuelles" valeur={formaterMontant(dossier.monthly_expenses)} />
-              <Ligne label="Autres crédits mensuels" valeur={formaterMontant(dossier.client_autres_credits_mensuels)} />
-              <Ligne label="Capacité disponible" valeur={formaterMontant(capaciteDisponible)} />
-            </div>
-
-            <div className="border-t border-[#232733] pt-4 mb-2">
-              <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
-                <h2 className="text-sm font-medium text-[#E8E6DE]">Score de risque automatique</h2>
-                <span
-                  className="inline-flex items-center gap-1.5 text-xs font-medium rounded-full px-3 py-1"
-                  style={{ backgroundColor: infosRisque.bg, color: infosRisque.couleur }}
-                >
-                  {infosRisque.emoji} {infosRisque.libelle}
-                </span>
-              </div>
-
-              <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-3xl font-mono font-semibold text-[#E8E6DE]">{dossier.credit_score ?? "—"}</span>
-                <span className="text-sm text-[#5A6070]">/100</span>
-              </div>
-
-              <div className="space-y-3">
-                <BarreScore label="Situation professionnelle" valeur={dossier.profession_score} max={BAREME_SCORE.profession} />
-                <BarreScore label="Ancienneté" valeur={dossier.anciennete_score} max={BAREME_SCORE.anciennete} />
-                <BarreScore label="Capacité de remboursement" valeur={dossier.capacity_score} max={BAREME_SCORE.capacite} />
-                <BarreScore label="Résidence" valeur={dossier.residence_score} max={BAREME_SCORE.residence} />
-                <BarreScore label="Historique Lotafinance" valeur={dossier.history_score} max={BAREME_SCORE.historique} />
-              </div>
-
-              <div className="flex items-center justify-between gap-3 flex-wrap mt-4 text-sm bg-[#0B0E14] border border-[#1B1F29] rounded-md px-4 py-3">
-                <span className="text-[#7C8494]">Montant recommandé</span>
-                <span className="font-mono text-[#E8E6DE] font-medium">{formaterMontant(dossier.recommended_amount)}</span>
-                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${montantCoherent ? "bg-[#0F2420] text-[#3DDC97]" : "bg-[#2A2312] text-[#C9A227]"}`}>
-                  {montantCoherent ? "Demande cohérente" : "Supérieur à la recommandation"}
-                </span>
-              </div>
-            </div>
-
-            {/* Analyse Lotafinance — texte généré à partir des données réelles du dossier */}
-            <div className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-4 mt-4">
-              <p className="text-xs text-[#C9A227] uppercase tracking-wide font-medium mb-2">Analyse Lotafinance</p>
-              <p className="text-sm text-[#B8BAC4] leading-relaxed">
-                Client {libelleCategoriePro !== "Non renseignée" ? `en situation de « ${libelleCategoriePro.toLowerCase()} »` : "à la situation professionnelle non renseignée"}
-                {dossier.client_activity_seniority_months != null ? `, ${formaterAnciennete(dossier.client_activity_seniority_months).toLowerCase()} d'ancienneté` : ""}.{" "}
-                Revenu déclaré de {formaterMontant(dossier.monthly_income)} pour {formaterMontant(dossier.monthly_expenses)} de charges
-                {dossier.client_autres_credits_mensuels ? ` et ${formaterMontant(dossier.client_autres_credits_mensuels)} d'autres crédits en cours` : ", sans autre crédit déclaré"}
-                , soit une capacité disponible d&apos;environ {formaterMontant(capaciteDisponible)}.{" "}
-                {dossier.client_nombre_echeances_en_retard_historique > 0
-                  ? `Le client a un historique avec ${dossier.client_nombre_echeances_en_retard_historique} échéance${dossier.client_nombre_echeances_en_retard_historique > 1 ? "s" : ""} en retard chez Lotafinance.`
-                  : dossier.client_nombre_prets_reussis > 0
-                  ? `Aucun retard sur ${dossier.client_nombre_prets_reussis} prêt${dossier.client_nombre_prets_reussis > 1 ? "s" : ""} déjà remboursé${dossier.client_nombre_prets_reussis > 1 ? "s" : ""} chez Lotafinance.`
-                  : "Aucun historique de remboursement chez Lotafinance (premier dossier)."}{" "}
-                La demande de {formaterMontant(dossier.amount_requested)} est {montantCoherent ? "cohérente avec sa capacité financière estimée" : "supérieure au montant recommandé par le système au vu de son profil"}.
-              </p>
-            </div>
-
-            {dossier.facilite_paiement && (scoreFaible || risqueEleve) && (
-              <div className="flex items-start gap-2 bg-[#2A2312] border border-[#3A3013] rounded-md px-4 py-3 mt-4 text-[#C9A227] text-sm">
-                {Ic("alert", "w-4 h-4 shrink-0 mt-0.5")}
-                <span>
-                  Ce client demande la facilité de paiement mais présente un {scoreFaible ? "score faible" : ""}
-                  {scoreFaible && risqueEleve ? " et un " : ""}
-                  {risqueEleve ? "risque élevé" : ""}. Vous pouvez tout de même l&apos;accorder si vous le jugez pertinent.
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Historique du client */}
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-1">Historique de ce client</h2>
-            <p className="text-sm text-[#E8E6DE] mb-3 font-medium">
-              {dossier.client_nombre_prets_reussis} prêt{dossier.client_nombre_prets_reussis > 1 ? "s" : ""} réussi{dossier.client_nombre_prets_reussis > 1 ? "s" : ""}
-              {" — "}
-              {dossier.client_nombre_echeances_en_retard_historique} retard{dossier.client_nombre_echeances_en_retard_historique > 1 ? "s" : ""}
-              {" — défauts non suivis actuellement"}
-            </p>
-            <p className="text-xs text-[#7C8494] mb-3">
-              {pretsPrecedents.length === 0
-                ? "Aucun autre dossier chez Lotafinance."
-                : `${pretsPrecedents.length} autre${pretsPrecedents.length > 1 ? "s" : ""} dossier${pretsPrecedents.length > 1 ? "s" : ""} (tous statuts confondus)`}
-            </p>
-            {pretsPrecedents.length > 0 && (
-              <div className="space-y-2">
-                {pretsPrecedents.map((p) => {
-                  const couleur = couleurStatut(p.status);
-                  return (
-                    <div key={p.id} className="flex items-center justify-between border border-[#232733] rounded-md p-3">
-                      <div>
-                        <p className="text-sm font-mono text-[#E8E6DE]">
-                          {formaterMontant(p.amount_requested)} — {p.duration_weeks} sem.
-                        </p>
-                        <p className="text-xs text-[#7C8494] mt-0.5">Demandé le {formaterDate(p.submitted_at)}</p>
-                      </div>
-                      <span
-                        className="text-xs font-medium px-2.5 py-1 rounded-full shrink-0"
-                        style={{ backgroundColor: couleur.bg, color: couleur.text }}
-                      >
-                        {LIBELLES_STATUT[p.status] || p.status}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Simulateur de prêt — outil d'aide à la décision, ne modifie rien tant que l'analyste n'applique pas */}
-          {!dejaDecide && (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <h2 className="text-sm font-medium text-[#E8E6DE] mb-1">Simulateur de prêt</h2>
-              <p className="text-xs text-[#7C8494] mb-4">
-                Ajustez librement le montant, la durée ou le taux pour comparer différents scénarios avant de décider. Rien n&apos;est enregistré ici.
-              </p>
-
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                <div>
-                  <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Montant (F)</label>
-                  <input
-                    type="number" min={0}
-                    value={simMontant}
-                    onChange={(e) => setSimMontant(e.target.value)}
-                    className={CHAMP_CLASSES}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Durée</label>
-                  <select
-                    value={simDuree}
-                    onChange={(e) => {
-                      const nouvelleDuree = Number(e.target.value);
-                      setSimDuree(nouvelleDuree);
-                      setSimTaux(String(TAUX_PAR_DUREE[nouvelleDuree] ?? 0));
-                    }}
-                    className={CHAMP_CLASSES}
-                  >
-                    <option value={2}>2 semaines</option>
-                    <option value={4}>1 mois</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Taux (%)</label>
-                  <input
-                    type="number" min={0} step={0.1}
-                    value={simTaux}
-                    onChange={(e) => setSimTaux(e.target.value)}
-                    className={CHAMP_CLASSES}
-                  />
-                </div>
-              </div>
-
-              <div className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-4 space-y-1.5 text-sm font-mono mb-4">
-                <LigneCout label="Intérêts" valeur={formaterMontant(simInterets)} />
-                <LigneCout label="Total à rembourser (échéance)" valeur={formaterMontant(simTotal)} gras />
-                <LigneCout label="Capacité disponible" valeur={formaterMontant(capaciteDisponible)} />
-                <LigneCout label="Marge restante après remboursement" valeur={formaterMontant(simMarge)} accent={simMarge >= 0} />
-              </div>
-
-              <div
-                className={`flex items-center gap-2 rounded-md px-4 py-3 mb-4 text-sm ${
-                  simMarge >= 0 ? "bg-[#0F2420] border border-[#1E4A3D] text-[#3DDC97]" : "bg-[#2A1414] border border-[#4A2222] text-[#F0A0A0]"
-                }`}
-              >
-                {simMarge >= 0 ? "🟢" : "🔴"} {simMarge >= 0 ? "Capacité suffisante pour ce scénario" : "Capacité insuffisante — l'échéance dépasse la capacité disponible"}
-              </div>
-
-              <button
-                onClick={() => setMontantApprouve(simMontant)}
-                className="w-full text-sm font-medium bg-[#1B1706] border border-[#3A3013] text-[#C9A227] py-2.5 rounded-md hover:bg-[#241E09] transition"
-              >
-                Appliquer ce montant ({formaterMontant(simMontantNombre)}) à la décision ci-dessous
-              </button>
-            </div>
-          )}
-
-          {journal.length > 0 && (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <h2 className="text-sm font-medium text-[#E8E6DE] mb-3 flex items-center gap-2">{Ic("history", "w-4 h-4")} Journal des décisions</h2>
-              <div className="space-y-2">
-                {journal.map((j) => (
-                  <div key={j.id} className="border border-[#232733] rounded-md p-3 text-sm">
-                    <p className="text-[#E8E6DE]">
-                      {j.ancien_statut ? `${LIBELLES_STATUT[j.ancien_statut] || j.ancien_statut} → ` : ""}
-                      <strong>{LIBELLES_STATUT[j.nouveau_statut] || j.nouveau_statut}</strong>
-                    </p>
-                    <p className="text-xs text-[#7C8494] mt-0.5">
-                      {formaterDate(j.cree_le)} — {j.analyst_email ? `par ${j.analyst_email}` : "décision automatique du système"}
-                    </p>
-                    {j.commentaire && <p className="text-xs text-[#B8BAC4] mt-1 italic">&quot;{j.commentaire}&quot;</p>}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {dossier.status === "approuve" && (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Rentabilité de ce prêt</h2>
-              <div className="grid grid-cols-2 gap-3 text-sm font-mono">
-                <Ligne label="Capital versé au client" valeur={formaterMontant(Math.max(capital - FRAIS_DE_TRAITEMENT, 0))} />
-                <Ligne label="Frais de traitement encaissés" valeur={formaterMontant(FRAIS_DE_TRAITEMENT)} />
-                <Ligne label="Intérêts prévus" valeur={formaterMontant(interetsPrevus)} />
-                <Ligne label="Déjà encaissé (échéances)" valeur={formaterMontant(dejaEncaisse)} />
-                <Ligne label="Reste à percevoir" valeur={formaterMontant(resteAPercevoir)} />
-                <Ligne label="Bénéfice net estimé (à terme)" valeur={formaterMontant(interetsPrevus + FRAIS_DE_TRAITEMENT)} />
-                <Ligne label="Risque de perte actuel" valeur={formaterMontant(resteAPercevoir)} />
-              </div>
-              <p className="text-[11px] text-[#5A6070] mt-3">
-                Estimation basée sur les échéances confirmées. Le bénéfice inclut les {formaterMontant(FRAIS_DE_TRAITEMENT)} de frais de
-                traitement, encaissés dès le déboursement. Le risque de perte suppose que le client cesse tout remboursement à partir de maintenant.
-              </p>
-            </div>
-          )}
-
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Documents fournis</h2>
-            {documents.length === 0 ? (
-              <p className="text-sm text-[#5A6070]">Aucun document envoyé par ce client.</p>
-            ) : (
-              <div className="space-y-2">
-                {documents.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between border border-[#232733] rounded-md p-3">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-[#E8E6DE]">{LIBELLES_DOCUMENTS[doc.document_type] || doc.document_type}</p>
-                      <p className="text-xs text-[#7C8494] truncate">{doc.original_file_name}</p>
-                    </div>
-                    <button onClick={() => gererTelechargement(doc)} className="shrink-0 text-sm font-medium text-[#C9A227] hover:text-[#DDB63A] underline">
-                      Télécharger
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {dossier.status === "approuve" && echeances.length > 0 && (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Échéances — confirmation de paiement</h2>
-              <p className="text-xs text-[#7C8494] mb-3">
-                Confirmez uniquement après avoir vérifié que le paiement a bien été reçu.
-              </p>
-              <div className="space-y-2">
-                {echeances.map((e) => {
-                  const retard = estEnRetard(e);
-                  const jours = retard ? joursDeRetard(e) : 0;
-                  const critique = retard && jours >= SEUIL_RETARD_CRITIQUE;
-                  return (
-                    <div
-                      key={e.id}
-                      className={`flex items-center justify-between border rounded-md p-3 ${
-                        critique ? "border-[#7A2E2E] bg-[#2A0D0D]" : retard ? "border-[#4A2222] bg-[#1A0F0F]" : "border-[#232733]"
-                      }`}
-                    >
-                      <div>
-                        <p className="text-sm font-mono text-[#E8E6DE]">
-                          Mensualité {e.numero} — {formaterMontant(e.montant)}
-                        </p>
-                        <p className={`text-xs mt-0.5 ${critique ? "text-[#FFB3B3] font-medium" : retard ? "text-[#F0A0A0]" : "text-[#7C8494]"}`}>
-                          {e.payee
-                            ? `Confirmée le ${formaterDate(e.payee_le)}`
-                            : retard
-                            ? `En retard de ${jours} jour${jours > 1 ? "s" : ""} — échéance du ${formaterDate(e.date_echeance)}${critique ? " ⚠️ critique" : ""}`
-                            : `Échéance : ${formaterDate(e.date_echeance)}`}
-                        </p>
-                      </div>
-                      {e.payee ? (
-                        <span className="text-[#3DDC97] font-medium text-sm">✓ Confirmée</span>
-                      ) : (
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-sm font-medium text-[#B8BAC4]">Mot de passe</label>
+                      {mode === "connexion" && (
                         <button
-                          onClick={() => gererConfirmationPaiement(e.id)}
-                          disabled={confirmationEnCours === e.id}
-                          className="shrink-0 bg-[#1E4A3D] text-[#3DDC97] border border-[#2A6B57] text-sm font-medium px-3 py-1.5 rounded-md hover:bg-[#245A49] transition disabled:opacity-50"
+                          type="button"
+                          onClick={() => setAideMotDePasseOuverte((v) => !v)}
+                          className="text-xs text-[#C9A227] hover:text-[#DDB63A] transition"
                         >
-                          {confirmationEnCours === e.id ? "..." : "Confirmer le paiement"}
+                          Mot de passe oublié ?
                         </button>
                       )}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {!dejaDecide ? (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Décision</h2>
-
-              {dossier.credit_score != null && dossier.credit_score < 80 && (
-                <div
-                  className={`flex items-start gap-2 rounded-md px-4 py-3 mb-4 text-sm ${
-                    dossier.credit_score < 60
-                      ? "bg-[#2A1414] border border-[#4A2222] text-[#F0A0A0]"
-                      : "bg-[#1B1706] border border-[#3A3013] text-[#C9A227]"
-                  }`}
-                >
-                  {Ic("alert", "w-4 h-4 shrink-0 mt-0.5")}
-                  <span>
-                    {dossier.credit_score < 60
-                      ? `Score faible (${dossier.credit_score}/100) : profil fragile, aucune décision automatique n'a été prise. `
-                      : `Score moyen (${dossier.credit_score}/100) : ni approuvé ni refusé automatiquement. `}
-                    Le dossier est laissé à ton appréciation — tu peux refuser, demander des infos, ou approuver un montant réduit
-                    (voir le montant recommandé ci-dessus) plutôt que le montant demandé en entier, pour laisser une chance au client de construire un historique.
-                  </span>
-                </div>
-              )}
-
-              <div className="mb-3">
-                <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Montant à approuver (F)</label>
-                <input type="number" min={0} value={montantApprouve} onChange={(e) => setMontantApprouve(e.target.value)} className={CHAMP_CLASSES} />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Commentaire (optionnel)</label>
-                <textarea value={commentaire} onChange={(e) => setCommentaire(e.target.value)} rows={3} className={CHAMP_CLASSES} />
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => gererDecision("approuve")}
-                  disabled={decisionEnCours}
-                  className="flex-1 bg-[#1E4A3D] text-[#3DDC97] border border-[#2A6B57] text-sm font-medium py-2.5 rounded-md hover:bg-[#245A49] transition disabled:opacity-50"
-                >
-                  {decisionEnCours ? "..." : "Approuver"}
-                </button>
-                <button
-                  onClick={() => gererDecision("infos_demandees")}
-                  disabled={decisionEnCours}
-                  className="flex-1 bg-[#2A2312] text-[#C9A227] border border-[#3A3013] text-sm font-medium py-2.5 rounded-md hover:bg-[#332A16] transition disabled:opacity-50"
-                >
-                  {decisionEnCours ? "..." : "Demander des infos"}
-                </button>
-                <button
-                  onClick={() => gererDecision("refuse")}
-                  disabled={decisionEnCours}
-                  className="flex-1 bg-[#4A2222] text-[#F0A0A0] border border-[#6B2E2E] text-sm font-medium py-2.5 rounded-md hover:bg-[#5A2828] transition disabled:opacity-50"
-                >
-                  {decisionEnCours ? "..." : "Refuser"}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <p className="text-sm text-[#B8BAC4]">
-                Ce dossier a déjà été traité : <strong className="text-[#E8E6DE]">{dossier.status}</strong>
-                {dossier.decision_reason ? ` — ${dossier.decision_reason}` : ""}
-              </p>
-            </div>
-          )}
-
-          {/* Zone de suppression — réservée aux admins */}
-          {monRole === "admin" && (
-            <div className="bg-[#1A0F0F] border border-[#4A2222] rounded-lg p-6">
-              <h2 className="text-sm font-medium text-[#F0A0A0] mb-2 flex items-center gap-2">{Ic("trash", "w-4 h-4")} Zone sensible</h2>
-              {!demandeSuppression ? (
-                <>
-                  <p className="text-xs text-[#B8BAC4] mb-3">
-                    Supprime définitivement ce dossier, son score et ses échéances. Action irréversible.
-                  </p>
-                  <button
-                    onClick={gererSuppression}
-                    className="text-sm font-medium text-[#F0A0A0] border border-[#6B2E2E] rounded-md px-4 py-2 hover:bg-[#2A1414] transition"
-                  >
-                    Supprimer ce dossier
-                  </button>
-                </>
-              ) : (
-                <>
-                  <p className="text-sm text-[#F0A0A0] mb-3 font-medium">
-                    Es-tu sûr ? Cette action est définitive et ne peut pas être annulée.
-                  </p>
-                  <div className="flex gap-3">
-                    <button
-                      onClick={gererSuppression}
-                      disabled={suppressionEnCours}
-                      className="bg-[#4A2222] text-[#F0A0A0] border border-[#6B2E2E] text-sm font-medium px-4 py-2 rounded-md hover:bg-[#5A2828] transition disabled:opacity-50"
-                    >
-                      {suppressionEnCours ? "Suppression..." : "Oui, supprimer définitivement"}
-                    </button>
-                    <button
-                      onClick={() => setDemandeSuppression(false)}
-                      disabled={suppressionEnCours}
-                      className="text-sm font-medium text-[#7C8494] border border-[#232733] px-4 py-2 rounded-md hover:bg-[#12151C] transition"
-                    >
-                      Annuler
-                    </button>
+                    <div className="relative">
+                      <input
+                        type={motDePasseVisible ? "text" : "password"}
+                        required
+                        minLength={6}
+                        value={motDePasse}
+                        onChange={(e) => setMotDePasse(e.target.value)}
+                        placeholder="••••••••"
+                        className={`${CHAMP_CLASSES} pr-10`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setMotDePasseVisible((v) => !v)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7C8494] hover:text-[#E8E6DE] transition"
+                        tabIndex={-1}
+                      >
+                        {motDePasseVisible ? (
+                          <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
+                            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        ) : (
+                          <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
+                            <path d="M3 3l18 18 M10.6 10.6a3 3 0 0 0 4.24 4.24 M6.6 6.6C4 8.3 2 12 2 12s3.5 7 10 7c1.8 0 3.4-.4 4.7-1.1 M17.9 17.9C20.5 16.2 22 12 22 12s-1.2-2.4-3.2-4.3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
                   </div>
-                </>
-              )}
-            </div>
-          )}
+
+                  {aideMotDePasseOuverte && mode === "connexion" && (
+                    <p className="text-xs text-[#C9A227] bg-[#1B1706] border border-[#3A3013] rounded-md px-3 py-2">
+                      La réinitialisation automatique par email arrive bientôt. En attendant, contactez directement
+                      l&apos;équipe Lotafinance pour réinitialiser votre mot de passe.
+                    </p>
+                  )}
+
+                  {erreur && (
+                    <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2">
+                      {erreur}
+                    </p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={chargement}
+                    className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+                  >
+                    {chargement
+                      ? "Veuillez patienter..."
+                      : mode === "connexion"
+                      ? "Continuer"
+                      : "Créer mon compte"}
+                  </button>
+                </form>
+              </>
+            ) : (
+              <form onSubmit={gererVerificationCode} className="space-y-4">
+                <p className="text-sm text-[#B8BAC4]">
+                  Un code à 6 chiffres a été envoyé par email à l&apos;adresse associée à ce compte. Il est valable 10 minutes.
+                </p>
+
+                <div>
+                  <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Code de vérification</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={6}
+                    required
+                    value={code}
+                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                    placeholder="123456"
+                    className={`${CHAMP_CLASSES} text-center text-lg tracking-[0.5em] font-mono`}
+                    autoFocus
+                  />
+                </div>
+
+                {erreur && (
+                  <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2">
+                    {erreur}
+                  </p>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={chargement || code.length !== 6}
+                  className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+                >
+                  {chargement ? "Vérification..." : "Valider et me connecter"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={revenirAuxIdentifiants}
+                  className="w-full text-xs font-medium text-[#7C8494] hover:text-[#E8E6DE] transition"
+                >
+                  ← Revenir en arrière
+                </button>
+              </form>
+            )}
+          </div>
+
+          <p className="text-center text-xs text-[#5A6070] mt-6">
+            Lotafinance – Plus qu&apos;un prêt, un partenaire pour votre avenir.
+          </p>
         </div>
       </div>
     </main>
-  );
-}
-
-function Ligne({ label, valeur }: { label: string; valeur: string }) {
-  return (
-    <div>
-      <p className="text-[#7C8494] text-xs">{label}</p>
-      <p className="font-medium text-[#E8E6DE] font-mono">{valeur}</p>
-    </div>
-  );
-}
-
-function LigneCout({ label, valeur, gras, accent }: { label: string; valeur: string; gras?: boolean; accent?: boolean }) {
-  return (
-    <div className={`flex justify-between ${gras ? "border-t border-[#232733] pt-1.5 mt-1.5" : ""}`}>
-      <span className={gras ? "text-[#E8E6DE] font-medium" : "text-[#7C8494]"}>{label}</span>
-      <span className={accent ? "text-[#3DDC97] font-medium" : gras ? "text-[#E8E6DE] font-medium" : "text-[#E8E6DE]"}>{valeur}</span>
-    </div>
-  );
-}
-
-function BarreScore({ label, valeur, max }: { label: string; valeur?: number | null; max: number }) {
-  const v = valeur ?? 0;
-  const pourcentage = max > 0 ? Math.min(100, Math.round((v / max) * 100)) : 0;
-  const couleur = pourcentage >= 70 ? "#3DDC97" : pourcentage >= 40 ? "#C9A227" : "#F0A0A0";
-  return (
-    <div>
-      <div className="flex items-center justify-between text-xs mb-1">
-        <span className="text-[#B8BAC4]">{label}</span>
-        <span className="text-[#7C8494] font-mono">{valeur != null ? valeur : "—"}/{max}</span>
-      </div>
-      <div className="h-1.5 bg-[#0B0E14] border border-[#1B1F29] rounded-full overflow-hidden">
-        <div className="h-full rounded-full" style={{ width: `${pourcentage}%`, backgroundColor: couleur }} />
-      </div>
-    </div>
   );
 }

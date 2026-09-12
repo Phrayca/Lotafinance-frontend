@@ -18,6 +18,7 @@ import {
   obtenirStatutIdentiteClient,
   recupererMonProfilUtilisateur,
   urlPhotoDeProfil,
+  telechargerContratPdf,
   LoanDetailOut,
   LoanOut,
   DocumentClient,
@@ -309,6 +310,16 @@ export default function PageDossierAnalyste() {
     }
   }
 
+  async function gererTelechargementContrat() {
+    const token = localStorage.getItem("token");
+    if (!token || !dossier) return;
+    try {
+      await telechargerContratPdf(token, loanId, `${dossier.client_last_name}-${dossier.client_first_name}`);
+    } catch (err) {
+      setErreur(err instanceof Error ? err.message : "Erreur lors du téléchargement du contrat");
+    }
+  }
+
   async function gererDecision(decision: "approuve" | "refuse" | "infos_demandees") {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -548,9 +559,17 @@ export default function PageDossierAnalyste() {
             </div>
           </div>
 
-          <button onClick={() => router.back()} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] mb-4 transition">
-            ← Retour
-          </button>
+          <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+            <button onClick={() => router.back()} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] transition">
+              ← Retour
+            </button>
+            <button
+              onClick={gererTelechargementContrat}
+              className="text-sm font-medium text-[#C9A227] border border-[#3A3013] bg-[#1B1706] rounded-md px-3 py-1.5 hover:bg-[#241E09] transition flex items-center gap-1.5"
+            >
+              📄 Télécharger le contrat (PDF)
+            </button>
+          </div>
 
           {erreur && (
             <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
