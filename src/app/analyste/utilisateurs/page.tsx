@@ -39,11 +39,13 @@ function formaterDate(iso: string) {
 function libelleRole(role: string) {
   if (role === "admin") return "Administrateur";
   if (role === "analyste") return "Analyste";
+  if (role === "support") return "Service client";
   return "Client";
 }
 function couleurRole(role: string): { bg: string; text: string } {
   if (role === "admin") return { bg: "#2A1414", text: "#F0A0A0" };
   if (role === "analyste") return { bg: "#1B1706", text: "#C9A227" };
+  if (role === "support") return { bg: "#12203A", text: "#5B8DEF" };
   return { bg: "#1B2030", text: "#B8BAC4" };
 }
 
@@ -107,7 +109,7 @@ const LIENS_NAV = [
   { href: "/analyste/profil", label: "Mon profil", icone: "user" as const },
 ];
 
-const ROLES = ["client", "analyste", "admin"];
+const ROLES = ["client", "analyste", "admin", "support"];
 
 export default function PageGestionUtilisateurs() {
   const router = useRouter();
@@ -121,7 +123,6 @@ export default function PageGestionUtilisateurs() {
   const [utilisateurs, setUtilisateurs] = useState<UtilisateurApercu[]>([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
-  const [accesRefuse, setAccesRefuse] = useState(false);
   const [modificationEnCours, setModificationEnCours] = useState<string | null>(null);
 
   useEffect(() => {
@@ -141,11 +142,9 @@ export default function PageGestionUtilisateurs() {
         setUtilisateur(profil);
         setAvatarUrl(urlPhotoDeProfil(profil.id));
 
-        if (profil.role !== "admin") {
-          setAccesRefuse(true);
-          setChargement(false);
-          return;
-        }
+        // TEMPORAIRE : la gestion des utilisateurs est ouverte aussi aux analystes tant qu'un
+        // compte admin séparé n'a pas été créé. Remettre une restriction "admin uniquement"
+        // une fois le vrai compte admin en place (le backend a la même note).
         const liste = await obtenirUtilisateurs(token);
         setUtilisateurs(liste);
       } catch (err) {
@@ -270,15 +269,11 @@ export default function PageGestionUtilisateurs() {
 
           <div className="mb-6">
             <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Gestion des utilisateurs</h1>
-            <p className="text-[#7C8494] text-sm mt-1">Tous les comptes Lotafinance (clients, analystes, admins)</p>
+            <p className="text-[#7C8494] text-sm mt-1">Tous les comptes Lotafinance (clients, analystes, admins, service client)</p>
           </div>
 
           {chargement ? (
             <p className="text-sm text-[#7C8494] font-mono text-center py-8">Chargement...</p>
-          ) : accesRefuse ? (
-            <div className="flex items-center gap-2 bg-[#1B1706] border border-[#3A3013] rounded-md px-4 py-4 text-sm text-[#C9A227]">
-              {Ic("lock", "w-4 h-4 shrink-0")} Cette section est réservée aux comptes administrateur.
-            </div>
           ) : (
             <>
               {erreur && <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>}
