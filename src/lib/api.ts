@@ -1104,3 +1104,151 @@ export async function lancerVerificationAutomatique(token: string, clientId: str
   }
   return donnees as VerificationAuto;
 }
+
+// ---------------------- Tickets / réclamations ----------------------
+
+export type StatutTicket = "nouveau" | "en_cours" | "en_attente" | "resolu";
+
+export type Ticket = {
+  id: string;
+  sujet: string;
+  categorie?: string;
+  description: string;
+  statut: StatutTicket;
+  priorite: string;
+  cree_le: string;
+  mis_a_jour_le: string;
+  resolu_le?: string;
+};
+
+export type TicketDetail = Ticket & {
+  client_id: string;
+  client_first_name: string;
+  client_last_name: string;
+  client_phone: string;
+  agent_email?: string;
+};
+
+export type TicketMessage = {
+  id: string;
+  auteur: "client" | "agent";
+  contenu: string;
+  envoye_le: string;
+};
+
+// ---- Côté client ----
+
+export async function creerTicket(token: string, sujet: string, description: string, categorie?: string) {
+  const reponse = await fetch(`${API_URL}/tickets`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ sujet, description, categorie }),
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors de la création de la réclamation");
+  }
+  return donnees as Ticket;
+}
+
+export async function obtenirMesTickets(token: string) {
+  const reponse = await fetch(`${API_URL}/tickets/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération de vos réclamations");
+  }
+  return reponse.json() as Promise<Ticket[]>;
+}
+
+export async function obtenirMonTicket(token: string, ticketId: string) {
+  const reponse = await fetch(`${API_URL}/tickets/${ticketId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération de la réclamation");
+  }
+  return reponse.json() as Promise<TicketDetail>;
+}
+
+export async function obtenirMessagesDeMonTicket(token: string, ticketId: string) {
+  const reponse = await fetch(`${API_URL}/tickets/${ticketId}/messages`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération des messages");
+  }
+  return reponse.json() as Promise<TicketMessage[]>;
+}
+
+export async function repondreAMonTicket(token: string, ticketId: string, contenu: string) {
+  const reponse = await fetch(`${API_URL}/tickets/${ticketId}/messages`, {
+    method: "POST",
+    headers: { "Content-Type: "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ contenu }),
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors de l'envoi du message");
+  }
+  return donnees as TicketMessage;
+}
+
+// ---- Côté agent support ----
+
+export async function obtenirTousLesTicketsSupport(token: string, statut?: string) {
+  const url = statut && statut !== "tous" ? `${API_URL}/support/tickets?statut=${statut}` : `${API_URL}/support/tickets`;
+  const reponse = await fetch(url, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération des tickets");
+  }
+  return reponse.json() as Promise<TicketDetail[]>;
+}
+
+export async function obtenirTicketSupport(token: string, ticketId: string) {
+  const reponse = await fetch(`${API_URL}/support/tickets/${ticketId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération du ticket");
+  }
+  return reponse.json() as Promise<TicketDetail>;
+}
+
+export async function obtenirMessagesTicketSupport(token: string, ticketId: string) {
+  const reponse = await fetch(`${API_URL}/support/tickets/${ticketId}/messages`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération des messages");
+  }
+  return reponse.json() as Promise<TicketMessage[]>;
+}
+
+export async function repondreTicketSupport(token: string, ticketId: string, contenu: string) {
+  const reponse = await fetch(`${API_URL}/support/tickets/${ticketId}/messages`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ contenu }),
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors de l'envoi de la réponse");
+  }
+  return donnees as TicketMessage;
+}
+
+export async function changerStatutTicket(token: string, ticketId: string, statut: StatutTicket) {
+  const reponse = await fetch(`${API_URL}/support/tickets/${ticketId}/statut`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ statut }),
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors du changement de statut");
+  }
+  return donnees as Ticket;
+}

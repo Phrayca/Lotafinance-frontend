@@ -91,6 +91,7 @@ const ICONES = {
   percent: "M19 5 5 19 M7.5 9a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z M16.5 18a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z",
   chevronLeft: "M15 5l-7 7 7 7",
   gift: "M20 12v10H4V12 M2 7h20v5H2V7Z M12 22V7 M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7Z M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7Z",
+  alert: "M12 9v4 M12 17h.01 M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z",
 };
 function Ic(name: keyof typeof ICONES, className?: string) {
   return <Icon path={ICONES[name]} className={className} />;
@@ -220,6 +221,10 @@ export default function TableauDeBord() {
 
         if (profil.role === "analyste" || profil.role === "admin") {
           router.push("/analyste");
+          return;
+        }
+        if (profil.role === "support") {
+          router.push("/support");
           return;
         }
 
@@ -694,7 +699,8 @@ export default function TableauDeBord() {
                 <ActionRapide icone="loans" label="Mes prêts" couleur="blue" onClick={() => router.push("/mes-demandes")} />
                 <ActionRapide icone="calendarCheck" label="Remboursement" couleur="green" onClick={() => router.push("/remboursements")} />
                 <ActionRapide icone="headset" label="Assistance" couleur="red" onClick={ouvrirAssistance} />
-                <ActionRapide icone="calculator" label="Simulateur de prêt" couleur="purple" onClick={() => router.push("/simulateur")} />
+                <ActionRapide icone="alert" label="Réclamations" couleur="purple" onClick={() => router.push("/reclamations")} />
+                <ActionRapide icone="calculator" label="Simulateur de prêt" couleur="blue" onClick={() => router.push("/simulateur")} />
                 <ActionRapide icone="gift" label="Parrainage" couleur="orange" onClick={() => router.push("/parrainage")} />
               </div>
             </div>
@@ -732,6 +738,7 @@ export default function TableauDeBord() {
           { href: "/mes-demandes", label: "Mes prêts", icone: "loans" as const },
           { href: "/demande-pret", label: "Demander", icone: "plus" as const },
           { href: "/remboursements", label: "Rembours.", icone: "calendarCheck" as const },
+          { href: "/documents", label: "Docs", icone: "document" as const },
           { href: "/profil", label: "Profil", icone: "user" as const },
         ].map((lien) => {
           const IconeRiche = ICONES_RICHES[lien.icone];
