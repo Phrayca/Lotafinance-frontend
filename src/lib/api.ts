@@ -1184,7 +1184,7 @@ export async function obtenirMessagesDeMonTicket(token: string, ticketId: string
 export async function repondreAMonTicket(token: string, ticketId: string, contenu: string) {
   const reponse = await fetch(`${API_URL}/tickets/${ticketId}/messages`, {
     method: "POST",
-    headers: { "Content-Type: "application/json", Authorization: `Bearer ${token}` },
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
     body: JSON.stringify({ contenu }),
   });
   const donnees = await reponse.json();
