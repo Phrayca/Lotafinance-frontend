@@ -1342,3 +1342,73 @@ export async function obtenirTicketsDuClientSupport(token: string, clientId: str
   }
   return reponse.json() as Promise<Ticket[]>;
 }
+
+
+// ---------------------- FAQ / Base de connaissances ----------------------
+
+export type FaqItem = {
+  id: string;
+  question: string;
+  reponse: string;
+  categorie?: string;
+  publiee: boolean;
+  cree_le: string;
+};
+
+export async function obtenirFaqPublique(token: string) {
+  const reponse = await fetch(`${API_URL}/faq`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération de la FAQ");
+  }
+  return reponse.json() as Promise<FaqItem[]>;
+}
+
+export async function obtenirFaqSupport(token: string) {
+  const reponse = await fetch(`${API_URL}/support/faq`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération de la FAQ");
+  }
+  return reponse.json() as Promise<FaqItem[]>;
+}
+
+export async function creerFaqItem(token: string, question: string, reponseTexte: string, categorie: string, publiee: boolean) {
+  const rep = await fetch(`${API_URL}/support/faq`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ question, reponse: reponseTexte, categorie: categorie || undefined, publiee }),
+  });
+  const donnees = await rep.json();
+  if (!rep.ok) {
+    throw new Error(donnees.detail || "Erreur lors de la création");
+  }
+  return donnees as FaqItem;
+}
+
+export async function modifierFaqItem(token: string, itemId: string, question: string, reponseTexte: string, categorie: string, publiee: boolean) {
+  const rep = await fetch(`${API_URL}/support/faq/${itemId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ question, reponse: reponseTexte, categorie: categorie || undefined, publiee }),
+  });
+  const donnees = await rep.json();
+  if (!rep.ok) {
+    throw new Error(donnees.detail || "Erreur lors de la modification");
+  }
+  return donnees as FaqItem;
+}
+
+export async function supprimerFaqItem(token: string, itemId: string) {
+  const rep = await fetch(`${API_URL}/support/faq/${itemId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const donnees = await rep.json();
+  if (!rep.ok) {
+    throw new Error(donnees.detail || "Erreur lors de la suppression");
+  }
+  return donnees;
+}

@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   recupererMonProfilUtilisateur,
-  obtenirModelesReponse,
-  creerModeleReponse,
-  supprimerModeleReponse,
-  ModeleReponse,
+  obtenirFaqSupport,
+  creerFaqItem,
+  modifierFaqItem,
+  supprimerFaqItem,
+  FaqItem,
 } from "@/lib/api";
-import { HomeIcon, ProfileIcon, IconCircle, CouleurLotafinance } from "@/components/icons";
+import { HomeIcon, ClientsIcon, ReportsIcon, DocumentIcon, ProfileIcon, IconCircle, CouleurLotafinance } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
   backgroundColor: "#0B0E14",
@@ -19,8 +20,6 @@ const FOND_TEXTURE_STYLE: React.CSSProperties = {
 
 const CHAMP_CLASSES =
   "w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition";
-
-type Utilisateur = { id: string; email: string; role: string; first_name?: string; last_name?: string };
 
 function Icon({ path, className }: { path: string; className?: string }) {
   return (
@@ -34,12 +33,13 @@ const ICONES = {
   home: "M4 11 12 4l8 7M6 10v9h12v-9",
   users: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z M2.5 20a5.5 5.5 0 0 1 11 0 M16 11a3.5 3.5 0 1 0 0-7 M21.5 20a5.5 5.5 0 0 0-5-5.48",
   chart: "M4 20V10 M10 20V4 M16 20v-7 M22 20H2",
+  document: "M6 3h8l4 4v14H6V3Z M14 3v4h4 M9 12h6 M9 16h6",
   faq: "M9.1 9a3 3 0 1 1 4.9 2.3c-.9.7-1.5 1.3-1.5 2.7 M12 17h.01",
   user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M4 20c1.5-4 5-6 8-6s6.5 2 8 6",
-  document: "M6 3h8l4 4v14H6V3Z M14 3v4h4 M9 12h6 M9 16h6",
   trash: "M4 7h16 M9 7V4h6v3 M6 7l1 13h10l1-13 M10 11v6 M14 11v6",
-  chevronLeft: "M15 5l-7 7 7 7",
+  pencil: "M12 20h9 M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z",
   chevronRight: "M9 5l7 7-7 7",
+  chevronLeft: "M15 5l-7 7 7 7",
 };
 function Ic(name: keyof typeof ICONES, className?: string) {
   return <Icon path={ICONES[name]} className={className} />;
@@ -47,6 +47,9 @@ function Ic(name: keyof typeof ICONES, className?: string) {
 
 const ICONES_RICHES: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
   home: HomeIcon,
+  users: ClientsIcon,
+  chart: ReportsIcon,
+  document: DocumentIcon,
   user: ProfileIcon,
 };
 const COULEURS_NAV: CouleurLotafinance[] = ["gold", "green", "blue", "purple", "orange", "red"];
@@ -55,26 +58,25 @@ const LIENS_NAV = [
   { href: "/support", label: "Tableau de bord", icone: "home" as const },
   { href: "/support/clients", label: "Clients", icone: "users" as const },
   { href: "/support/statistiques", label: "Statistiques", icone: "chart" as const },
-  { href: "/support/modeles", label: "Modèles de réponses", icone: "document" as const, actif: true },
-  { href: "/support/faq", label: "FAQ & Réponses", icone: "faq" as const },
+  { href: "/support/modeles", label: "Modèles de réponses", icone: "document" as const },
+  { href: "/support/faq", label: "FAQ & Réponses", icone: "faq" as const, actif: true },
   { href: "/support/profil", label: "Mon profil", icone: "user" as const },
 ];
 
-function formaterDate(iso: string) {
-  return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
-}
-
-export default function PageModelesReponse() {
+export default function PageFaqSupport() {
   const router = useRouter();
   const [sidebarReduite, setSidebarReduite] = useState(false);
   const [autorise, setAutorise] = useState(false);
-  const [modeles, setModeles] = useState<ModeleReponse[]>([]);
+  const [items, setItems] = useState<FaqItem[]>([]);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
 
   const [formulaireOuvert, setFormulaireOuvert] = useState(false);
-  const [titre, setTitre] = useState("");
-  const [contenu, setContenu] = useState("");
+  const [itemEnEdition, setItemEnEdition] = useState<FaqItem | null>(null);
+  const [question, setQuestion] = useState("");
+  const [reponseTexte, setReponseTexte] = useState("");
+  const [categorie, setCategorie] = useState("");
+  const [publiee, setPubliee] = useState(true);
   const [envoiEnCours, setEnvoiEnCours] = useState(false);
   const [suppressionEnCours, setSuppressionEnCours] = useState<string | null>(null);
 
@@ -93,8 +95,8 @@ export default function PageModelesReponse() {
           return;
         }
         setAutorise(true);
-        const liste = await obtenirModelesReponse(token);
-        setModeles(liste);
+        const liste = await obtenirFaqSupport(token);
+        setItems(liste);
       } catch (err) {
         setErreur(err instanceof Error ? err.message : "Une erreur est survenue");
       } finally {
@@ -117,21 +119,41 @@ export default function PageModelesReponse() {
     });
   }
 
-  async function gererCreation(e: React.FormEvent) {
+  function ouvrirNouveau() {
+    setItemEnEdition(null);
+    setQuestion("");
+    setReponseTexte("");
+    setCategorie("");
+    setPubliee(true);
+    setFormulaireOuvert(true);
+  }
+  function ouvrirEdition(item: FaqItem) {
+    setItemEnEdition(item);
+    setQuestion(item.question);
+    setReponseTexte(item.reponse);
+    setCategorie(item.categorie || "");
+    setPubliee(item.publiee);
+    setFormulaireOuvert(true);
+  }
+
+  async function gererEnregistrement(e: React.FormEvent) {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    if (!token || !titre.trim() || !contenu.trim()) return;
+    if (!token || !question.trim() || !reponseTexte.trim()) return;
 
     setErreur("");
     setEnvoiEnCours(true);
     try {
-      const nouveau = await creerModeleReponse(token, titre.trim(), contenu.trim());
-      setModeles((precedent) => [...precedent, nouveau].sort((a, b) => a.titre.localeCompare(b.titre)));
-      setTitre("");
-      setContenu("");
+      if (itemEnEdition) {
+        const misAJour = await modifierFaqItem(token, itemEnEdition.id, question.trim(), reponseTexte.trim(), categorie.trim(), publiee);
+        setItems((precedent) => precedent.map((i) => (i.id === misAJour.id ? misAJour : i)));
+      } else {
+        const nouveau = await creerFaqItem(token, question.trim(), reponseTexte.trim(), categorie.trim(), publiee);
+        setItems((precedent) => [nouveau, ...precedent]);
+      }
       setFormulaireOuvert(false);
     } catch (err) {
-      setErreur(err instanceof Error ? err.message : "Erreur lors de la création");
+      setErreur(err instanceof Error ? err.message : "Erreur lors de l'enregistrement");
     } finally {
       setEnvoiEnCours(false);
     }
@@ -142,8 +164,8 @@ export default function PageModelesReponse() {
     if (!token) return;
     setSuppressionEnCours(id);
     try {
-      await supprimerModeleReponse(token, id);
-      setModeles((precedent) => precedent.filter((m) => m.id !== id));
+      await supprimerFaqItem(token, id);
+      setItems((precedent) => precedent.filter((i) => i.id !== id));
     } catch (err) {
       setErreur(err instanceof Error ? err.message : "Erreur lors de la suppression");
     } finally {
@@ -216,14 +238,14 @@ export default function PageModelesReponse() {
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between gap-3 flex-wrap mb-6">
             <div>
-              <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Modèles de réponses</h1>
-              <p className="text-[#7C8494] text-sm mt-1">Partagés par toute l&apos;équipe Service Client</p>
+              <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">FAQ & Réponses</h1>
+              <p className="text-[#7C8494] text-sm mt-1">Visible par les clients si publiée</p>
             </div>
             <button
-              onClick={() => setFormulaireOuvert((v) => !v)}
+              onClick={() => (formulaireOuvert ? setFormulaireOuvert(false) : ouvrirNouveau())}
               className="text-sm font-semibold bg-[#C9A227] text-[#0B0E14] px-3 py-1.5 rounded-md hover:bg-[#DDB63A] transition"
             >
-              {formulaireOuvert ? "Annuler" : "+ Nouveau modèle"}
+              {formulaireOuvert ? "Annuler" : "+ Nouvelle question"}
             </button>
           </div>
 
@@ -232,45 +254,67 @@ export default function PageModelesReponse() {
           )}
 
           {formulaireOuvert && (
-            <form onSubmit={gererCreation} className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4 space-y-3">
+            <form onSubmit={gererEnregistrement} className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4 space-y-3">
               <div>
-                <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Titre</label>
-                <input value={titre} onChange={(e) => setTitre(e.target.value)} className={CHAMP_CLASSES} placeholder="Ex : Retard de paiement" />
+                <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Question</label>
+                <input value={question} onChange={(e) => setQuestion(e.target.value)} className={CHAMP_CLASSES} placeholder="Comment faire une demande de prêt ?" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Contenu</label>
-                <textarea value={contenu} onChange={(e) => setContenu(e.target.value)} rows={4} className={CHAMP_CLASSES} placeholder="Le texte que tu veux réutiliser..." />
+                <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Réponse</label>
+                <textarea value={reponseTexte} onChange={(e) => setReponseTexte(e.target.value)} rows={4} className={CHAMP_CLASSES} />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Catégorie (optionnel)</label>
+                <input value={categorie} onChange={(e) => setCategorie(e.target.value)} className={CHAMP_CLASSES} placeholder="Ex : Prêts, Remboursement..." />
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={publiee} onChange={(e) => setPubliee(e.target.checked)} className="accent-[#C9A227]" />
+                <span className="text-sm text-[#B8BAC4]">Visible par les clients</span>
+              </label>
               <button
                 type="submit"
                 disabled={envoiEnCours}
                 className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
               >
-                {envoiEnCours ? "Création..." : "Créer le modèle"}
+                {envoiEnCours ? "Enregistrement..." : itemEnEdition ? "Mettre à jour" : "Créer"}
               </button>
             </form>
           )}
 
           <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
-            {modeles.length === 0 ? (
-              <p className="text-sm text-[#5A6070] py-8 text-center">Aucun modèle pour le moment.</p>
+            {items.length === 0 ? (
+              <p className="text-sm text-[#5A6070] py-8 text-center">Aucune question pour le moment.</p>
             ) : (
               <div className="space-y-2">
-                {modeles.map((m) => (
-                  <div key={m.id} className="border border-[#232733] rounded-md p-4 flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-[#E8E6DE]">{m.titre}</p>
-                      <p className="text-xs text-[#7C8494] mt-1 whitespace-pre-wrap">{m.contenu}</p>
-                      <p className="text-[10px] text-[#5A6070] mt-1.5">Créé le {formaterDate(m.cree_le)}</p>
+                {items.map((item) => (
+                  <div key={item.id} className="border border-[#232733] rounded-md p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-[#E8E6DE]">{item.question}</p>
+                        <p className="text-xs text-[#7C8494] mt-1 whitespace-pre-wrap">{item.reponse}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          {item.categorie && (
+                            <span className="text-[10px] text-[#7C8494] bg-[#0B0E14] border border-[#232733] rounded-full px-2 py-0.5">{item.categorie}</span>
+                          )}
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full ${item.publiee ? "text-[#3DDC97] bg-[#0F2420]" : "text-[#7C8494] bg-[#1B1F29]"}`}>
+                            {item.publiee ? "Publiée" : "Brouillon"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button onClick={() => ouvrirEdition(item)} className="text-[#7C8494] hover:text-[#E8E6DE] transition" title="Modifier">
+                          {Ic("pencil", "w-4 h-4")}
+                        </button>
+                        <button
+                          onClick={() => gererSuppression(item.id)}
+                          disabled={suppressionEnCours === item.id}
+                          className="text-[#F0A0A0] hover:text-[#FFB3B3] transition disabled:opacity-40"
+                          title="Supprimer"
+                        >
+                          {Ic("trash", "w-4 h-4")}
+                        </button>
+                      </div>
                     </div>
-                    <button
-                      onClick={() => gererSuppression(m.id)}
-                      disabled={suppressionEnCours === m.id}
-                      className="shrink-0 text-[#F0A0A0] hover:text-[#FFB3B3] transition disabled:opacity-40"
-                      title="Supprimer"
-                    >
-                      {Ic("trash", "w-4 h-4")}
-                    </button>
                   </div>
                 ))}
               </div>

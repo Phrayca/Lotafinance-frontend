@@ -26,6 +26,9 @@ function Icon({ path, className }: { path: string; className?: string }) {
 const ICONES = {
   logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9",
   home: "M4 11 12 4l8 7M6 10v9h12v-9",
+  users: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z M2.5 20a5.5 5.5 0 0 1 11 0 M16 11a3.5 3.5 0 1 0 0-7 M21.5 20a5.5 5.5 0 0 0-5-5.48",
+  chart: "M4 20V10 M10 20V4 M16 20v-7 M22 20H2",
+  faq: "M9.1 9a3 3 0 1 1 4.9 2.3c-.9.7-1.5 1.3-1.5 2.7 M12 17h.01",
   document: "M6 3h8l4 4v14H6V3Z M14 3v4h4 M9 12h6 M9 16h6",
   user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M4 20c1.5-4 5-6 8-6s6.5 2 8 6",
   lock: "M6 11V7a6 6 0 1 1 12 0v4 M5 11h14v10H5V11Z",
@@ -41,11 +44,14 @@ const ICONES_RICHES: Record<string, React.ComponentType<{ className?: string; si
   document: DocumentIcon,
   user: ProfileIcon,
 };
-const COULEURS_NAV: CouleurLotafinance[] = ["gold", "purple", "blue"];
+const COULEURS_NAV: CouleurLotafinance[] = ["gold", "green", "blue", "purple", "orange", "red"];
 
 const LIENS_NAV = [
   { href: "/support", label: "Tableau de bord", icone: "home" as const },
+  { href: "/support/clients", label: "Clients", icone: "users" as const },
+  { href: "/support/statistiques", label: "Statistiques", icone: "chart" as const },
   { href: "/support/modeles", label: "Modèles de réponses", icone: "document" as const },
+  { href: "/support/faq", label: "FAQ & Réponses", icone: "faq" as const },
   { href: "/support/profil", label: "Mon profil", icone: "user" as const, actif: true },
 ];
 
