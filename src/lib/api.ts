@@ -1252,3 +1252,48 @@ export async function changerStatutTicket(token: string, ticketId: string, statu
   }
   return donnees as Ticket;
 }
+
+
+// ---------------------- Modèles de réponse ----------------------
+
+export type ModeleReponse = {
+  id: string;
+  titre: string;
+  contenu: string;
+  cree_le: string;
+};
+
+export async function obtenirModelesReponse(token: string) {
+  const reponse = await fetch(`${API_URL}/support/modeles`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération des modèles");
+  }
+  return reponse.json() as Promise<ModeleReponse[]>;
+}
+
+export async function creerModeleReponse(token: string, titre: string, contenu: string) {
+  const reponse = await fetch(`${API_URL}/support/modeles`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ titre, contenu }),
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors de la création du modèle");
+  }
+  return donnees as ModeleReponse;
+}
+
+export async function supprimerModeleReponse(token: string, modeleId: string) {
+  const reponse = await fetch(`${API_URL}/support/modeles/${modeleId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors de la suppression du modèle");
+  }
+  return donnees;
+}

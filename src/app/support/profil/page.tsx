@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { recupererMonProfilUtilisateur, enregistrerMesInformations, changerMonMotDePasse } from "@/lib/api";
-import { HomeIcon, ProfileIcon, IconCircle, CouleurLotafinance } from "@/components/icons";
+import { HomeIcon, ProfileIcon, DocumentIcon, IconCircle, CouleurLotafinance } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
   backgroundColor: "#0B0E14",
@@ -26,6 +26,7 @@ function Icon({ path, className }: { path: string; className?: string }) {
 const ICONES = {
   logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4 M16 17l5-5-5-5 M21 12H9",
   home: "M4 11 12 4l8 7M6 10v9h12v-9",
+  document: "M6 3h8l4 4v14H6V3Z M14 3v4h4 M9 12h6 M9 16h6",
   user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M4 20c1.5-4 5-6 8-6s6.5 2 8 6",
   lock: "M6 11V7a6 6 0 1 1 12 0v4 M5 11h14v10H5V11Z",
   chevronLeft: "M15 5l-7 7 7 7",
@@ -37,12 +38,14 @@ function Ic(name: keyof typeof ICONES, className?: string) {
 
 const ICONES_RICHES: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
   home: HomeIcon,
+  document: DocumentIcon,
   user: ProfileIcon,
 };
-const COULEURS_NAV: CouleurLotafinance[] = ["gold", "blue"];
+const COULEURS_NAV: CouleurLotafinance[] = ["gold", "purple", "blue"];
 
 const LIENS_NAV = [
   { href: "/support", label: "Tableau de bord", icone: "home" as const },
+  { href: "/support/modeles", label: "Modèles de réponses", icone: "document" as const },
   { href: "/support/profil", label: "Mon profil", icone: "user" as const, actif: true },
 ];
 
