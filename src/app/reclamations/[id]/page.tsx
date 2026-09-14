@@ -56,6 +56,7 @@ export default function PageDetailReclamation() {
       const [t, m] = await Promise.all([obtenirMonTicket(token, ticketId), obtenirMessagesDeMonTicket(token, ticketId)]);
       setTicket(t);
       setMessages(m);
+      localStorage.setItem(`ticket_vu_${ticketId}`, new Date().toISOString());
     } catch (err) {
       setErreur(err instanceof Error ? err.message : "Une erreur est survenue");
     } finally {

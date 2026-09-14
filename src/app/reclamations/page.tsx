@@ -182,15 +182,20 @@ export default function PageReclamations() {
             <div className="space-y-2">
               {tickets.map((t) => {
                 const couleur = couleurStatut(t.statut);
+                const vu = localStorage.getItem(`ticket_vu_${t.id}`);
+                const nouvelleReponse = !!t.dernier_message_agent_le && (!vu || t.dernier_message_agent_le > vu);
                 return (
                   <button
                     key={t.id}
                     onClick={() => router.push(`/reclamations/${t.id}`)}
                     className="w-full text-left border border-[#232733] rounded-md p-4 hover:border-[#3A4050] transition flex items-center justify-between gap-4"
                   >
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-[#E8E6DE] truncate">{t.sujet}</p>
-                      <p className="text-xs text-[#7C8494] mt-0.5">{formaterDate(t.cree_le)}</p>
+                    <div className="min-w-0 flex items-center gap-2">
+                      {nouvelleReponse && <span className="w-2 h-2 rounded-full bg-[#C24545] shrink-0" title="Nouvelle réponse" />}
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-[#E8E6DE] truncate">{t.sujet}</p>
+                        <p className="text-xs text-[#7C8494] mt-0.5">{formaterDate(t.cree_le)}</p>
+                      </div>
                     </div>
                     <span className="text-xs font-medium px-2.5 py-1 rounded-full shrink-0" style={{ backgroundColor: couleur.bg, color: couleur.text }}>
                       {LIBELLES_STATUT[t.statut] || t.statut}

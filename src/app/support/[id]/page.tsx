@@ -10,11 +10,16 @@ import {
   changerStatutTicket,
   obtenirFicheClient,
   obtenirModelesReponse,
+  obtenirAgentsSupport,
+  assignerTicket,
+  obtenirTicketsDuClientSupport,
   TicketDetail,
   TicketMessage,
   StatutTicket,
   ClientDetail,
   ModeleReponse,
+  AgentApercu,
+  Ticket,
 } from "@/lib/api";
 import { HomeIcon, ProfileIcon, DocumentIcon, IconCircle, CouleurLotafinance } from "@/components/icons";
 
@@ -95,6 +100,9 @@ export default function PageDetailTicketSupport() {
   const [ficheClientOuverte, setFicheClientOuverte] = useState(false);
   const [modeles, setModeles] = useState<ModeleReponse[]>([]);
   const [modelesOuvert, setModelesOuvert] = useState(false);
+  const [agents, setAgents] = useState<AgentApercu[]>([]);
+  const [assignationEnCours, setAssignationEnCours] = useState(false);
+  const [historiqueClient, setHistoriqueClient] = useState<Ticket[]>([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -129,6 +137,10 @@ export default function PageDetailTicketSupport() {
     setMessages(m);
     obtenirFicheClient(token, t.client_id).then(setFicheClient).catch(() => {});
     obtenirModelesReponse(token).then(setModeles).catch(() => {});
+    obtenirAgentsSupport(token).then(setAgents).catch(() => {});
+    obtenirTicketsDuClientSupport(token, t.client_id)
+      .then((liste) => setHistoriqueClient(liste.filter((x) => x.id !== ticketId)))
+      .catch(() => {});
   }
 
   async function gererEnvoi(e: React.FormEvent) {
@@ -160,6 +172,21 @@ export default function PageDetailTicketSupport() {
       setErreur(err instanceof Error ? err.message : "Erreur lors du changement de statut");
     } finally {
       setChangementStatutEnCours(false);
+    }
+  }
+
+  async function gererAssignation(agentId: string) {
+    const token = localStorage.getItem("token");
+    if (!token || !agentId) return;
+
+    setAssignationEnCours(true);
+    try {
+      await assignerTicket(token, ticketId, agentId);
+      await charger(token);
+    } catch (err) {
+      setErreur(err instanceof Error ? err.message : "Erreur lors de l'assignation");
+    } finally {
+      setAssignationEnCours(false);
     }
   }
 
@@ -334,7 +361,53 @@ export default function PageDetailTicketSupport() {
                 </button>
               )}
             </div>
+
+            <div className="border-t border-[#1B1F29] mt-4 pt-4">
+              <label className="block text-xs font-medium text-[#B8BAC4] mb-1.5">Assigné à</label>
+              <select
+                value={ticket.agent_id || ""}
+                disabled={assignationEnCours}
+                onChange={(e) => gererAssignation(e.target.value)}
+                className="bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition disabled:opacity-50"
+              >
+                <option value="">— Non assigné —</option>
+                {agents.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.first_name || a.last_name ? `${a.first_name || ""} ${a.last_name || ""}`.trim() : a.email}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
+
+          {historiqueClient.length > 0 && (
+            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
+              <h2 className="text-sm font-medium text-[#E8E6DE] mb-1">Historique de ce client</h2>
+              <p className="text-xs text-[#7C8494] mb-3">
+                {historiqueClient.length} autre{historiqueClient.length > 1 ? "s" : ""} ticket{historiqueClient.length > 1 ? "s" : ""}
+              </p>
+              <div className="space-y-2">
+                {historiqueClient.map((t) => {
+                  const c = couleurStatut(t.statut);
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => router.push(`/support/${t.id}`)}
+                      className="w-full text-left border border-[#232733] rounded-md p-3 hover:border-[#3A4050] transition flex items-center justify-between gap-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm text-[#E8E6DE] truncate">{t.sujet}</p>
+                        <p className="text-xs text-[#7C8494] mt-0.5">{formaterDateHeure(t.cree_le)}</p>
+                      </div>
+                      <span className="text-xs font-medium px-2.5 py-1 rounded-full shrink-0" style={{ backgroundColor: c.bg, color: c.text }}>
+                        {LIBELLES_STATUT[t.statut] || t.statut}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
             <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Échanges</h2>

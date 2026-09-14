@@ -9,11 +9,13 @@ import {
   obtenirEcheances,
   obtenirMesMessagesAssistance,
   obtenirMonPlafond,
+  obtenirMesTickets,
   LoanOut,
   Echeance,
   ProfilClient,
   MessageAssistance,
   Plafond,
+  Ticket,
 } from "@/lib/api";
 import {
   HomeIcon,
@@ -189,6 +191,7 @@ export default function TableauDeBord() {
   const [demandes, setDemandes] = useState<LoanOut[]>([]);
   const [echeancesParPret, setEcheancesParPret] = useState<Record<string, Echeance[]>>({});
   const [messages, setMessages] = useState<MessageAssistance[]>([]);
+  const [mesTickets, setMesTickets] = useState<Ticket[]>([]);
   const [plafond, setPlafond] = useState<Plafond | null>(null);
   const [chargement, setChargement] = useState(true);
   const [notifOuvertes, setNotifOuvertes] = useState(false);
@@ -244,6 +247,7 @@ export default function TableauDeBord() {
         setEcheancesParPret(Object.fromEntries(entries));
 
         obtenirMonPlafond(token).then(setPlafond).catch(() => {});
+        obtenirMesTickets(token).then(setMesTickets).catch(() => {});
       } catch {
         // Seule une vraie session invalide (ex: profil utilisateur introuvable) doit déconnecter.
         // Un profil client pas encore complété ne doit jamais éjecter l'utilisateur.
@@ -328,7 +332,14 @@ export default function TableauDeBord() {
 
   // Une échéance ne compte dans le badge que si elle n'a pas déjà été vue (ouverte) par le client
   const echeancesNonVues = echeancesNonPayeesDuPret.filter((e) => !echeancesVues.includes(e.id));
-  const totalNotifications = messagesNonLus.length + echeancesNonVues.length;
+
+  const ticketsAvecNouvelleReponse = mesTickets.filter((t) => {
+    if (!t.dernier_message_agent_le) return false;
+    const vu = typeof window !== "undefined" ? localStorage.getItem(`ticket_vu_${t.id}`) : null;
+    return !vu || t.dernier_message_agent_le > vu;
+  });
+
+  const totalNotifications = messagesNonLus.length + echeancesNonVues.length + ticketsAvecNouvelleReponse.length;
 
   const nomComplet =
     profilClient?.first_name || profilClient?.last_name
@@ -354,6 +365,10 @@ export default function TableauDeBord() {
     }
     if (nouvelEtat && messagesNonLus.length > 0) {
       localStorage.setItem("assistance_derniere_vue", new Date().toISOString());
+    }
+    if (nouvelEtat && ticketsAvecNouvelleReponse.length > 0) {
+      const maintenant = new Date().toISOString();
+      ticketsAvecNouvelleReponse.forEach((t) => localStorage.setItem(`ticket_vu_${t.id}`, maintenant));
     }
   }
 
@@ -447,6 +462,16 @@ export default function TableauDeBord() {
                       >
                         <p className="text-xs text-[#C9A227] font-medium">Nouveau message de Lotafinance</p>
                         <p className="text-xs text-[#B8BAC4] truncate mt-0.5">{m.contenu || "Fichier envoyé"}</p>
+                      </button>
+                    ))}
+                    {ticketsAvecNouvelleReponse.map((t) => (
+                      <button
+                        key={t.id}
+                        onClick={() => { setNotifOuvertes(false); router.push(`/reclamations/${t.id}`); }}
+                        className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition border-b border-[#1B1F29]"
+                      >
+                        <p className="text-xs text-[#5B8DEF] font-medium">Réponse à votre réclamation</p>
+                        <p className="text-xs text-[#B8BAC4] truncate mt-0.5">{t.sujet}</p>
                       </button>
                     ))}
                     {echeancesEnRetard.map((e) => (

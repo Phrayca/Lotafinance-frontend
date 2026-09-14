@@ -1119,6 +1119,7 @@ export type Ticket = {
   cree_le: string;
   mis_a_jour_le: string;
   resolu_le?: string;
+  dernier_message_agent_le?: string;
 };
 
 export type TicketDetail = Ticket & {
@@ -1126,6 +1127,7 @@ export type TicketDetail = Ticket & {
   client_first_name: string;
   client_last_name: string;
   client_phone: string;
+  agent_id?: string;
   agent_email?: string;
 };
 
@@ -1296,4 +1298,47 @@ export async function supprimerModeleReponse(token: string, modeleId: string) {
     throw new Error(donnees.detail || "Erreur lors de la suppression du modèle");
   }
   return donnees;
+}
+
+
+// ---------------------- Assignation d'agent, historique client ----------------------
+
+export type AgentApercu = {
+  id: string;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+};
+
+export async function obtenirAgentsSupport(token: string) {
+  const reponse = await fetch(`${API_URL}/support/agents`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération des agents");
+  }
+  return reponse.json() as Promise<AgentApercu[]>;
+}
+
+export async function assignerTicket(token: string, ticketId: string, agentId: string) {
+  const reponse = await fetch(`${API_URL}/support/tickets/${ticketId}/assigner`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ agent_id: agentId }),
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors de l'assignation");
+  }
+  return donnees as TicketDetail;
+}
+
+export async function obtenirTicketsDuClientSupport(token: string, clientId: string) {
+  const reponse = await fetch(`${API_URL}/support/tickets/client/${clientId}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération de l'historique du client");
+  }
+  return reponse.json() as Promise<Ticket[]>;
 }
