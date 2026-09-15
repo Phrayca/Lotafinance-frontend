@@ -58,6 +58,7 @@ const ICONES = {
   chevronDown: "M6 9l6 6 6-6",
   chevronRight: "M9 5l7 7-7 7",
   chevronLeft: "M15 5l-7 7 7 7",
+  bell: "M6 10a6 6 0 1 1 12 0c0 4 1.5 5 1.5 5h-15S6 14 6 10Z M10 19a2 2 0 0 0 4 0",
 };
 function Ic(name: keyof typeof ICONES, className?: string) {
   return <Icon path={ICONES[name]} className={className} />;
@@ -88,6 +89,7 @@ export default function PageServiceClient() {
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
   const [menuOuvert, setMenuOuvert] = useState(false);
+  const [notifOuvertes, setNotifOuvertes] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -150,6 +152,15 @@ export default function PageServiceClient() {
     resolu: tickets.filter((t) => t.statut === "resolu").length,
   };
 
+  // Tickets où le client attend une réponse : nouveaux sans réponse, ou dernier message venant du client
+  const ticketsNecessitantReponse = tickets.filter((t) => {
+    if (t.statut === "resolu") return false;
+    if (!t.dernier_message_client_le && !t.dernier_message_agent_le) return t.statut === "nouveau";
+    if (!t.dernier_message_client_le) return false;
+    if (!t.dernier_message_agent_le) return true;
+    return t.dernier_message_client_le > t.dernier_message_agent_le;
+  });
+
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
       <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
@@ -210,6 +221,40 @@ export default function PageServiceClient() {
               <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Bonjour {utilisateur?.first_name || ""} 👋</h1>
               <p className="text-[#7C8494] text-sm mt-1">Voici les réclamations à traiter.</p>
             </div>
+            <div className="flex items-center gap-3 shrink-0">
+            <div className="relative">
+              <button onClick={() => setNotifOuvertes((v) => !v)} className="relative text-[#7C8494] hover:text-[#E8E6DE] transition p-2" title="Notifications">
+                {Ic("bell", "w-5 h-5")}
+                {ticketsNecessitantReponse.length > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#C24545] text-white text-[9px] flex items-center justify-center">
+                    {ticketsNecessitantReponse.length}
+                  </span>
+                )}
+              </button>
+              {notifOuvertes && (
+                <div className="absolute right-0 top-10 w-80 bg-[#12151C] border border-[#232733] rounded-md shadow-xl z-20 overflow-hidden">
+                  <p className="text-xs font-medium text-[#7C8494] uppercase tracking-wide px-4 py-3 border-b border-[#232733]">
+                    Tickets en attente d&apos;une réponse
+                  </p>
+                  <div className="max-h-80 overflow-y-auto">
+                    {ticketsNecessitantReponse.length === 0 ? (
+                      <p className="text-xs text-[#5A6070] text-center py-6">Aucune notification pour le moment</p>
+                    ) : (
+                      ticketsNecessitantReponse.map((t) => (
+                        <button
+                          key={t.id}
+                          onClick={() => { setNotifOuvertes(false); router.push(`/support/${t.id}`); }}
+                          className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition border-b border-[#1B1F29] last:border-0"
+                        >
+                          <p className="text-xs text-[#C9A227] font-medium">{t.statut === "nouveau" ? "Nouveau ticket" : "Réponse du client en attente"}</p>
+                          <p className="text-xs text-[#B8BAC4] truncate mt-0.5">{t.sujet}</p>
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
             <div className="relative shrink-0">
               <button onClick={() => setMenuOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[#232733] hover:border-[#3A4050] transition">
                 <span className="w-7 h-7 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center overflow-hidden shrink-0">
@@ -228,6 +273,7 @@ export default function PageServiceClient() {
                   </button>
                 </div>
               )}
+            </div>
             </div>
           </div>
 

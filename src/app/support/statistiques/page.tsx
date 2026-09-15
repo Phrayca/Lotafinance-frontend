@@ -185,6 +185,18 @@ export default function PageStatistiquesSupport() {
 
   const tauxResolution = tickets.length > 0 ? Math.round((parStatut.resolu / tickets.length) * 100) : 0;
 
+  const ticketsNotes = tickets.filter((t) => t.satisfaction_note != null);
+  const satisfactionMoyenne = ticketsNotes.length > 0 ? ticketsNotes.reduce((s, t) => s + (t.satisfaction_note || 0), 0) / ticketsNotes.length : null;
+
+  const LIBELLES_CANAL: Record<string, string> = { app: "Application", telephone: "Téléphone", whatsapp: "WhatsApp", email: "Email", chat: "Chat" };
+  const ICONES_CANAL: Record<string, string> = { app: "📱", telephone: "📞", whatsapp: "💬", email: "📧", chat: "🗨️" };
+  const canaux = ["app", "telephone", "whatsapp", "email", "chat"].map((c) => ({
+    canal: c,
+    libelle: LIBELLES_CANAL[c],
+    icone: ICONES_CANAL[c],
+    compte: tickets.filter((t) => (t.canal || "app") === c).length,
+  })).filter((c) => c.compte > 0);
+
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
       <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
@@ -247,10 +259,15 @@ export default function PageStatistiquesSupport() {
             <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             <CarteKpi label="Total tickets" valeur={String(tickets.length)} />
             <CarteKpi label="Taux de résolution" valeur={`${tauxResolution}%`} couleur="#3DDC97" />
             <CarteKpi label="Temps moyen de résolution" valeur={libelleDuree} couleur="#C9A227" />
+            <CarteKpi
+              label="Satisfaction client"
+              valeur={satisfactionMoyenne != null ? `${satisfactionMoyenne.toFixed(1)}/5` : "—"}
+              couleur="#F4C95D"
+            />
           </div>
 
           <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
@@ -261,6 +278,21 @@ export default function PageStatistiquesSupport() {
               <p className="text-sm text-[#5A6070] py-8 text-center">Aucun ticket pour le moment.</p>
             )}
           </div>
+
+          {canaux.length > 0 && (
+            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mt-4">
+              <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-4">Canaux d&apos;accès</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {canaux.map((c) => (
+                  <div key={c.canal} className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-3 text-center">
+                    <p className="text-xl mb-1">{c.icone}</p>
+                    <p className="text-lg font-mono font-semibold text-[#E8E6DE]">{c.compte}</p>
+                    <p className="text-[10px] text-[#7C8494]">{c.libelle}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </main>

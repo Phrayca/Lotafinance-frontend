@@ -13,6 +13,7 @@ import {
   obtenirAgentsSupport,
   assignerTicket,
   obtenirTicketsDuClientSupport,
+  definirCanalTicket,
   TicketDetail,
   TicketMessage,
   StatutTicket,
@@ -109,6 +110,7 @@ export default function PageDetailTicketSupport() {
   const [agents, setAgents] = useState<AgentApercu[]>([]);
   const [assignationEnCours, setAssignationEnCours] = useState(false);
   const [historiqueClient, setHistoriqueClient] = useState<Ticket[]>([]);
+  const [canalEnCours, setCanalEnCours] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -193,6 +195,21 @@ export default function PageDetailTicketSupport() {
       setErreur(err instanceof Error ? err.message : "Erreur lors de l'assignation");
     } finally {
       setAssignationEnCours(false);
+    }
+  }
+
+  async function gererChangementCanal(canal: string) {
+    const token = localStorage.getItem("token");
+    if (!token || !canal) return;
+
+    setCanalEnCours(true);
+    try {
+      await definirCanalTicket(token, ticketId, canal);
+      await charger(token);
+    } catch (err) {
+      setErreur(err instanceof Error ? err.message : "Erreur lors du changement de canal");
+    } finally {
+      setCanalEnCours(false);
     }
   }
 
@@ -368,22 +385,49 @@ export default function PageDetailTicketSupport() {
               )}
             </div>
 
-            <div className="border-t border-[#1B1F29] mt-4 pt-4">
-              <label className="block text-xs font-medium text-[#B8BAC4] mb-1.5">Assigné à</label>
-              <select
-                value={ticket.agent_id || ""}
-                disabled={assignationEnCours}
-                onChange={(e) => gererAssignation(e.target.value)}
-                className="bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition disabled:opacity-50"
-              >
-                <option value="">— Non assigné —</option>
-                {agents.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.first_name || a.last_name ? `${a.first_name || ""} ${a.last_name || ""}`.trim() : a.email}
-                  </option>
-                ))}
-              </select>
+            <div className="border-t border-[#1B1F29] mt-4 pt-4 grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-[#B8BAC4] mb-1.5">Assigné à</label>
+                <select
+                  value={ticket.agent_id || ""}
+                  disabled={assignationEnCours}
+                  onChange={(e) => gererAssignation(e.target.value)}
+                  className="w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition disabled:opacity-50"
+                >
+                  <option value="">— Non assigné —</option>
+                  {agents.map((a) => (
+                    <option key={a.id} value={a.id}>
+                      {a.first_name || a.last_name ? `${a.first_name || ""} ${a.last_name || ""}`.trim() : a.email}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-[#B8BAC4] mb-1.5">Canal</label>
+                <select
+                  value={ticket.canal || "app"}
+                  disabled={canalEnCours}
+                  onChange={(e) => gererChangementCanal(e.target.value)}
+                  className="w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition disabled:opacity-50"
+                >
+                  <option value="app">📱 Application</option>
+                  <option value="telephone">📞 Téléphone</option>
+                  <option value="whatsapp">💬 WhatsApp</option>
+                  <option value="email">📧 Email</option>
+                  <option value="chat">🗨️ Chat</option>
+                </select>
+              </div>
             </div>
+
+            {ticket.satisfaction_note && (
+              <div className="border-t border-[#1B1F29] mt-4 pt-4">
+                <p className="text-xs font-medium text-[#B8BAC4] mb-1">Satisfaction client</p>
+                <p className="text-lg">{"⭐".repeat(ticket.satisfaction_note)}{"☆".repeat(5 - ticket.satisfaction_note)}</p>
+                {ticket.satisfaction_commentaire && (
+                  <p className="text-xs text-[#7C8494] italic mt-1">« {ticket.satisfaction_commentaire} »</p>
+                )}
+              </div>
+            )}
           </div>
 
           {historiqueClient.length > 0 && (

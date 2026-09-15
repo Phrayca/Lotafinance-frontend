@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { obtenirMonTicket, obtenirMessagesDeMonTicket, repondreAMonTicket, TicketDetail, TicketMessage } from "@/lib/api";
+import { obtenirMonTicket, obtenirMessagesDeMonTicket, repondreAMonTicket, noterSatisfactionTicket, TicketDetail, TicketMessage } from "@/lib/api";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
   backgroundColor: "#0B0E14",
@@ -40,6 +40,9 @@ export default function PageDetailReclamation() {
   const [erreur, setErreur] = useState("");
   const [reponse, setReponse] = useState("");
   const [envoiEnCours, setEnvoiEnCours] = useState(false);
+  const [noteChoisie, setNoteChoisie] = useState(0);
+  const [commentaireSatisfaction, setCommentaireSatisfaction] = useState("");
+  const [envoiNoteEnCours, setEnvoiNoteEnCours] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -79,6 +82,21 @@ export default function PageDetailReclamation() {
       setErreur(err instanceof Error ? err.message : "Erreur lors de l'envoi");
     } finally {
       setEnvoiEnCours(false);
+    }
+  }
+
+  async function gererEnvoiSatisfaction() {
+    const token = localStorage.getItem("token");
+    if (!token || noteChoisie < 1) return;
+
+    setEnvoiNoteEnCours(true);
+    try {
+      const misAJour = await noterSatisfactionTicket(token, ticketId, noteChoisie, commentaireSatisfaction.trim() || undefined);
+      setTicket((precedent) => (precedent ? { ...precedent, satisfaction_note: misAJour.satisfaction_note, satisfaction_commentaire: misAJour.satisfaction_commentaire } : precedent));
+    } catch (err) {
+      setErreur(err instanceof Error ? err.message : "Erreur lors de l'envoi de votre avis");
+    } finally {
+      setEnvoiNoteEnCours(false);
     }
   }
 
@@ -160,8 +178,38 @@ export default function PageDetailReclamation() {
               Envoyer
             </button>
           </form>
+        ) : ticket.satisfaction_note ? (
+          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 text-center">
+            <p className="text-sm text-[#3DDC97] font-medium">Merci pour ton avis !</p>
+            <p className="text-2xl mt-1">{"⭐".repeat(ticket.satisfaction_note)}{"☆".repeat(5 - ticket.satisfaction_note)}</p>
+          </div>
         ) : (
-          <p className="text-xs text-[#5A6070] text-center">Cette réclamation est résolue. Ouvre une nouvelle réclamation si le problème persiste.</p>
+          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
+            <p className="text-sm font-medium text-[#E8E6DE] mb-1">Cette réclamation est résolue</p>
+            <p className="text-xs text-[#7C8494] mb-4">Comment évalues-tu la façon dont ça a été traité ?</p>
+            <div className="flex items-center gap-1 mb-4">
+              {[1, 2, 3, 4, 5].map((n) => (
+                <button key={n} onClick={() => setNoteChoisie(n)} className="text-2xl transition hover:scale-110">
+                  {n <= noteChoisie ? "⭐" : "☆"}
+                </button>
+              ))}
+            </div>
+            <textarea
+              value={commentaireSatisfaction}
+              onChange={(e) => setCommentaireSatisfaction(e.target.value)}
+              placeholder="Un commentaire (optionnel)..."
+              rows={2}
+              className="w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition mb-3"
+            />
+            <button
+              onClick={gererEnvoiSatisfaction}
+              disabled={noteChoisie < 1 || envoiNoteEnCours}
+              className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+            >
+              {envoiNoteEnCours ? "Envoi..." : "Envoyer mon avis"}
+            </button>
+            <p className="text-xs text-[#5A6070] text-center mt-3">Ouvre une nouvelle réclamation si le problème persiste.</p>
+          </div>
         )}
       </div>
     </main>

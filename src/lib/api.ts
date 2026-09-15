@@ -1120,6 +1120,10 @@ export type Ticket = {
   mis_a_jour_le: string;
   resolu_le?: string;
   dernier_message_agent_le?: string;
+  dernier_message_client_le?: string;
+  canal: string;
+  satisfaction_note?: number;
+  satisfaction_commentaire?: string;
 };
 
 export type TicketDetail = Ticket & {
@@ -1411,4 +1415,33 @@ export async function supprimerFaqItem(token: string, itemId: string) {
     throw new Error(donnees.detail || "Erreur lors de la suppression");
   }
   return donnees;
+}
+
+
+// ---------------------- Satisfaction client et canal ----------------------
+
+export async function noterSatisfactionTicket(token: string, ticketId: string, note: number, commentaire?: string) {
+  const reponse = await fetch(`${API_URL}/tickets/${ticketId}/satisfaction`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ note, commentaire }),
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors de l'envoi de votre avis");
+  }
+  return donnees as Ticket;
+}
+
+export async function definirCanalTicket(token: string, ticketId: string, canal: string) {
+  const reponse = await fetch(`${API_URL}/support/tickets/${ticketId}/canal`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ canal }),
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors du changement de canal");
+  }
+  return donnees as Ticket;
 }
