@@ -25,6 +25,8 @@ const ICONES = {
   chart: "M4 20V10 M10 20V4 M16 20v-7 M22 20H2",
   document: "M6 3h8l4 4v14H6V3Z M14 3v4h4 M9 12h6 M9 16h6",
   faq: "M9.1 9a3 3 0 1 1 4.9 2.3c-.9.7-1.5 1.3-1.5 2.7 M12 17h.01",
+  star: "M12 2l3 6.5 7 .8-5.2 4.8 1.4 7-6.2-3.6-6.2 3.6 1.4-7L2 9.3l7-.8Z",
+  channel: "M4 6h16v12H4V6Z M4 6l8 7 8-7",
   user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M4 20c1.5-4 5-6 8-6s6.5 2 8 6",
   chevronRight: "M9 5l7 7-7 7",
   chevronLeft: "M15 5l-7 7 7 7",
@@ -46,7 +48,9 @@ const LIENS_NAV = [
   { href: "/support", label: "Tableau de bord", icone: "home" as const },
   { href: "/support/clients", label: "Clients", icone: "users" as const },
   { href: "/support/statistiques", label: "Statistiques", icone: "chart" as const, actif: true },
+  { href: "/support/satisfaction", label: "Satisfaction client", icone: "star" as const },
   { href: "/support/modeles", label: "Modèles de réponses", icone: "document" as const },
+  { href: "/support/canaux", label: "Canaux d'accès", icone: "channel" as const },
   { href: "/support/faq", label: "FAQ & Réponses", icone: "faq" as const },
   { href: "/support/profil", label: "Mon profil", icone: "user" as const },
 ];
@@ -185,18 +189,6 @@ export default function PageStatistiquesSupport() {
 
   const tauxResolution = tickets.length > 0 ? Math.round((parStatut.resolu / tickets.length) * 100) : 0;
 
-  const ticketsNotes = tickets.filter((t) => t.satisfaction_note != null);
-  const satisfactionMoyenne = ticketsNotes.length > 0 ? ticketsNotes.reduce((s, t) => s + (t.satisfaction_note || 0), 0) / ticketsNotes.length : null;
-
-  const LIBELLES_CANAL: Record<string, string> = { app: "Application", telephone: "Téléphone", whatsapp: "WhatsApp", email: "Email", chat: "Chat" };
-  const ICONES_CANAL: Record<string, string> = { app: "📱", telephone: "📞", whatsapp: "💬", email: "📧", chat: "🗨️" };
-  const canaux = ["app", "telephone", "whatsapp", "email", "chat"].map((c) => ({
-    canal: c,
-    libelle: LIBELLES_CANAL[c],
-    icone: ICONES_CANAL[c],
-    compte: tickets.filter((t) => (t.canal || "app") === c).length,
-  })).filter((c) => c.compte > 0);
-
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
       <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
@@ -215,7 +207,7 @@ export default function PageStatistiquesSupport() {
             <div key={lien.href}>
               {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1">Gestion</p>}
               {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
-              {!sidebarReduite && i === 3 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
+              {!sidebarReduite && i === 4 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
               <button
                 onClick={() => router.push(lien.href)}
                 title={sidebarReduite ? lien.label : undefined}
@@ -263,15 +255,10 @@ export default function PageStatistiquesSupport() {
             <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <CarteKpi label="Total tickets" valeur={String(tickets.length)} />
             <CarteKpi label="Taux de résolution" valeur={`${tauxResolution}%`} couleur="#3DDC97" />
             <CarteKpi label="Temps moyen de résolution" valeur={libelleDuree} couleur="#C9A227" />
-            <CarteKpi
-              label="Satisfaction client"
-              valeur={satisfactionMoyenne != null ? `${satisfactionMoyenne.toFixed(1)}/5` : "—"}
-              couleur="#F4C95D"
-            />
           </div>
 
           <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
@@ -283,20 +270,16 @@ export default function PageStatistiquesSupport() {
             )}
           </div>
 
-          {canaux.length > 0 && (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mt-4">
-              <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-4">Canaux d&apos;accès</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {canaux.map((c) => (
-                  <div key={c.canal} className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-3 text-center">
-                    <p className="text-xl mb-1">{c.icone}</p>
-                    <p className="text-lg font-mono font-semibold text-[#E8E6DE]">{c.compte}</p>
-                    <p className="text-[10px] text-[#7C8494]">{c.libelle}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <button onClick={() => router.push("/support/satisfaction")} className="bg-[#12151C] border border-[#232733] rounded-lg p-4 text-left hover:border-[#3A4050] transition">
+              <p className="text-sm text-[#E8E6DE]">⭐ Voir la satisfaction client</p>
+              <p className="text-xs text-[#5A6070] mt-1">Détail des avis et notes des clients</p>
+            </button>
+            <button onClick={() => router.push("/support/canaux")} className="bg-[#12151C] border border-[#232733] rounded-lg p-4 text-left hover:border-[#3A4050] transition">
+              <p className="text-sm text-[#E8E6DE]">📡 Voir les canaux d&apos;accès</p>
+              <p className="text-xs text-[#5A6070] mt-1">Répartition des tickets par canal</p>
+            </button>
+          </div>
         </div>
       </div>
     </main>

@@ -1356,6 +1356,7 @@ export type FaqItem = {
   reponse: string;
   categorie?: string;
   publiee: boolean;
+  vues: number;
   cree_le: string;
 };
 
@@ -1458,4 +1459,24 @@ export async function creerTicketSupport(token: string, clientId: string, sujet:
     throw new Error(donnees.detail || "Erreur lors de la création du ticket");
   }
   return donnees as Ticket;
+}
+
+
+export async function incrementerVueFaq(token: string, itemId: string) {
+  const reponse = await fetch(`${API_URL}/faq/${itemId}/vue`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) return null;
+  return reponse.json() as Promise<{ vues: number }>;
+}
+
+export async function rechercherTicketsSupport(token: string, q: string) {
+  const reponse = await fetch(`${API_URL}/support/recherche?q=${encodeURIComponent(q)}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la recherche");
+  }
+  return reponse.json() as Promise<Ticket[]>;
 }

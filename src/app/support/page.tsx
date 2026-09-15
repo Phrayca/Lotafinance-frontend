@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { recupererMonProfilUtilisateur, obtenirTousLesTicketsSupport, TicketDetail } from "@/lib/api";
+import { recupererMonProfilUtilisateur, obtenirTousLesTicketsSupport, obtenirFaqSupport, TicketDetail, FaqItem } from "@/lib/api";
 import { HomeIcon, ProfileIcon, DocumentIcon, IconCircle, CouleurLotafinance } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
@@ -53,12 +53,16 @@ const ICONES = {
   users: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z M2.5 20a5.5 5.5 0 0 1 11 0 M16 11a3.5 3.5 0 1 0 0-7 M21.5 20a5.5 5.5 0 0 0-5-5.48",
   chart: "M4 20V10 M10 20V4 M16 20v-7 M22 20H2",
   faq: "M9.1 9a3 3 0 1 1 4.9 2.3c-.9.7-1.5 1.3-1.5 2.7 M12 17h.01",
+  star: "M12 2l3 6.5 7 .8-5.2 4.8 1.4 7-6.2-3.6-6.2 3.6 1.4-7L2 9.3l7-.8Z",
+  channel: "M4 6h16v12H4V6Z M4 6l8 7 8-7",
   document: "M6 3h8l4 4v14H6V3Z M14 3v4h4 M9 12h6 M9 16h6",
   user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M4 20c1.5-4 5-6 8-6s6.5 2 8 6",
   chevronDown: "M6 9l6 6 6-6",
   chevronRight: "M9 5l7 7-7 7",
   chevronLeft: "M15 5l-7 7 7 7",
   bell: "M6 10a6 6 0 1 1 12 0c0 4 1.5 5 1.5 5h-15S6 14 6 10Z M10 19a2 2 0 0 0 4 0",
+  headset: "M4 13v-1a8 8 0 0 1 16 0v1 M4 13v4a2 2 0 0 0 2 2h1v-7H5a1 1 0 0 0-1 1Z M20 13v4a2 2 0 0 1-2 2h-1v-7h2a1 1 0 0 1 1 1Z",
+  search: "M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z M21 21l-4.3-4.3",
 };
 function Ic(name: keyof typeof ICONES, className?: string) {
   return <Icon path={ICONES[name]} className={className} />;
@@ -75,7 +79,9 @@ const LIENS_NAV = [
   { href: "/support", label: "Tableau de bord", icone: "home" as const, actif: true },
   { href: "/support/clients", label: "Clients", icone: "users" as const },
   { href: "/support/statistiques", label: "Statistiques", icone: "chart" as const },
+  { href: "/support/satisfaction", label: "Satisfaction client", icone: "star" as const },
   { href: "/support/modeles", label: "Modèles de réponses", icone: "document" as const },
+  { href: "/support/canaux", label: "Canaux d'accès", icone: "channel" as const },
   { href: "/support/faq", label: "FAQ & Réponses", icone: "faq" as const },
   { href: "/support/profil", label: "Mon profil", icone: "user" as const },
 ];
@@ -90,6 +96,8 @@ export default function PageServiceClient() {
   const [erreur, setErreur] = useState("");
   const [menuOuvert, setMenuOuvert] = useState(false);
   const [notifOuvertes, setNotifOuvertes] = useState(false);
+  const [recherche, setRecherche] = useState("");
+  const [faqItems, setFaqItems] = useState<FaqItem[]>([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -106,6 +114,7 @@ export default function PageServiceClient() {
           return;
         }
         setUtilisateur(profil);
+        obtenirFaqSupport(token).then(setFaqItems).catch(() => {});
       } catch (err) {
         setErreur(err instanceof Error ? err.message : "Une erreur est survenue");
       } finally {
@@ -135,6 +144,11 @@ export default function PageServiceClient() {
       localStorage.setItem("sidebar_reduite", nouveau ? "1" : "0");
       return nouveau;
     });
+  }
+
+  function gererRecherche(e: React.FormEvent) {
+    e.preventDefault();
+    if (recherche.trim()) router.push(`/support/recherche?q=${encodeURIComponent(recherche.trim())}`);
   }
 
   if (chargement) {
@@ -190,7 +204,7 @@ export default function PageServiceClient() {
             <div key={lien.href}>
               {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1">Gestion</p>}
               {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
-              {!sidebarReduite && i === 3 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
+              {!sidebarReduite && i === 4 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
               <button
                 onClick={() => router.push(lien.href)}
                 title={sidebarReduite ? lien.label : undefined}
@@ -231,12 +245,29 @@ export default function PageServiceClient() {
 
       <div className="flex-1 px-4 sm:px-8 py-6 overflow-x-auto">
         <div className="max-w-5xl mx-auto">
+          <form onSubmit={gererRecherche} className="relative mb-5">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6070]">{Ic("search", "w-4 h-4")}</span>
+            <input
+              value={recherche}
+              onChange={(e) => setRecherche(e.target.value)}
+              placeholder="Rechercher un client, ticket, téléphone..."
+              className="w-full bg-[#12151C] border border-[#232733] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition"
+            />
+          </form>
+
           <div className="flex items-center justify-between gap-3 flex-wrap mb-6">
             <div>
               <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Bonjour {utilisateur?.first_name || ""} 👋</h1>
               <p className="text-[#7C8494] text-sm mt-1">Voici les réclamations à traiter.</p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
+            <button
+              title="Assistance interne (bientôt disponible)"
+              disabled
+              className="text-[#5A6070] p-2 cursor-not-allowed"
+            >
+              {Ic("headset", "w-5 h-5")}
+            </button>
             <div className="relative">
               <button onClick={() => setNotifOuvertes((v) => !v)} className="relative text-[#7C8494] hover:text-[#E8E6DE] transition p-2" title="Notifications">
                 {Ic("bell", "w-5 h-5")}
@@ -386,6 +417,23 @@ export default function PageServiceClient() {
                   </div>
                 )}
               </div>
+
+              {faqItems.filter((f) => f.publiee).length > 0 && (
+                <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs text-[#7C8494] uppercase tracking-wide">FAQ populaires</p>
+                    <button onClick={() => router.push("/support/faq")} className="text-[10px] text-[#C9A227] hover:text-[#DDB63A] transition">Voir tout</button>
+                  </div>
+                  <div className="space-y-2">
+                    {[...faqItems].filter((f) => f.publiee).sort((a, b) => b.vues - a.vues).slice(0, 5).map((f) => (
+                      <button key={f.id} onClick={() => router.push("/support/faq")} className="w-full flex items-center justify-between gap-2 text-left hover:opacity-80 transition">
+                        <span className="text-xs text-[#B8BAC4] truncate">{f.question}</span>
+                        <span className="text-[10px] text-[#5A6070] shrink-0">{f.vues} vues</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

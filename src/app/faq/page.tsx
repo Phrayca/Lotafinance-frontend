@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { obtenirFaqPublique, FaqItem } from "@/lib/api";
+import { obtenirFaqPublique, incrementerVueFaq, FaqItem } from "@/lib/api";
 import { HomeIcon, LoanIcon, LoanRequestIcon, RepaymentIcon, DocumentIcon, ProfileIcon } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
@@ -40,7 +40,12 @@ export default function PageFaqClient() {
   }, [router]);
 
   function basculer(id: string) {
-    setOuverts((precedent) => ({ ...precedent, [id]: !precedent[id] }));
+    const seraOuvert = !ouverts[id];
+    setOuverts((precedent) => ({ ...precedent, [id]: seraOuvert }));
+    if (seraOuvert) {
+      const token = localStorage.getItem("token");
+      if (token) incrementerVueFaq(token, id).catch(() => {});
+    }
   }
 
   const categories = Array.from(new Set(items.map((i) => i.categorie).filter(Boolean))) as string[];
