@@ -152,6 +152,17 @@ export default function PageServiceClient() {
     resolu: tickets.filter((t) => t.statut === "resolu").length,
   };
 
+  const ticketsNotes = tickets.filter((t) => t.satisfaction_note != null);
+  const satisfactionMoyenne = ticketsNotes.length > 0 ? ticketsNotes.reduce((s, t) => s + (t.satisfaction_note || 0), 0) / ticketsNotes.length : null;
+
+  const resolus = tickets.filter((t) => t.resolu_le);
+  const dureesEnHeures = resolus.map((t) => (new Date(t.resolu_le!).getTime() - new Date(t.cree_le).getTime()) / (1000 * 60 * 60));
+  const dureeMoyenneHeures = dureesEnHeures.length > 0 ? dureesEnHeures.reduce((s, d) => s + d, 0) / dureesEnHeures.length : null;
+  const libelleDureeMoyenne =
+    dureeMoyenneHeures == null ? "—" : dureeMoyenneHeures < 24 ? `${dureeMoyenneHeures.toFixed(1)} h` : `${(dureeMoyenneHeures / 24).toFixed(1)} j`;
+
+  const activiteRecente = [...tickets].sort((a, b) => b.mis_a_jour_le.localeCompare(a.mis_a_jour_le)).slice(0, 6);
+
   // Tickets où le client attend une réponse : nouveaux sans réponse, ou dernier message venant du client
   const ticketsNecessitantReponse = tickets.filter((t) => {
     if (t.statut === "resolu") return false;
@@ -176,22 +187,26 @@ export default function PageServiceClient() {
 
         <nav className="flex-1 space-y-1">
           {LIENS_NAV.map((lien, i) => (
-            <button
-              key={lien.href}
-              onClick={() => router.push(lien.href)}
-              title={sidebarReduite ? lien.label : undefined}
-              className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
-              }`}
-            >
-              <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
-                {(() => {
-                  const IconeRiche = ICONES_RICHES[lien.icone];
-                  return IconeRiche ? <IconeRiche size={16} /> : Ic(lien.icone, "w-4 h-4");
-                })()}
-              </IconCircle>
-              {!sidebarReduite && <span className="flex-1 text-left">{lien.label}</span>}
-            </button>
+            <div key={lien.href}>
+              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1">Gestion</p>}
+              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
+              {!sidebarReduite && i === 3 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
+              <button
+                onClick={() => router.push(lien.href)}
+                title={sidebarReduite ? lien.label : undefined}
+                className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
+                  lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                }`}
+              >
+                <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
+                  {(() => {
+                    const IconeRiche = ICONES_RICHES[lien.icone];
+                    return IconeRiche ? <IconeRiche size={16} /> : Ic(lien.icone, "w-4 h-4");
+                  })()}
+                </IconCircle>
+                {!sidebarReduite && <span className="flex-1 text-left">{lien.label}</span>}
+              </button>
+            </div>
           ))}
         </nav>
 
@@ -281,60 +296,97 @@ export default function PageServiceClient() {
             <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
             <CarteKpi label="Nouveaux" valeur={compteurs.nouveau} couleur="#5B8DEF" />
             <CarteKpi label="En cours" valeur={compteurs.en_cours} couleur="#C9A227" />
             <CarteKpi label="En attente" valeur={compteurs.en_attente} couleur="#C9A6F0" />
             <CarteKpi label="Résolus" valeur={compteurs.resolu} couleur="#3DDC97" />
+            <CarteKpi label="Satisfaction" valeur={satisfactionMoyenne != null ? `${satisfactionMoyenne.toFixed(1)}/5` : "—"} couleur="#F4C95D" texte />
+            <CarteKpi label="Temps moyen" valeur={libelleDureeMoyenne} couleur="#7DBEF0" texte />
           </div>
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
-            <div className="flex gap-2 mb-5 flex-wrap">
-              {FILTRES.map((f) => (
-                <button
-                  key={f.valeur}
-                  onClick={() => setFiltre(f.valeur)}
-                  className={`text-xs font-medium px-3 py-1.5 rounded-full transition ${
-                    filtre === f.valeur ? "bg-[#C9A227] text-[#0B0E14]" : "bg-[#0B0E14] border border-[#232733] text-[#7C8494] hover:text-[#E8E6DE]"
-                  }`}
-                >
-                  {f.label}
-                </button>
-              ))}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-2 bg-[#12151C] border border-[#232733] rounded-lg p-6">
+              <div className="flex gap-2 mb-5 flex-wrap">
+                {FILTRES.map((f) => (
+                  <button
+                    key={f.valeur}
+                    onClick={() => setFiltre(f.valeur)}
+                    className={`text-xs font-medium px-3 py-1.5 rounded-full transition ${
+                      filtre === f.valeur ? "bg-[#C9A227] text-[#0B0E14]" : "bg-[#0B0E14] border border-[#232733] text-[#7C8494] hover:text-[#E8E6DE]"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              {tickets.length === 0 ? (
+                <p className="text-sm text-[#5A6070] py-8 text-center">Aucun ticket pour ce filtre.</p>
+              ) : (
+                <div className="space-y-2">
+                  {tickets.map((t) => {
+                    const couleur = couleurStatut(t.statut);
+                    return (
+                      <button
+                        key={t.id}
+                        onClick={() => router.push(`/support/${t.id}`)}
+                        className="w-full text-left border border-[#232733] rounded-md p-4 hover:border-[#3A4050] transition flex items-center justify-between gap-4"
+                      >
+                        <div className="min-w-0 flex items-center gap-3">
+                          <span className="w-8 h-8 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] text-xs font-semibold flex items-center justify-center shrink-0">
+                            {t.client_first_name[0]}{t.client_last_name[0]}
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-[#E8E6DE] truncate">{t.sujet}</p>
+                            <p className="text-xs text-[#7C8494] mt-0.5 truncate">{t.client_first_name} {t.client_last_name} · {formaterDate(t.cree_le)}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-xs font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: couleur.bg, color: couleur.text }}>
+                            {LIBELLES_STATUT[t.statut] || t.statut}
+                          </span>
+                          {Ic("chevronRight", "w-4 h-4 text-[#5A6070]")}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
-            {tickets.length === 0 ? (
-              <p className="text-sm text-[#5A6070] py-8 text-center">Aucun ticket pour ce filtre.</p>
-            ) : (
-              <div className="space-y-2">
-                {tickets.map((t) => {
-                  const couleur = couleurStatut(t.statut);
-                  return (
-                    <button
-                      key={t.id}
-                      onClick={() => router.push(`/support/${t.id}`)}
-                      className="w-full text-left border border-[#232733] rounded-md p-4 hover:border-[#3A4050] transition flex items-center justify-between gap-4"
-                    >
-                      <div className="min-w-0 flex items-center gap-3">
-                        <span className="w-8 h-8 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] text-xs font-semibold flex items-center justify-center shrink-0">
-                          {t.client_first_name[0]}{t.client_last_name[0]}
-                        </span>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium text-[#E8E6DE] truncate">{t.sujet}</p>
-                          <p className="text-xs text-[#7C8494] mt-0.5 truncate">{t.client_first_name} {t.client_last_name} · {formaterDate(t.cree_le)}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-xs font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: couleur.bg, color: couleur.text }}>
-                          {LIBELLES_STATUT[t.statut] || t.statut}
-                        </span>
-                        {Ic("chevronRight", "w-4 h-4 text-[#5A6070]")}
-                      </div>
-                    </button>
-                  );
-                })}
+            <div className="space-y-4">
+              <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
+                <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Accès rapides</p>
+                <div className="space-y-1">
+                  <AccesRapideItem label="Nouvelle demande" onClick={() => router.push("/support/nouveau-ticket")} />
+                  <AccesRapideItem label="Rechercher un client" onClick={() => router.push("/support/clients")} />
+                  <AccesRapideItem label="Modèles de réponses" onClick={() => router.push("/support/modeles")} />
+                  <AccesRapideItem label="Base de connaissances" onClick={() => router.push("/support/faq")} />
+                </div>
               </div>
-            )}
+
+              <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
+                <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Activité récente</p>
+                {activiteRecente.length === 0 ? (
+                  <p className="text-xs text-[#5A6070] text-center py-4">Aucune activité pour le moment</p>
+                ) : (
+                  <div className="space-y-3">
+                    {activiteRecente.map((t) => (
+                      <button key={t.id} onClick={() => router.push(`/support/${t.id}`)} className="w-full text-left flex items-start gap-2 hover:opacity-80 transition">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#C9A227] mt-1.5 shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-xs text-[#B8BAC4] truncate">
+                            {t.statut === "resolu" ? "Résolu : " : t.statut === "nouveau" ? "Nouveau : " : "Mis à jour : "}{t.sujet}
+                          </p>
+                          <p className="text-[10px] text-[#5A6070]">{formaterDate(t.mis_a_jour_le)}</p>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -342,11 +394,20 @@ export default function PageServiceClient() {
   );
 }
 
-function CarteKpi({ label, valeur, couleur }: { label: string; valeur: number; couleur: string }) {
+function CarteKpi({ label, valeur, couleur, texte }: { label: string; valeur: number | string; couleur: string; texte?: boolean }) {
   return (
     <div className="bg-[#12151C] border border-[#232733] rounded-lg px-4 py-4">
       <p className="text-xs text-[#7C8494] mb-1">{label}</p>
       <p className="text-2xl font-mono font-semibold" style={{ color: couleur }}>{valeur}</p>
     </div>
+  );
+}
+
+function AccesRapideItem({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="w-full flex items-center justify-between px-2 py-2 rounded-md hover:bg-[#171B24] transition text-left">
+      <span className="text-sm text-[#B8BAC4]">{label}</span>
+      <span className="text-[#5A6070]">›</span>
+    </button>
   );
 }

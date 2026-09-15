@@ -1445,3 +1445,17 @@ export async function definirCanalTicket(token: string, ticketId: string, canal:
   }
   return donnees as Ticket;
 }
+
+
+export async function creerTicketSupport(token: string, clientId: string, sujet: string, description: string, canal: string, categorie?: string) {
+  const reponse = await fetch(`${API_URL}/support/tickets`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ client_id: clientId, sujet, description, canal, categorie: categorie || undefined }),
+  });
+  const donnees = await reponse.json();
+  if (!reponse.ok) {
+    throw new Error(donnees.detail || "Erreur lors de la création du ticket");
+  }
+  return donnees as Ticket;
+}

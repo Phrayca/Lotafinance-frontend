@@ -140,22 +140,26 @@ export default function PageClientsSupport() {
 
         <nav className="flex-1 space-y-1">
           {LIENS_NAV.map((lien, i) => (
-            <button
-              key={lien.href}
-              onClick={() => router.push(lien.href)}
-              title={sidebarReduite ? lien.label : undefined}
-              className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
-              }`}
-            >
-              <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
-                {(() => {
-                  const IconeRiche = ICONES_RICHES[lien.icone];
-                  return IconeRiche ? <IconeRiche size={16} /> : Ic(lien.icone, "w-4 h-4");
-                })()}
-              </IconCircle>
-              {!sidebarReduite && <span className="flex-1 text-left">{lien.label}</span>}
-            </button>
+            <div key={lien.href}>
+              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1">Gestion</p>}
+              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
+              {!sidebarReduite && i === 3 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
+              <button
+                onClick={() => router.push(lien.href)}
+                title={sidebarReduite ? lien.label : undefined}
+                className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
+                  lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                }`}
+              >
+                <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
+                  {(() => {
+                    const IconeRiche = ICONES_RICHES[lien.icone];
+                    return IconeRiche ? <IconeRiche size={16} /> : Ic(lien.icone, "w-4 h-4");
+                  })()}
+                </IconCircle>
+                {!sidebarReduite && <span className="flex-1 text-left">{lien.label}</span>}
+              </button>
+            </div>
           ))}
         </nav>
 
