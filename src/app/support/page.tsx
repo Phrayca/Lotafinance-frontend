@@ -28,6 +28,13 @@ const LIBELLES_STATUT: Record<string, string> = {
   resolu: "Résolu",
 };
 
+const LIBELLES_PRIORITE: Record<string, string> = { basse: "Basse", moyenne: "Moyenne", haute: "Haute" };
+function couleurPriorite(priorite: string): { bg: string; text: string } {
+  if (priorite === "haute") return { bg: "#2A1414", text: "#F0A0A0" };
+  if (priorite === "basse") return { bg: "#0F2420", text: "#3DDC97" };
+  return { bg: "#2A2312", text: "#C9A227" };
+}
+
 function couleurStatut(statut: string): { bg: string; text: string } {
   if (statut === "resolu") return { bg: "#0F2420", text: "#3DDC97" };
   if (statut === "en_cours") return { bg: "#1B1706", text: "#C9A227" };
@@ -176,6 +183,22 @@ export default function PageServiceClient() {
     dureeMoyenneHeures == null ? "—" : dureeMoyenneHeures < 24 ? `${dureeMoyenneHeures.toFixed(1)} h` : `${(dureeMoyenneHeures / 24).toFixed(1)} j`;
 
   const activiteRecente = [...tickets].sort((a, b) => b.mis_a_jour_le.localeCompare(a.mis_a_jour_le)).slice(0, 6);
+
+  const donutCounts = [
+    { label: "Nouveaux", value: compteurs.nouveau, color: "#5B8DEF" },
+    { label: "En cours", value: compteurs.en_cours, color: "#C9A227" },
+    { label: "En attente", value: compteurs.en_attente, color: "#C9A6F0" },
+    { label: "Résolus", value: compteurs.resolu, color: "#3DDC97" },
+  ].filter((c) => c.value > 0);
+
+  const LIBELLES_CANAL: Record<string, string> = { app: "Application", telephone: "Téléphone", whatsapp: "WhatsApp", email: "Email", chat: "Chat" };
+  const ICONES_CANAL: Record<string, string> = { app: "📱", telephone: "📞", whatsapp: "💬", email: "📧", chat: "🗨️" };
+  const canaux = ["telephone", "whatsapp", "email", "chat"].map((c) => ({
+    canal: c,
+    libelle: LIBELLES_CANAL[c],
+    icone: ICONES_CANAL[c],
+    compte: tickets.filter((t) => (t.canal || "app") === c).length,
+  })).filter((c) => c.compte > 0);
 
   // Tickets où le client attend une réponse : nouveaux sans réponse, ou dernier message venant du client
   const ticketsNecessitantReponse = tickets.filter((t) => {
@@ -355,38 +378,89 @@ export default function PageServiceClient() {
               {tickets.length === 0 ? (
                 <p className="text-sm text-[#5A6070] py-8 text-center">Aucun ticket pour ce filtre.</p>
               ) : (
-                <div className="space-y-2">
-                  {tickets.map((t) => {
-                    const couleur = couleurStatut(t.statut);
-                    return (
-                      <button
-                        key={t.id}
-                        onClick={() => router.push(`/support/${t.id}`)}
-                        className="w-full text-left border border-[#232733] rounded-md p-4 hover:border-[#3A4050] transition flex items-center justify-between gap-4"
-                      >
-                        <div className="min-w-0 flex items-center gap-3">
-                          <span className="w-8 h-8 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] text-xs font-semibold flex items-center justify-center shrink-0">
-                            {t.client_first_name[0]}{t.client_last_name[0]}
-                          </span>
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium text-[#E8E6DE] truncate">{t.sujet}</p>
-                            <p className="text-xs text-[#7C8494] mt-0.5 truncate">{t.client_first_name} {t.client_last_name} · {formaterDate(t.cree_le)}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-xs font-medium px-2.5 py-1 rounded-full" style={{ backgroundColor: couleur.bg, color: couleur.text }}>
-                            {LIBELLES_STATUT[t.statut] || t.statut}
-                          </span>
-                          {Ic("chevronRight", "w-4 h-4 text-[#5A6070]")}
-                        </div>
-                      </button>
-                    );
-                  })}
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm border-collapse min-w-[560px]">
+                    <thead>
+                      <tr className="text-left text-[10px] uppercase tracking-wide text-[#7C8494] border-b border-[#232733]">
+                        <th className="pb-2 font-medium pr-3">ID</th>
+                        <th className="pb-2 font-medium pr-3">Client</th>
+                        <th className="pb-2 font-medium pr-3">Sujet</th>
+                        <th className="pb-2 font-medium pr-3">Priorité</th>
+                        <th className="pb-2 font-medium pr-3">Agent</th>
+                        <th className="pb-2 font-medium pr-3">Statut</th>
+                        <th className="pb-2 font-medium">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tickets.map((t) => {
+                        const couleur = couleurStatut(t.statut);
+                        const couleurPrio = couleurPriorite(t.priorite);
+                        return (
+                          <tr
+                            key={t.id}
+                            onClick={() => router.push(`/support/${t.id}`)}
+                            className="border-b border-[#1B1F29] last:border-0 cursor-pointer hover:bg-[#171B24] transition"
+                          >
+                            <td className="py-3 pr-3 text-[#5A6070] font-mono text-xs whitespace-nowrap">#{t.id.slice(0, 6)}</td>
+                            <td className="py-3 pr-3">
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className="w-7 h-7 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] text-[10px] font-semibold flex items-center justify-center shrink-0">
+                                  {t.client_first_name[0]}{t.client_last_name[0]}
+                                </span>
+                                <span className="text-[#E8E6DE] truncate">{t.client_first_name} {t.client_last_name}</span>
+                              </div>
+                            </td>
+                            <td className="py-3 pr-3 text-[#B8BAC4] truncate max-w-[160px]">{t.sujet}</td>
+                            <td className="py-3 pr-3">
+                              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap" style={{ backgroundColor: couleurPrio.bg, color: couleurPrio.text }}>
+                                {LIBELLES_PRIORITE[t.priorite] || t.priorite}
+                              </span>
+                            </td>
+                            <td className="py-3 pr-3 text-[#7C8494] text-xs whitespace-nowrap">{t.agent_email ? t.agent_email.split("@")[0] : "—"}</td>
+                            <td className="py-3 pr-3">
+                              <span className="text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: couleur.bg, color: couleur.text }}>
+                                {LIBELLES_STATUT[t.statut] || t.statut}
+                              </span>
+                            </td>
+                            <td className="py-3 text-[#5A6070] text-xs whitespace-nowrap">{formaterDate(t.cree_le)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>
 
             <div className="space-y-4">
+              <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
+                <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-4">Tickets par statut</p>
+                {donutCounts.length > 0 ? (
+                  <DonutMini counts={donutCounts} />
+                ) : (
+                  <p className="text-xs text-[#5A6070] text-center py-4">Aucun ticket</p>
+                )}
+              </div>
+
+              {canaux.length > 0 && (
+                <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
+                  <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Canaux d&apos;accès</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {canaux.map((c) => (
+                      <button
+                        key={c.canal}
+                        onClick={() => router.push("/support/canaux")}
+                        className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-2.5 text-center hover:border-[#3A4050] transition"
+                      >
+                        <p className="text-base">{c.icone}</p>
+                        <p className="text-sm font-mono font-semibold text-[#E8E6DE]">{c.compte}</p>
+                        <p className="text-[9px] text-[#7C8494]">{c.libelle}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
                 <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Accès rapides</p>
                 <div className="space-y-1">
@@ -457,5 +531,50 @@ function AccesRapideItem({ label, onClick }: { label: string; onClick: () => voi
       <span className="text-sm text-[#B8BAC4]">{label}</span>
       <span className="text-[#5A6070]">›</span>
     </button>
+  );
+}
+
+function DonutMini({ counts }: { counts: { label: string; value: number; color: string }[] }) {
+  const total = counts.reduce((s, c) => s + c.value, 0);
+  const rayon = 40;
+  const circonference = 2 * Math.PI * rayon;
+  let cumule = 0;
+
+  return (
+    <div className="flex flex-col items-center gap-3">
+      <div className="relative w-28 h-28">
+        <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
+          <circle cx="50" cy="50" r={rayon} fill="none" stroke="#1B2030" strokeWidth="12" />
+          {total > 0 &&
+            counts.map((c) => {
+              const frac = c.value / total;
+              const dash = frac * circonference;
+              const el = (
+                <circle
+                  key={c.label}
+                  cx="50" cy="50" r={rayon} fill="none" stroke={c.color} strokeWidth="12"
+                  strokeDasharray={`${dash} ${circonference - dash}`}
+                  strokeDashoffset={-cumule}
+                />
+              );
+              cumule += dash;
+              return el;
+            })}
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-xl font-mono font-semibold text-[#E8E6DE]">{total}</span>
+          <span className="text-[9px] text-[#7C8494]">Total</span>
+        </div>
+      </div>
+      <div className="w-full space-y-1">
+        {counts.map((c) => (
+          <div key={c.label} className="flex items-center gap-2 text-[11px]">
+            <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: c.color }} />
+            <span className="text-[#B8BAC4] flex-1">{c.label}</span>
+            <span className="text-[#7C8494] font-mono">{c.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
