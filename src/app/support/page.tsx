@@ -262,9 +262,9 @@ export default function PageServiceClient() {
             </div>
             <div className="flex items-center gap-3 shrink-0">
             <button
-              title="Assistance interne (bientôt disponible)"
-              disabled
-              className="text-[#5A6070] p-2 cursor-not-allowed"
+              onClick={() => router.push("/support/faq")}
+              title="Base de connaissances"
+              className="text-[#7C8494] hover:text-[#E8E6DE] transition p-2"
             >
               {Ic("headset", "w-5 h-5")}
             </button>
