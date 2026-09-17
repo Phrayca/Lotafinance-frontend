@@ -67,6 +67,8 @@ const ICONES = {
   star: "M12 2l3 6.5 7 .8-5.2 4.8 1.4 7-6.2-3.6-6.2 3.6 1.4-7L2 9.3l7-.8Z",
   channel: "M4 6h16v12H4V6Z M4 6l8 7 8-7",
   document: "M6 3h8l4 4v14H6V3Z M14 3v4h4 M9 12h6 M9 16h6",
+  reports: "M6 3h8l4 4v14H6V3Z M14 3v4h4 M9 12h6 M9 16h6",
+  bell: "M6 10a6 6 0 1 1 12 0c0 4 1.5 5 1.5 5h-15S6 14 6 10Z M10 19a2 2 0 0 0 4 0",
   user: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z M4 20c1.5-4 5-6 8-6s6.5 2 8 6",
   chevronLeft: "M15 5l-7 7 7 7",
   chevronRight: "M9 5l7 7-7 7",
@@ -80,15 +82,17 @@ const ICONES_RICHES: Record<string, React.ComponentType<{ className?: string; si
   document: DocumentIcon,
   user: ProfileIcon,
 };
-const COULEURS_NAV: CouleurLotafinance[] = ["gold", "green", "blue", "purple", "orange", "red"];
+const COULEURS_NAV: CouleurLotafinance[] = ["gold", "green", "blue", "purple", "orange", "gold", "blue", "orange", "red"];
 
 const LIENS_NAV = [
   { href: "/support", label: "Tableau de bord", icone: "home" as const },
   { href: "/support/clients", label: "Clients", icone: "users" as const },
   { href: "/support/statistiques", label: "Statistiques", icone: "chart" as const },
   { href: "/support/satisfaction", label: "Satisfaction client", icone: "star" as const },
+  { href: "/support/rapports", label: "Rapports", icone: "reports" as const },
   { href: "/support/modeles", label: "Modèles de réponses", icone: "document" as const },
   { href: "/support/canaux", label: "Canaux d'accès", icone: "channel" as const },
+  { href: "/support/notifications", label: "Notifications", icone: "bell" as const },
   { href: "/support/faq", label: "FAQ & Réponses", icone: "faq" as const },
   { href: "/support/profil", label: "Mon profil", icone: "user" as const },
 ];
@@ -266,7 +270,7 @@ export default function PageDetailTicketSupport() {
             <div key={lien.href}>
               {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1">Gestion</p>}
               {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
-              {!sidebarReduite && i === 4 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
+              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
               <button
                 onClick={() => router.push(lien.href)}
                 title={sidebarReduite ? lien.label : undefined}

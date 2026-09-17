@@ -11,6 +11,11 @@ const FOND_TEXTURE_STYLE: React.CSSProperties = {
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
 
+function formaterDate(iso?: string | null) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
+}
+
 function Icon({ path, className }: { path: string; className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className} width="20" height="20">
@@ -24,6 +29,8 @@ const ICONES = {
   users: "M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z M2.5 20a5.5 5.5 0 0 1 11 0 M16 11a3.5 3.5 0 1 0 0-7 M21.5 20a5.5 5.5 0 0 0-5-5.48",
   chart: "M4 20V10 M10 20V4 M16 20v-7 M22 20H2",
   document: "M6 3h8l4 4v14H6V3Z M14 3v4h4 M9 12h6 M9 16h6",
+  reports: "M6 3h8l4 4v14H6V3Z M14 3v4h4 M9 12h6 M9 16h6",
+  bell: "M6 10a6 6 0 1 1 12 0c0 4 1.5 5 1.5 5h-15S6 14 6 10Z M10 19a2 2 0 0 0 4 0",
   faq: "M9.1 9a3 3 0 1 1 4.9 2.3c-.9.7-1.5 1.3-1.5 2.7 M12 17h.01",
   star: "M12 2l3 6.5 7 .8-5.2 4.8 1.4 7-6.2-3.6-6.2 3.6 1.4-7L2 9.3l7-.8Z",
   channel: "M4 6h16v12H4V6Z M4 6l8 7 8-7",
@@ -42,74 +49,22 @@ const ICONES_RICHES: Record<string, React.ComponentType<{ className?: string; si
   document: DocumentIcon,
   user: ProfileIcon,
 };
-const COULEURS_NAV: CouleurLotafinance[] = ["gold", "green", "blue", "purple", "orange", "red"];
+const COULEURS_NAV: CouleurLotafinance[] = ["gold", "green", "blue", "purple", "orange", "gold", "blue", "orange", "red"];
 
 const LIENS_NAV = [
   { href: "/support", label: "Tableau de bord", icone: "home" as const },
   { href: "/support/clients", label: "Clients", icone: "users" as const },
-  { href: "/support/statistiques", label: "Statistiques", icone: "chart" as const, actif: true },
-  { href: "/support/satisfaction", label: "Satisfaction client", icone: "star" as const },
+  { href: "/support/statistiques", label: "Statistiques", icone: "chart" as const },
+  { href: "/support/satisfaction", label: "Satisfaction client", icone: "star" as const, actif: true },
+  { href: "/support/rapports", label: "Rapports", icone: "reports" as const },
   { href: "/support/modeles", label: "Modèles de réponses", icone: "document" as const },
   { href: "/support/canaux", label: "Canaux d'accès", icone: "channel" as const },
+  { href: "/support/notifications", label: "Notifications", icone: "bell" as const },
   { href: "/support/faq", label: "FAQ & Réponses", icone: "faq" as const },
   { href: "/support/profil", label: "Mon profil", icone: "user" as const },
 ];
 
-function DonutStatut({ counts }: { counts: { label: string; value: number; color: string }[] }) {
-  const total = counts.reduce((s, c) => s + c.value, 0);
-  const rayon = 45;
-  const circonference = 2 * Math.PI * rayon;
-  let cumule = 0;
-
-  return (
-    <div className="flex items-center gap-6 flex-wrap">
-      <div className="relative w-36 h-36 shrink-0">
-        <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-          <circle cx="60" cy="60" r={rayon} fill="none" stroke="#1B2030" strokeWidth="14" />
-          {total > 0 &&
-            counts.map((c) => {
-              const frac = c.value / total;
-              const dash = frac * circonference;
-              const el = (
-                <circle
-                  key={c.label}
-                  cx="60" cy="60" r={rayon} fill="none" stroke={c.color} strokeWidth="14"
-                  strokeDasharray={`${dash} ${circonference - dash}`}
-                  strokeDashoffset={-cumule}
-                />
-              );
-              cumule += dash;
-              return el;
-            })}
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-mono font-semibold text-[#E8E6DE]">{total}</span>
-          <span className="text-[10px] text-[#7C8494]">Total</span>
-        </div>
-      </div>
-      <div className="space-y-1.5">
-        {counts.map((c) => (
-          <div key={c.label} className="flex items-center gap-2 text-xs">
-            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: c.color }} />
-            <span className="text-[#B8BAC4]">{c.label}</span>
-            <span className="text-[#7C8494] font-mono">{c.value} ({total > 0 ? Math.round((c.value / total) * 100) : 0}%)</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function CarteKpi({ label, valeur, couleur }: { label: string; valeur: string; couleur?: string }) {
-  return (
-    <div className="bg-[#12151C] border border-[#232733] rounded-lg px-4 py-4">
-      <p className="text-xs text-[#7C8494] mb-1">{label}</p>
-      <p className="text-2xl font-mono font-semibold" style={{ color: couleur || "#E8E6DE" }}>{valeur}</p>
-    </div>
-  );
-}
-
-export default function PageStatistiquesSupport() {
+export default function PageSatisfactionClient() {
   const router = useRouter();
   const [sidebarReduite, setSidebarReduite] = useState(false);
   const [autorise, setAutorise] = useState(false);
@@ -164,30 +119,9 @@ export default function PageStatistiquesSupport() {
     );
   }
 
-  const parStatut = {
-    nouveau: tickets.filter((t) => t.statut === "nouveau").length,
-    en_cours: tickets.filter((t) => t.statut === "en_cours").length,
-    en_attente: tickets.filter((t) => t.statut === "en_attente").length,
-    resolu: tickets.filter((t) => t.statut === "resolu").length,
-  };
-  const donutCounts = [
-    { label: "Nouveaux", value: parStatut.nouveau, color: "#5B8DEF" },
-    { label: "En cours", value: parStatut.en_cours, color: "#C9A227" },
-    { label: "En attente", value: parStatut.en_attente, color: "#C9A6F0" },
-    { label: "Résolus", value: parStatut.resolu, color: "#3DDC97" },
-  ].filter((c) => c.value > 0);
-
-  const resolus = tickets.filter((t) => t.resolu_le);
-  const dureesEnHeures = resolus.map((t) => (new Date(t.resolu_le!).getTime() - new Date(t.cree_le).getTime()) / (1000 * 60 * 60));
-  const dureeMoyenneHeures = dureesEnHeures.length > 0 ? dureesEnHeures.reduce((s, d) => s + d, 0) / dureesEnHeures.length : null;
-  const libelleDuree =
-    dureeMoyenneHeures == null
-      ? "—"
-      : dureeMoyenneHeures < 24
-      ? `${dureeMoyenneHeures.toFixed(1)} h`
-      : `${(dureeMoyenneHeures / 24).toFixed(1)} j`;
-
-  const tauxResolution = tickets.length > 0 ? Math.round((parStatut.resolu / tickets.length) * 100) : 0;
+  const notes = tickets.filter((t) => t.satisfaction_note != null);
+  const moyenne = notes.length > 0 ? notes.reduce((s, t) => s + (t.satisfaction_note || 0), 0) / notes.length : null;
+  const repartition = [5, 4, 3, 2, 1].map((n) => ({ note: n, compte: notes.filter((t) => t.satisfaction_note === n).length }));
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
@@ -207,7 +141,7 @@ export default function PageStatistiquesSupport() {
             <div key={lien.href}>
               {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1">Gestion</p>}
               {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
-              {!sidebarReduite && i === 4 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
+              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
               <button
                 onClick={() => router.push(lien.href)}
                 title={sidebarReduite ? lien.label : undefined}
@@ -247,38 +181,53 @@ export default function PageStatistiquesSupport() {
       </aside>
 
       <div className="flex-1 px-4 sm:px-8 py-6 overflow-y-auto">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE] mb-1">Statistiques</h1>
-          <p className="text-[#7C8494] text-sm mb-6">Vue d&apos;ensemble de l&apos;activité Service Client</p>
+        <div className="max-w-2xl mx-auto">
+          <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE] mb-1">Satisfaction client</h1>
+          <p className="text-[#7C8494] text-sm mb-6">Avis laissés par les clients sur leurs tickets résolus</p>
 
           {erreur && (
             <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <CarteKpi label="Total tickets" valeur={String(tickets.length)} />
-            <CarteKpi label="Taux de résolution" valeur={`${tauxResolution}%`} couleur="#3DDC97" />
-            <CarteKpi label="Temps moyen de résolution" valeur={libelleDuree} couleur="#C9A227" />
+          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4 text-center">
+            <p className="text-4xl font-mono font-semibold text-[#F4C95D]">{moyenne != null ? moyenne.toFixed(1) : "—"}<span className="text-lg text-[#5A6070]">/5</span></p>
+            <p className="text-xl mt-1">{moyenne != null ? "⭐".repeat(Math.round(moyenne)) + "☆".repeat(5 - Math.round(moyenne)) : ""}</p>
+            <p className="text-xs text-[#7C8494] mt-2">Basé sur {notes.length} avis</p>
+          </div>
+
+          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
+            <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Répartition des notes</p>
+            <div className="space-y-2">
+              {repartition.map((r) => (
+                <div key={r.note} className="flex items-center gap-3">
+                  <span className="text-xs text-[#B8BAC4] w-10 shrink-0">{r.note} ⭐</span>
+                  <div className="flex-1 h-2 bg-[#0B0E14] rounded-full overflow-hidden">
+                    <div className="h-full bg-[#F4C95D]" style={{ width: `${notes.length > 0 ? (r.compte / notes.length) * 100 : 0}%` }} />
+                  </div>
+                  <span className="text-xs text-[#7C8494] w-6 text-right shrink-0">{r.compte}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
           <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
-            <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-4">Tickets par statut</p>
-            {donutCounts.length > 0 ? (
-              <DonutStatut counts={donutCounts} />
+            <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Avis récents</p>
+            {notes.length === 0 ? (
+              <p className="text-sm text-[#5A6070] py-6 text-center">Aucun avis pour le moment.</p>
             ) : (
-              <p className="text-sm text-[#5A6070] py-8 text-center">Aucun ticket pour le moment.</p>
+              <div className="space-y-3">
+                {[...notes].sort((a, b) => b.cree_le.localeCompare(a.cree_le)).slice(0, 10).map((t) => (
+                  <button key={t.id} onClick={() => router.push(`/support/${t.id}`)} className="w-full text-left border border-[#232733] rounded-md p-3 hover:border-[#3A4050] transition">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm text-[#E8E6DE] truncate">{t.sujet}</p>
+                      <span className="text-xs shrink-0">{"⭐".repeat(t.satisfaction_note!)}</span>
+                    </div>
+                    {t.satisfaction_commentaire && <p className="text-xs text-[#7C8494] italic mt-1">« {t.satisfaction_commentaire} »</p>}
+                    <p className="text-[10px] text-[#5A6070] mt-1">{formaterDate(t.cree_le)}</p>
+                  </button>
+                ))}
+              </div>
             )}
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 mt-4">
-            <button onClick={() => router.push("/support/satisfaction")} className="bg-[#12151C] border border-[#232733] rounded-lg p-4 text-left hover:border-[#3A4050] transition">
-              <p className="text-sm text-[#E8E6DE]">⭐ Voir la satisfaction client</p>
-              <p className="text-xs text-[#5A6070] mt-1">Détail des avis et notes des clients</p>
-            </button>
-            <button onClick={() => router.push("/support/canaux")} className="bg-[#12151C] border border-[#232733] rounded-lg p-4 text-left hover:border-[#3A4050] transition">
-              <p className="text-sm text-[#E8E6DE]">📡 Voir les canaux d&apos;accès</p>
-              <p className="text-xs text-[#5A6070] mt-1">Répartition des tickets par canal</p>
-            </button>
           </div>
         </div>
       </div>
