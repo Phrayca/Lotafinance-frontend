@@ -1,30 +1,66 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap');
 @import "tailwindcss";
 
+/* Palette Lotabot adaptée à Lotafinance (mode sombre uniquement pour l'instant) */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #10151c;
+  --foreground: #eef1f4;
+
+  --color-bg: #10151c;
+  --color-frame: #0b0f14;
+  --color-surface: #1a212b;
+  --color-surface2: #212a35;
+  --color-surface3: #28323e;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-ink: #eef1f4;
+  --color-dim: #8e99a8;
+  --color-dimmer: #66707d;
+  --color-gold: #c99a4b;
+  --color-goldbright: #e4b565;
+  --color-green: #3fa873;
+  --color-greenbg: rgba(63, 168, 115, 0.12);
+  --color-red: #c0563b;
+  --color-redbg: rgba(192, 86, 59, 0.12);
 }
 
+/* Enregistre les couleurs et rayons Lotabot comme classes Tailwind utilisables
+   (bg-surface, text-dim, border-border, rounded-lg2, rounded-md2...) */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-inter);
+  --font-mono: ui-monospace, monospace;
+  --font-heading: var(--font-sora);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-bg: var(--color-bg);
+  --color-frame: var(--color-frame);
+  --color-surface: var(--color-surface);
+  --color-surface2: var(--color-surface2);
+  --color-surface3: var(--color-surface3);
+  --color-border: var(--color-border);
+  --color-ink: var(--color-ink);
+  --color-dim: var(--color-dim);
+  --color-dimmer: var(--color-dimmer);
+  --color-gold: var(--color-gold);
+  --color-goldbright: var(--color-goldbright);
+  --color-green: var(--color-green);
+  --color-greenbg: var(--color-greenbg);
+  --color-red: var(--color-red);
+  --color-redbg: var(--color-redbg);
+
+  --radius-lg2: 22px;
+  --radius-md2: 14px;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
 }
+
+.heading-font {
+  font-family: var(--font-sora), system-ui, sans-serif;
+}
+
 /* Style commun à tous les champs de formulaire (inputs, select) */
 .champ {
   width: 100%;
@@ -36,4 +72,16 @@ body {
 }
 .champ:focus {
   box-shadow: 0 0 0 2px #94a3b8;
+}
+
+input[type=text], input[type=tel], input[type=email], input[type=password], input[type=number] {
+  background: var(--color-surface2);
+  border: 1px solid var(--color-border);
+  color: var(--color-ink);
+  border-radius: 14px;
+  font-family: inherit;
+}
+input:focus {
+  outline: 2px solid var(--color-goldbright);
+  outline-offset: 1px;
 }
