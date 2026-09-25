@@ -6,7 +6,7 @@ import { recupererMonProfilUtilisateur, obtenirTousLesTicketsSupport, obtenirFaq
 import { HomeIcon, ProfileIcon, DocumentIcon, IconCircle, CouleurLotafinance } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
@@ -30,14 +30,14 @@ const LIBELLES_STATUT: Record<string, string> = {
 
 const LIBELLES_PRIORITE: Record<string, string> = { basse: "Basse", moyenne: "Moyenne", haute: "Haute" };
 function couleurPriorite(priorite: string): { bg: string; text: string } {
-  if (priorite === "haute") return { bg: "#2A1414", text: "#F0A0A0" };
-  if (priorite === "basse") return { bg: "#0F2420", text: "#3DDC97" };
-  return { bg: "#2A2312", text: "#C9A227" };
+  if (priorite === "haute") return { bg: "rgba(192,86,59,0.12)", text: "#c0563b" };
+  if (priorite === "basse") return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" };
+  return { bg: "#2A2312", text: "#c99a4b" };
 }
 
 function couleurStatut(statut: string): { bg: string; text: string } {
-  if (statut === "resolu") return { bg: "#0F2420", text: "#3DDC97" };
-  if (statut === "en_cours") return { bg: "#1B1706", text: "#C9A227" };
+  if (statut === "resolu") return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" };
+  if (statut === "en_cours") return { bg: "rgba(201,154,75,0.15)", text: "#c99a4b" };
   if (statut === "en_attente") return { bg: "#241B33", text: "#C9A6F0" };
   return { bg: "#12203A", text: "#5B8DEF" };
 }
@@ -164,7 +164,7 @@ export default function PageServiceClient() {
   if (chargement) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
@@ -189,9 +189,9 @@ export default function PageServiceClient() {
 
   const donutCounts = [
     { label: "Nouveaux", value: compteurs.nouveau, color: "#5B8DEF" },
-    { label: "En cours", value: compteurs.en_cours, color: "#C9A227" },
+    { label: "En cours", value: compteurs.en_cours, color: "#c99a4b" },
     { label: "En attente", value: compteurs.en_attente, color: "#C9A6F0" },
-    { label: "Résolus", value: compteurs.resolu, color: "#3DDC97" },
+    { label: "Résolus", value: compteurs.resolu, color: "#3fa873" },
   ].filter((c) => c.value > 0);
 
   const LIBELLES_CANAL: Record<string, string> = { app: "Application", telephone: "Téléphone", whatsapp: "WhatsApp", email: "Email", chat: "Chat" };
@@ -217,13 +217,13 @@ export default function PageServiceClient() {
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Service Client</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Service Client</p>
             </div>
           )}
         </div>
@@ -231,14 +231,14 @@ export default function PageServiceClient() {
         <nav className="flex-1 space-y-1">
           {LIENS_NAV.map((lien, i) => (
             <div key={lien.href}>
-              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1">Gestion</p>}
-              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
-              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
+              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1">Gestion</p>}
+              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
+              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
               <button
                 onClick={() => router.push(lien.href)}
                 title={sidebarReduite ? lien.label : undefined}
                 className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                  lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                  lien.actif ? "bg-[#c99a4b] text-[#10151c] font-medium" : "text-[#8e99a8] hover:bg-[#1a212b]"
                 }`}
               >
                 <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
@@ -256,7 +256,7 @@ export default function PageServiceClient() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -265,7 +265,7 @@ export default function PageServiceClient() {
         <button
           onClick={seDeconnecter}
           title={sidebarReduite ? "Déconnexion" : undefined}
-          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#7C8494] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
+          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#8e99a8] hover:bg-[#1a212b] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
         >
           {Ic("logout")}
           {!sidebarReduite && "Déconnexion"}
@@ -275,30 +275,30 @@ export default function PageServiceClient() {
       <div className="flex-1 px-4 sm:px-8 py-6 overflow-x-auto">
         <div className="max-w-5xl mx-auto">
           <form onSubmit={gererRecherche} className="relative mb-5">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6070]">{Ic("search", "w-4 h-4")}</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#66707d]">{Ic("search", "w-4 h-4")}</span>
             <input
               value={recherche}
               onChange={(e) => setRecherche(e.target.value)}
               placeholder="Rechercher un client, ticket, téléphone..."
-              className="w-full bg-[#12151C] border border-[#232733] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition"
+              className="w-full bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition"
             />
           </form>
 
           <div className="flex items-center justify-between gap-3 flex-wrap mb-6">
             <div>
-              <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Bonjour {utilisateur?.first_name || ""} 👋</h1>
-              <p className="text-[#7C8494] text-sm mt-1">Voici les réclamations à traiter.</p>
+              <h1 className="font-['Sora',sans-serif] text-2xl text-[#eef1f4]">Bonjour {utilisateur?.first_name || ""} 👋</h1>
+              <p className="text-[#8e99a8] text-sm mt-1">Voici les réclamations à traiter.</p>
             </div>
             <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={() => router.push("/support/faq")}
               title="Base de connaissances"
-              className="text-[#7C8494] hover:text-[#E8E6DE] transition p-2"
+              className="text-[#8e99a8] hover:text-[#eef1f4] transition p-2"
             >
               {Ic("headset", "w-5 h-5")}
             </button>
             <div className="relative">
-              <button onClick={() => setNotifOuvertes((v) => !v)} className="relative text-[#7C8494] hover:text-[#E8E6DE] transition p-2" title="Notifications">
+              <button onClick={() => setNotifOuvertes((v) => !v)} className="relative text-[#8e99a8] hover:text-[#eef1f4] transition p-2" title="Notifications">
                 {Ic("bell", "w-5 h-5")}
                 {ticketsNecessitantReponse.length > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#C24545] text-white text-[9px] flex items-center justify-center">
@@ -307,22 +307,22 @@ export default function PageServiceClient() {
                 )}
               </button>
               {notifOuvertes && (
-                <div className="absolute right-0 top-10 w-80 bg-[#12151C] border border-[#232733] rounded-md shadow-xl z-20 overflow-hidden">
-                  <p className="text-xs font-medium text-[#7C8494] uppercase tracking-wide px-4 py-3 border-b border-[#232733]">
+                <div className="absolute right-0 top-10 w-80 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md shadow-xl z-20 overflow-hidden">
+                  <p className="text-xs font-medium text-[#8e99a8] uppercase tracking-wide px-4 py-3 border-b border-[rgba(255,255,255,0.08)]">
                     Tickets en attente d&apos;une réponse
                   </p>
                   <div className="max-h-80 overflow-y-auto">
                     {ticketsNecessitantReponse.length === 0 ? (
-                      <p className="text-xs text-[#5A6070] text-center py-6">Aucune notification pour le moment</p>
+                      <p className="text-xs text-[#66707d] text-center py-6">Aucune notification pour le moment</p>
                     ) : (
                       ticketsNecessitantReponse.map((t) => (
                         <button
                           key={t.id}
                           onClick={() => { setNotifOuvertes(false); router.push(`/support/${t.id}`); }}
-                          className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition border-b border-[#1B1F29] last:border-0"
+                          className="w-full text-left px-4 py-3 hover:bg-[#212a35] transition border-b border-[rgba(255,255,255,0.08)] last:border-0"
                         >
-                          <p className="text-xs text-[#C9A227] font-medium">{t.statut === "nouveau" ? "Nouveau ticket" : "Réponse du client en attente"}</p>
-                          <p className="text-xs text-[#B8BAC4] truncate mt-0.5">{t.sujet}</p>
+                          <p className="text-xs text-[#c99a4b] font-medium">{t.statut === "nouveau" ? "Nouveau ticket" : "Réponse du client en attente"}</p>
+                          <p className="text-xs text-[#8e99a8] truncate mt-0.5">{t.sujet}</p>
                         </button>
                       ))
                     )}
@@ -331,19 +331,19 @@ export default function PageServiceClient() {
               )}
             </div>
             <div className="relative shrink-0">
-              <button onClick={() => setMenuOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[#232733] hover:border-[#3A4050] transition">
-                <span className="w-7 h-7 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center overflow-hidden shrink-0">
+              <button onClick={() => setMenuOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.16)] transition">
+                <span className="w-7 h-7 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] flex items-center justify-center overflow-hidden shrink-0">
                   {Ic("user", "w-3.5 h-3.5")}
                 </span>
-                <span className="text-xs text-[#B8BAC4]">{utilisateur?.first_name || utilisateur?.email?.split("@")[0]}</span>
-                {Ic("chevronDown", "w-3 h-3 text-[#7C8494]")}
+                <span className="text-xs text-[#8e99a8]">{utilisateur?.first_name || utilisateur?.email?.split("@")[0]}</span>
+                {Ic("chevronDown", "w-3 h-3 text-[#8e99a8]")}
               </button>
               {menuOuvert && (
-                <div className="absolute right-0 top-10 w-44 bg-[#12151C] border border-[#232733] rounded-md shadow-xl z-10 overflow-hidden">
-                  <button onClick={() => router.push("/support/profil")} className="w-full text-left px-3 py-2 text-sm text-[#B8BAC4] hover:bg-[#171B24] transition">
+                <div className="absolute right-0 top-10 w-44 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md shadow-xl z-10 overflow-hidden">
+                  <button onClick={() => router.push("/support/profil")} className="w-full text-left px-3 py-2 text-sm text-[#8e99a8] hover:bg-[#212a35] transition">
                     Mon profil
                   </button>
-                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#F0A0A0] hover:bg-[#171B24] transition">
+                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#c0563b] hover:bg-[#212a35] transition">
                     Déconnexion
                   </button>
                 </div>
@@ -353,27 +353,27 @@ export default function PageServiceClient() {
           </div>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
             <CarteKpi label="Nouveaux" valeur={compteurs.nouveau} couleur="#5B8DEF" />
-            <CarteKpi label="En cours" valeur={compteurs.en_cours} couleur="#C9A227" />
+            <CarteKpi label="En cours" valeur={compteurs.en_cours} couleur="#c99a4b" />
             <CarteKpi label="En attente" valeur={compteurs.en_attente} couleur="#C9A6F0" />
-            <CarteKpi label="Résolus" valeur={compteurs.resolu} couleur="#3DDC97" />
+            <CarteKpi label="Résolus" valeur={compteurs.resolu} couleur="#3fa873" />
             <CarteKpi label="Satisfaction" valeur={satisfactionMoyenne != null ? `${satisfactionMoyenne.toFixed(1)}/5` : "—"} couleur="#F4C95D" texte />
             <CarteKpi label="Temps moyen" valeur={libelleDureeMoyenne} couleur="#7DBEF0" texte />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2 bg-[#12151C] border border-[#232733] rounded-lg p-6">
+            <div className="lg:col-span-2 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
               <div className="flex gap-2 mb-5 flex-wrap">
                 {FILTRES.map((f) => (
                   <button
                     key={f.valeur}
                     onClick={() => setFiltre(f.valeur)}
                     className={`text-xs font-medium px-3 py-1.5 rounded-full transition ${
-                      filtre === f.valeur ? "bg-[#C9A227] text-[#0B0E14]" : "bg-[#0B0E14] border border-[#232733] text-[#7C8494] hover:text-[#E8E6DE]"
+                      filtre === f.valeur ? "bg-[#c99a4b] text-[#10151c]" : "bg-[#10151c] border border-[rgba(255,255,255,0.08)] text-[#8e99a8] hover:text-[#eef1f4]"
                     }`}
                   >
                     {f.label}
@@ -382,12 +382,12 @@ export default function PageServiceClient() {
               </div>
 
               {tickets.length === 0 ? (
-                <p className="text-sm text-[#5A6070] py-8 text-center">Aucun ticket pour ce filtre.</p>
+                <p className="text-sm text-[#66707d] py-8 text-center">Aucun ticket pour ce filtre.</p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm border-collapse min-w-[560px]">
                     <thead>
-                      <tr className="text-left text-[10px] uppercase tracking-wide text-[#7C8494] border-b border-[#232733]">
+                      <tr className="text-left text-[10px] uppercase tracking-wide text-[#8e99a8] border-b border-[rgba(255,255,255,0.08)]">
                         <th className="pb-2 font-medium pr-3">ID</th>
                         <th className="pb-2 font-medium pr-3">Client</th>
                         <th className="pb-2 font-medium pr-3">Sujet</th>
@@ -405,30 +405,30 @@ export default function PageServiceClient() {
                           <tr
                             key={t.id}
                             onClick={() => router.push(`/support/${t.id}`)}
-                            className="border-b border-[#1B1F29] last:border-0 cursor-pointer hover:bg-[#171B24] transition"
+                            className="border-b border-[rgba(255,255,255,0.08)] last:border-0 cursor-pointer hover:bg-[#212a35] transition"
                           >
-                            <td className="py-3 pr-3 text-[#5A6070] font-mono text-xs whitespace-nowrap">#{t.id.slice(0, 6)}</td>
+                            <td className="py-3 pr-3 text-[#66707d] font-mono text-xs whitespace-nowrap">#{t.id.slice(0, 6)}</td>
                             <td className="py-3 pr-3">
                               <div className="flex items-center gap-2 min-w-0">
-                                <span className="w-7 h-7 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] text-[10px] font-semibold flex items-center justify-center shrink-0">
+                                <span className="w-7 h-7 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] text-[10px] font-semibold flex items-center justify-center shrink-0">
                                   {t.client_first_name[0]}{t.client_last_name[0]}
                                 </span>
-                                <span className="text-[#E8E6DE] truncate">{t.client_first_name} {t.client_last_name}</span>
+                                <span className="text-[#eef1f4] truncate">{t.client_first_name} {t.client_last_name}</span>
                               </div>
                             </td>
-                            <td className="py-3 pr-3 text-[#B8BAC4] truncate max-w-[160px]">{t.sujet}</td>
+                            <td className="py-3 pr-3 text-[#8e99a8] truncate max-w-[160px]">{t.sujet}</td>
                             <td className="py-3 pr-3">
                               <span className="text-[10px] font-medium px-2 py-0.5 rounded-full whitespace-nowrap" style={{ backgroundColor: couleurPrio.bg, color: couleurPrio.text }}>
                                 {LIBELLES_PRIORITE[t.priorite] || t.priorite}
                               </span>
                             </td>
-                            <td className="py-3 pr-3 text-[#7C8494] text-xs whitespace-nowrap">{t.agent_email ? t.agent_email.split("@")[0] : "—"}</td>
+                            <td className="py-3 pr-3 text-[#8e99a8] text-xs whitespace-nowrap">{t.agent_email ? t.agent_email.split("@")[0] : "—"}</td>
                             <td className="py-3 pr-3">
                               <span className="text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: couleur.bg, color: couleur.text }}>
                                 {LIBELLES_STATUT[t.statut] || t.statut}
                               </span>
                             </td>
-                            <td className="py-3 text-[#5A6070] text-xs whitespace-nowrap">{formaterDate(t.cree_le)}</td>
+                            <td className="py-3 text-[#66707d] text-xs whitespace-nowrap">{formaterDate(t.cree_le)}</td>
                           </tr>
                         );
                       })}
@@ -439,36 +439,36 @@ export default function PageServiceClient() {
             </div>
 
             <div className="space-y-4">
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
-                <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-4">Tickets par statut</p>
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-5">
+                <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-4">Tickets par statut</p>
                 {donutCounts.length > 0 ? (
                   <DonutMini counts={donutCounts} />
                 ) : (
-                  <p className="text-xs text-[#5A6070] text-center py-4">Aucun ticket</p>
+                  <p className="text-xs text-[#66707d] text-center py-4">Aucun ticket</p>
                 )}
               </div>
 
               {canaux.length > 0 && (
-                <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
-                  <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Canaux d&apos;accès</p>
+                <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-5">
+                  <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-3">Canaux d&apos;accès</p>
                   <div className="grid grid-cols-2 gap-2">
                     {canaux.map((c) => (
                       <button
                         key={c.canal}
                         onClick={() => router.push("/support/canaux")}
-                        className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-2.5 text-center hover:border-[#3A4050] transition"
+                        className="bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md p-2.5 text-center hover:border-[rgba(255,255,255,0.16)] transition"
                       >
                         <p className="text-base">{c.icone}</p>
-                        <p className="text-sm font-mono font-semibold text-[#E8E6DE]">{c.compte}</p>
-                        <p className="text-[9px] text-[#7C8494]">{c.libelle}</p>
+                        <p className="text-sm font-mono font-semibold text-[#eef1f4]">{c.compte}</p>
+                        <p className="text-[9px] text-[#8e99a8]">{c.libelle}</p>
                       </button>
                     ))}
                   </div>
                 </div>
               )}
 
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
-                <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Accès rapides</p>
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-5">
+                <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-3">Accès rapides</p>
                 <div className="space-y-1">
                   <AccesRapideItem label="Nouvelle demande" onClick={() => router.push("/support/nouveau-ticket")} />
                   <AccesRapideItem label="Rechercher un client" onClick={() => router.push("/support/clients")} />
@@ -477,20 +477,20 @@ export default function PageServiceClient() {
                 </div>
               </div>
 
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
-                <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Activité récente</p>
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-5">
+                <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-3">Activité récente</p>
                 {activiteRecente.length === 0 ? (
-                  <p className="text-xs text-[#5A6070] text-center py-4">Aucune activité pour le moment</p>
+                  <p className="text-xs text-[#66707d] text-center py-4">Aucune activité pour le moment</p>
                 ) : (
                   <div className="space-y-3">
                     {activiteRecente.map((t) => (
                       <button key={t.id} onClick={() => router.push(`/support/${t.id}`)} className="w-full text-left flex items-start gap-2 hover:opacity-80 transition">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#C9A227] mt-1.5 shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#c99a4b] mt-1.5 shrink-0" />
                         <div className="min-w-0">
-                          <p className="text-xs text-[#B8BAC4] truncate">
+                          <p className="text-xs text-[#8e99a8] truncate">
                             {t.statut === "resolu" ? "Résolu : " : t.statut === "nouveau" ? "Nouveau : " : "Mis à jour : "}{t.sujet}
                           </p>
-                          <p className="text-[10px] text-[#5A6070]">{formaterDate(t.mis_a_jour_le)}</p>
+                          <p className="text-[10px] text-[#66707d]">{formaterDate(t.mis_a_jour_le)}</p>
                         </div>
                       </button>
                     ))}
@@ -499,16 +499,16 @@ export default function PageServiceClient() {
               </div>
 
               {faqItems.filter((f) => f.publiee).length > 0 && (
-                <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
+                <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-5">
                   <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs text-[#7C8494] uppercase tracking-wide">FAQ populaires</p>
-                    <button onClick={() => router.push("/support/faq")} className="text-[10px] text-[#C9A227] hover:text-[#DDB63A] transition">Voir tout</button>
+                    <p className="text-xs text-[#8e99a8] uppercase tracking-wide">FAQ populaires</p>
+                    <button onClick={() => router.push("/support/faq")} className="text-[10px] text-[#c99a4b] hover:text-[#e4b565] transition">Voir tout</button>
                   </div>
                   <div className="space-y-2">
                     {[...faqItems].filter((f) => f.publiee).sort((a, b) => b.vues - a.vues).slice(0, 5).map((f) => (
                       <button key={f.id} onClick={() => router.push("/support/faq")} className="w-full flex items-center justify-between gap-2 text-left hover:opacity-80 transition">
-                        <span className="text-xs text-[#B8BAC4] truncate">{f.question}</span>
-                        <span className="text-[10px] text-[#5A6070] shrink-0">{f.vues} vues</span>
+                        <span className="text-xs text-[#8e99a8] truncate">{f.question}</span>
+                        <span className="text-[10px] text-[#66707d] shrink-0">{f.vues} vues</span>
                       </button>
                     ))}
                   </div>
@@ -524,8 +524,8 @@ export default function PageServiceClient() {
 
 function CarteKpi({ label, valeur, couleur, texte }: { label: string; valeur: number | string; couleur: string; texte?: boolean }) {
   return (
-    <div className="bg-[#12151C] border border-[#232733] rounded-lg px-4 py-4">
-      <p className="text-xs text-[#7C8494] mb-1">{label}</p>
+    <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-4">
+      <p className="text-xs text-[#8e99a8] mb-1">{label}</p>
       <p className="text-2xl font-mono font-semibold" style={{ color: couleur }}>{valeur}</p>
     </div>
   );
@@ -533,9 +533,9 @@ function CarteKpi({ label, valeur, couleur, texte }: { label: string; valeur: nu
 
 function AccesRapideItem({ label, onClick }: { label: string; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="w-full flex items-center justify-between px-2 py-2 rounded-md hover:bg-[#171B24] transition text-left">
-      <span className="text-sm text-[#B8BAC4]">{label}</span>
-      <span className="text-[#5A6070]">›</span>
+    <button onClick={onClick} className="w-full flex items-center justify-between px-2 py-2 rounded-md hover:bg-[#212a35] transition text-left">
+      <span className="text-sm text-[#8e99a8]">{label}</span>
+      <span className="text-[#66707d]">›</span>
     </button>
   );
 }
@@ -550,7 +550,7 @@ function DonutMini({ counts }: { counts: { label: string; value: number; color: 
     <div className="flex flex-col items-center gap-3">
       <div className="relative w-28 h-28">
         <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-          <circle cx="50" cy="50" r={rayon} fill="none" stroke="#1B2030" strokeWidth="12" />
+          <circle cx="50" cy="50" r={rayon} fill="none" stroke="#212a35" strokeWidth="12" />
           {total > 0 &&
             counts.map((c) => {
               const frac = c.value / total;
@@ -568,16 +568,16 @@ function DonutMini({ counts }: { counts: { label: string; value: number; color: 
             })}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-xl font-mono font-semibold text-[#E8E6DE]">{total}</span>
-          <span className="text-[9px] text-[#7C8494]">Total</span>
+          <span className="text-xl font-mono font-semibold text-[#eef1f4]">{total}</span>
+          <span className="text-[9px] text-[#8e99a8]">Total</span>
         </div>
       </div>
       <div className="w-full space-y-1">
         {counts.map((c) => (
           <div key={c.label} className="flex items-center gap-2 text-[11px]">
             <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: c.color }} />
-            <span className="text-[#B8BAC4] flex-1">{c.label}</span>
-            <span className="text-[#7C8494] font-mono">{c.value}</span>
+            <span className="text-[#8e99a8] flex-1">{c.label}</span>
+            <span className="text-[#8e99a8] font-mono">{c.value}</span>
           </div>
         ))}
       </div>

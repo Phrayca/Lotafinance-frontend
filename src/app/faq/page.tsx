@@ -6,7 +6,7 @@ import { obtenirFaqPublique, incrementerVueFaq, FaqItem } from "@/lib/api";
 import { HomeIcon, LoanIcon, LoanRequestIcon, RepaymentIcon, DocumentIcon, ProfileIcon } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
@@ -53,7 +53,7 @@ export default function PageFaqClient() {
   if (chargement) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
@@ -61,24 +61,24 @@ export default function PageFaqClient() {
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen px-4 py-10 pb-28 md:pb-10">
       <div className="max-w-xl mx-auto">
-        <button onClick={() => router.push("/tableau-de-bord")} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] mb-4 transition">
+        <button onClick={() => router.push("/tableau-de-bord")} className="text-sm text-[#8e99a8] hover:text-[#eef1f4] mb-4 transition">
           ← Retour au tableau de bord
         </button>
 
-        <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
-          <h1 className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE] mb-1">Questions fréquentes</h1>
-          <p className="text-[#7C8494] text-sm mb-6">Trouve rapidement une réponse à ta question.</p>
+        <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
+          <h1 className="font-['Sora',sans-serif] text-xl text-[#eef1f4] mb-1">Questions fréquentes</h1>
+          <p className="text-[#8e99a8] text-sm mb-6">Trouve rapidement une réponse à ta question.</p>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
           {items.length === 0 ? (
-            <p className="text-sm text-[#5A6070] py-8 text-center">Aucune question disponible pour le moment.</p>
+            <p className="text-sm text-[#66707d] py-8 text-center">Aucune question disponible pour le moment.</p>
           ) : categories.length > 0 ? (
             categories.map((cat) => (
               <div key={cat} className="mb-5">
-                <p className="text-xs text-[#C9A227] uppercase tracking-wide mb-2">{cat}</p>
+                <p className="text-xs text-[#c99a4b] uppercase tracking-wide mb-2">{cat}</p>
                 <div className="space-y-2">
                   {items.filter((i) => i.categorie === cat).map((item) => (
                     <QuestionItem key={item.id} item={item} ouvert={!!ouverts[item.id]} onClick={() => basculer(item.id)} />
@@ -96,15 +96,15 @@ export default function PageFaqClient() {
         </div>
       </div>
 
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0B0E14]/95 backdrop-blur border-t border-[#1B1F29] flex items-center justify-around py-2 px-1">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#10151c]/95 backdrop-blur border-t border-[rgba(255,255,255,0.08)] flex items-center justify-around py-2 px-1">
         {LIENS_NAV_MOBILE.map((lien) => {
           const Icone = lien.Icone;
           return (
             <button key={lien.href} onClick={() => router.push(lien.href)} className="flex flex-col items-center gap-0.5 flex-1 py-1">
-              <span className="text-[#7C8494]">
+              <span className="text-[#8e99a8]">
                 <Icone size={20} />
               </span>
-              <span className="text-[9px] text-[#7C8494]">{lien.label}</span>
+              <span className="text-[9px] text-[#8e99a8]">{lien.label}</span>
             </button>
           );
         })}
@@ -115,12 +115,12 @@ export default function PageFaqClient() {
 
 function QuestionItem({ item, ouvert, onClick }: { item: FaqItem; ouvert: boolean; onClick: () => void }) {
   return (
-    <div className="border border-[#232733] rounded-md overflow-hidden">
-      <button onClick={onClick} className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition flex items-center justify-between gap-3">
-        <span className="text-sm font-medium text-[#E8E6DE]">{item.question}</span>
-        <span className="text-[#7C8494] text-xs shrink-0">{ouvert ? "▲" : "▼"}</span>
+    <div className="border border-[rgba(255,255,255,0.08)] rounded-md overflow-hidden">
+      <button onClick={onClick} className="w-full text-left px-4 py-3 hover:bg-[#212a35] transition flex items-center justify-between gap-3">
+        <span className="text-sm font-medium text-[#eef1f4]">{item.question}</span>
+        <span className="text-[#8e99a8] text-xs shrink-0">{ouvert ? "▲" : "▼"}</span>
       </button>
-      {ouvert && <p className="px-4 pb-3 text-sm text-[#B8BAC4] whitespace-pre-wrap">{item.reponse}</p>}
+      {ouvert && <p className="px-4 pb-3 text-sm text-[#8e99a8] whitespace-pre-wrap">{item.reponse}</p>}
     </div>
   );
 }

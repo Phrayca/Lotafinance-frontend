@@ -6,7 +6,7 @@ import { recupererMonProfilUtilisateur } from "@/lib/api";
 import { HomeIcon, ClientsIcon, ReportsIcon, DocumentIcon, ProfileIcon, IconCircle, CouleurLotafinance } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
@@ -63,7 +63,7 @@ function Toggle({ actif, onClick }: { actif: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className={`w-11 h-6 rounded-full relative transition shrink-0 ${actif ? "bg-[#C9A227]" : "bg-[#232733]"}`}
+      className={`w-11 h-6 rounded-full relative transition shrink-0 ${actif ? "bg-[#c99a4b]" : "bg-[rgba(255,255,255,0.08)]"}`}
     >
       <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all ${actif ? "left-5.5" : "left-0.5"}`} style={{ left: actif ? "22px" : "2px" }} />
     </button>
@@ -130,20 +130,20 @@ export default function PageNotifications() {
   if (chargement || !autorise) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Service Client</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Service Client</p>
             </div>
           )}
         </div>
@@ -151,14 +151,14 @@ export default function PageNotifications() {
         <nav className="flex-1 space-y-1 overflow-y-auto">
           {LIENS_NAV.map((lien, i) => (
             <div key={lien.href}>
-              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1">Gestion</p>}
-              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
-              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
+              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1">Gestion</p>}
+              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
+              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
               <button
                 onClick={() => router.push(lien.href)}
                 title={sidebarReduite ? lien.label : undefined}
                 className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                  lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                  lien.actif ? "bg-[#c99a4b] text-[#10151c] font-medium" : "text-[#8e99a8] hover:bg-[#1a212b]"
                 }`}
               >
                 <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
@@ -176,7 +176,7 @@ export default function PageNotifications() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -185,7 +185,7 @@ export default function PageNotifications() {
         <button
           onClick={seDeconnecter}
           title={sidebarReduite ? "Déconnexion" : undefined}
-          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#7C8494] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
+          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#8e99a8] hover:bg-[#1a212b] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
         >
           {Ic("logout")}
           {!sidebarReduite && "Déconnexion"}
@@ -194,27 +194,27 @@ export default function PageNotifications() {
 
       <div className="flex-1 px-4 sm:px-8 py-6 overflow-y-auto">
         <div className="max-w-xl mx-auto">
-          <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE] mb-1">Notifications</h1>
-          <p className="text-[#7C8494] text-sm mb-6">Choisis les alertes que tu veux voir dans la cloche du tableau de bord.</p>
+          <h1 className="font-['Sora',sans-serif] text-2xl text-[#eef1f4] mb-1">Notifications</h1>
+          <p className="text-[#8e99a8] text-sm mb-6">Choisis les alertes que tu veux voir dans la cloche du tableau de bord.</p>
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg divide-y divide-[#1B1F29]">
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg divide-y divide-[rgba(255,255,255,0.08)]">
             <div className="flex items-center justify-between px-5 py-4">
               <div>
-                <p className="text-sm text-[#E8E6DE] font-medium">Nouveaux tickets</p>
-                <p className="text-xs text-[#7C8494] mt-0.5">Être alerté quand un client ouvre un nouveau ticket</p>
+                <p className="text-sm text-[#eef1f4] font-medium">Nouveaux tickets</p>
+                <p className="text-xs text-[#8e99a8] mt-0.5">Être alerté quand un client ouvre un nouveau ticket</p>
               </div>
               <Toggle actif={nouveauxTickets} onClick={basculerNouveaux} />
             </div>
             <div className="flex items-center justify-between px-5 py-4">
               <div>
-                <p className="text-sm text-[#E8E6DE] font-medium">Réponses en attente</p>
-                <p className="text-xs text-[#7C8494] mt-0.5">Être alerté quand un client répond et attend une réponse</p>
+                <p className="text-sm text-[#eef1f4] font-medium">Réponses en attente</p>
+                <p className="text-xs text-[#8e99a8] mt-0.5">Être alerté quand un client répond et attend une réponse</p>
               </div>
               <Toggle actif={reponsesClient} onClick={basculerReponses} />
             </div>
           </div>
 
-          <p className="text-[11px] text-[#5A6070] mt-4">Ces préférences sont enregistrées sur cet appareil et s&apos;appliquent à la cloche de notifications du tableau de bord.</p>
+          <p className="text-[11px] text-[#66707d] mt-4">Ces préférences sont enregistrées sur cet appareil et s&apos;appliquent à la cloche de notifications du tableau de bord.</p>
         </div>
       </div>
     </main>

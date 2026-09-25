@@ -37,7 +37,7 @@ import {
 } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
@@ -57,17 +57,17 @@ const LIBELLES_STATUT: Record<string, string> = {
 };
 
 function couleurRisque(risque?: string): { bg: string; text: string } {
-  if (!risque) return { bg: "#1B1F29", text: "#7C8494" };
+  if (!risque) return { bg: "rgba(255,255,255,0.08)", text: "#8e99a8" };
   const r = risque.toLowerCase();
-  if (r.includes("faible")) return { bg: "#0F2420", text: "#3DDC97" };
-  if (r.includes("moyen")) return { bg: "#2A2312", text: "#C9A227" };
-  return { bg: "#2A1414", text: "#F0A0A0" };
+  if (r.includes("faible")) return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" };
+  if (r.includes("moyen")) return { bg: "#2A2312", text: "#c99a4b" };
+  return { bg: "rgba(192,86,59,0.12)", text: "#c0563b" };
 }
 
 function couleurStatut(statut: string): { bg: string; text: string } {
-  if (statut === "approuve") return { bg: "#0F2420", text: "#3DDC97" };
-  if (statut === "refuse") return { bg: "#2A1414", text: "#F0A0A0" };
-  return { bg: "#2A2312", text: "#C9A227" };
+  if (statut === "approuve") return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" };
+  if (statut === "refuse") return { bg: "rgba(192,86,59,0.12)", text: "#c0563b" };
+  return { bg: "#2A2312", text: "#c99a4b" };
 }
 
 function formaterMontant(m?: number | null) {
@@ -155,10 +155,10 @@ const LIENS_NAV = [
 
 function CarteKpi({ icone, label, valeur, sousTexte, accent }: { icone: keyof typeof ICONES; label: string; valeur: string; sousTexte?: string; accent?: string }) {
   return (
-    <div className="bg-[#12151C] border border-[#232733] rounded-lg px-4 py-4">
-      <p className="flex items-center gap-2 text-xs text-[#7C8494] mb-2">{Ic(icone, "w-4 h-4")} {label}</p>
-      <p className="text-lg font-mono font-medium" style={{ color: accent || "#E8E6DE" }}>{valeur}</p>
-      {sousTexte && <p className="text-xs text-[#7C8494] mt-1">{sousTexte}</p>}
+    <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-4">
+      <p className="flex items-center gap-2 text-xs text-[#8e99a8] mb-2">{Ic(icone, "w-4 h-4")} {label}</p>
+      <p className="text-lg font-mono font-medium" style={{ color: accent || "#eef1f4" }}>{valeur}</p>
+      {sousTexte && <p className="text-xs text-[#8e99a8] mt-1">{sousTexte}</p>}
     </div>
   );
 }
@@ -174,23 +174,23 @@ function GraphiquePortefeuille({ data }: { data: StatMois[] }) {
   return (
     <div>
       <svg viewBox={`0 0 ${largeurTotale} 175`} className="w-full" preserveAspectRatio="xMidYMid meet">
-        <line x1="10" y1="150" x2={largeurTotale - 10} y2="150" stroke="#232733" strokeWidth="1" />
+        <line x1="10" y1="150" x2={largeurTotale - 10} y2="150" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
         {data.map((d, i) => {
           const x = 25 + i * espacement;
           const hCapital = (d.capital_prete / maxValeur) * hauteurMax;
           const hEncaisse = (d.montant_encaisse / maxValeur) * hauteurMax;
           return (
             <g key={d.mois + i}>
-              <rect x={x} y={150 - hCapital} width={largeurBarre} height={Math.max(hCapital, 1)} fill="#C9A227" rx="2" />
-              <rect x={x + largeurBarre + 4} y={150 - hEncaisse} width={largeurBarre} height={Math.max(hEncaisse, 1)} fill="#3DDC97" rx="2" />
-              <text x={x + largeurBarre + 2} y="166" textAnchor="middle" fontSize="10" fill="#7C8494">{d.mois}</text>
+              <rect x={x} y={150 - hCapital} width={largeurBarre} height={Math.max(hCapital, 1)} fill="#c99a4b" rx="2" />
+              <rect x={x + largeurBarre + 4} y={150 - hEncaisse} width={largeurBarre} height={Math.max(hEncaisse, 1)} fill="#3fa873" rx="2" />
+              <text x={x + largeurBarre + 2} y="166" textAnchor="middle" fontSize="10" fill="#8e99a8">{d.mois}</text>
             </g>
           );
         })}
       </svg>
       <div className="flex items-center gap-5 mt-2 text-xs">
-        <span className="flex items-center gap-1.5 text-[#B8BAC4]"><span className="w-2.5 h-2.5 rounded-sm bg-[#C9A227]" /> Capital prêté</span>
-        <span className="flex items-center gap-1.5 text-[#B8BAC4]"><span className="w-2.5 h-2.5 rounded-sm bg-[#3DDC97]" /> Montant encaissé</span>
+        <span className="flex items-center gap-1.5 text-[#8e99a8]"><span className="w-2.5 h-2.5 rounded-sm bg-[#c99a4b]" /> Capital prêté</span>
+        <span className="flex items-center gap-1.5 text-[#8e99a8]"><span className="w-2.5 h-2.5 rounded-sm bg-[#3fa873]" /> Montant encaissé</span>
       </div>
     </div>
   );
@@ -206,7 +206,7 @@ function DonutStatut({ counts }: { counts: { label: string; value: number; color
     <div className="flex items-center gap-6 flex-wrap">
       <div className="relative w-32 h-32 shrink-0">
         <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-          <circle cx="60" cy="60" r={rayon} fill="none" stroke="#1B2030" strokeWidth="14" />
+          <circle cx="60" cy="60" r={rayon} fill="none" stroke="#212a35" strokeWidth="14" />
           {total > 0 &&
             counts.map((c) => {
               const frac = c.value / total;
@@ -224,16 +224,16 @@ function DonutStatut({ counts }: { counts: { label: string; value: number; color
             })}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-mono font-semibold text-[#E8E6DE]">{total}</span>
-          <span className="text-[10px] text-[#7C8494]">Total</span>
+          <span className="text-2xl font-mono font-semibold text-[#eef1f4]">{total}</span>
+          <span className="text-[10px] text-[#8e99a8]">Total</span>
         </div>
       </div>
       <div className="space-y-1.5">
         {counts.map((c) => (
           <div key={c.label} className="flex items-center gap-2 text-xs">
             <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: c.color }} />
-            <span className="text-[#B8BAC4]">{c.label}</span>
-            <span className="text-[#7C8494] font-mono">{c.value} ({total > 0 ? Math.round((c.value / total) * 100) : 0}%)</span>
+            <span className="text-[#8e99a8]">{c.label}</span>
+            <span className="text-[#8e99a8] font-mono">{c.value} ({total > 0 ? Math.round((c.value / total) * 100) : 0}%)</span>
           </div>
         ))}
       </div>
@@ -259,14 +259,14 @@ function LigneEvolution({ data }: { data: StatMois[] }) {
     <div>
       <svg viewBox={`0 0 ${w} ${h + 20}`} className="w-full" preserveAspectRatio="xMidYMid meet">
         <polyline points={points("nombre_dossiers_traites")} fill="none" stroke="#5B8DEF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-        <polyline points={points("nombre_approuves")} fill="none" stroke="#3DDC97" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline points={points("nombre_approuves")} fill="none" stroke="#3fa873" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         {data.map((d, i) => (
-          <text key={d.mois} x={pad + i * stepX} y={h + 14} textAnchor="middle" fontSize="9" fill="#7C8494">{d.mois}</text>
+          <text key={d.mois} x={pad + i * stepX} y={h + 14} textAnchor="middle" fontSize="9" fill="#8e99a8">{d.mois}</text>
         ))}
       </svg>
       <div className="flex items-center gap-5 mt-2 text-xs">
-        <span className="flex items-center gap-1.5 text-[#B8BAC4]"><span className="w-2.5 h-0.5 bg-[#5B8DEF]" /> Dossiers traités</span>
-        <span className="flex items-center gap-1.5 text-[#B8BAC4]"><span className="w-2.5 h-0.5 bg-[#3DDC97]" /> Approuvés</span>
+        <span className="flex items-center gap-1.5 text-[#8e99a8]"><span className="w-2.5 h-0.5 bg-[#5B8DEF]" /> Dossiers traités</span>
+        <span className="flex items-center gap-1.5 text-[#8e99a8]"><span className="w-2.5 h-0.5 bg-[#3fa873]" /> Approuvés</span>
       </div>
     </div>
   );
@@ -278,26 +278,26 @@ function JaugeRisque({ faible, moyen, eleve }: { faible: number; moyen: number; 
   const pMoyen = (moyen / total) * 100;
   const dominant =
     eleve >= moyen && eleve >= faible && eleve > 0
-      ? { label: "Élevé", color: "#F0A0A0" }
+      ? { label: "Élevé", color: "#c0563b" }
       : moyen >= faible && moyen > 0
-      ? { label: "Moyen", color: "#C9A227" }
+      ? { label: "Moyen", color: "#c99a4b" }
       : faible > 0
-      ? { label: "Faible", color: "#3DDC97" }
-      : { label: "—", color: "#7C8494" };
-  const gradient = `conic-gradient(#3DDC97 0% ${pFaible}%, #C9A227 ${pFaible}% ${pFaible + pMoyen}%, #F0A0A0 ${pFaible + pMoyen}% 100%)`;
+      ? { label: "Faible", color: "#3fa873" }
+      : { label: "—", color: "#8e99a8" };
+  const gradient = `conic-gradient(#3fa873 0% ${pFaible}%, #c99a4b ${pFaible}% ${pFaible + pMoyen}%, #c0563b ${pFaible + pMoyen}% 100%)`;
 
   return (
     <div className="flex flex-col items-center">
-      <div className="relative w-32 h-32 rounded-full" style={{ background: total > 1 ? gradient : "#1B2030" }}>
-        <div className="absolute inset-2 rounded-full bg-[#12151C] flex flex-col items-center justify-center">
+      <div className="relative w-32 h-32 rounded-full" style={{ background: total > 1 ? gradient : "#212a35" }}>
+        <div className="absolute inset-2 rounded-full bg-[#1a212b] flex flex-col items-center justify-center">
           <span className="text-sm font-semibold" style={{ color: dominant.color }}>{dominant.label}</span>
-          <span className="text-[10px] text-[#7C8494] text-center px-2">Risque global</span>
+          <span className="text-[10px] text-[#8e99a8] text-center px-2">Risque global</span>
         </div>
       </div>
       <div className="flex gap-4 mt-3 text-xs flex-wrap justify-center">
-        <span className="flex items-center gap-1 text-[#B8BAC4]"><span className="w-2 h-2 rounded-full bg-[#3DDC97]" />Faible ({faible})</span>
-        <span className="flex items-center gap-1 text-[#B8BAC4]"><span className="w-2 h-2 rounded-full bg-[#C9A227]" />Moyen ({moyen})</span>
-        <span className="flex items-center gap-1 text-[#B8BAC4]"><span className="w-2 h-2 rounded-full bg-[#F0A0A0]" />Élevé ({eleve})</span>
+        <span className="flex items-center gap-1 text-[#8e99a8]"><span className="w-2 h-2 rounded-full bg-[#3fa873]" />Faible ({faible})</span>
+        <span className="flex items-center gap-1 text-[#8e99a8]"><span className="w-2 h-2 rounded-full bg-[#c99a4b]" />Moyen ({moyen})</span>
+        <span className="flex items-center gap-1 text-[#8e99a8]"><span className="w-2 h-2 rounded-full bg-[#c0563b]" />Élevé ({eleve})</span>
       </div>
     </div>
   );
@@ -406,7 +406,7 @@ export default function PageEspaceAnalyste() {
   if (chargement) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
@@ -449,9 +449,9 @@ export default function PageEspaceAnalyste() {
   });
   const donutCounts = [
     { label: "En attente", value: parStatut.soumis, color: "#5B8DEF" },
-    { label: "Approuvés", value: parStatut.approuve, color: "#3DDC97" },
-    { label: "Refusés", value: parStatut.refuse, color: "#F0A0A0" },
-    { label: "Infos demandées", value: parStatut.infos_demandees, color: "#C9A227" },
+    { label: "Approuvés", value: parStatut.approuve, color: "#3fa873" },
+    { label: "Refusés", value: parStatut.refuse, color: "#c0563b" },
+    { label: "Infos demandées", value: parStatut.infos_demandees, color: "#c99a4b" },
   ].filter((c) => c.value > 0);
 
   // Demandes récentes, enrichies avec le nom du client
@@ -471,13 +471,13 @@ export default function PageEspaceAnalyste() {
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Espace analyste</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Espace analyste</p>
             </div>
           )}
         </div>
@@ -489,7 +489,7 @@ export default function PageEspaceAnalyste() {
               onClick={() => router.push(lien.href)}
               title={sidebarReduite ? lien.label : undefined}
               className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                lien.actif ? "bg-[#c99a4b] text-[#10151c] font-medium" : "text-[#8e99a8] hover:bg-[#1a212b]"
               }`}
             >
                             <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
@@ -502,7 +502,7 @@ export default function PageEspaceAnalyste() {
               {lien.href === "/analyste/messages" && totalNonLus > 0 && (
                 <span
                   className={`${sidebarReduite ? "absolute translate-x-3 -translate-y-3" : ""} w-5 h-5 rounded-full text-[10px] flex items-center justify-center shrink-0 ${
-                    lien.actif ? "bg-[#0B0E14] text-[#C9A227]" : "bg-[#C24545] text-white"
+                    lien.actif ? "bg-[#10151c] text-[#c99a4b]" : "bg-[#C24545] text-white"
                   }`}
                 >
                   {totalNonLus}
@@ -515,7 +515,7 @@ export default function PageEspaceAnalyste() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -525,12 +525,12 @@ export default function PageEspaceAnalyste() {
       <div className="flex-1 px-8 py-6 overflow-x-auto">
         <div className="flex items-center gap-3 mb-6">
           <form onSubmit={gererRecherche} className="flex-1 relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6070]">{Ic("search", "w-4 h-4")}</span>
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#66707d]">{Ic("search", "w-4 h-4")}</span>
             <input
               value={recherche}
               onChange={(e) => setRecherche(e.target.value)}
               placeholder="Rechercher un dossier, client, numéro de téléphone..."
-              className="w-full bg-[#12151C] border border-[#232733] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition"
+              className="w-full bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition"
             />
           </form>
 
@@ -545,7 +545,7 @@ export default function PageEspaceAnalyste() {
                 }
               }}
               title="Notifications"
-              className="relative text-[#7C8494] hover:text-[#E8E6DE] transition p-2"
+              className="relative text-[#8e99a8] hover:text-[#eef1f4] transition p-2"
             >
               <NotificationIcon size={20} />
               {totalAlertes > alertesVuesCompte && (
@@ -553,42 +553,42 @@ export default function PageEspaceAnalyste() {
               )}
             </button>
             {notifOuvertes && (
-              <div className="absolute right-0 top-10 w-80 bg-[#12151C] border border-[#232733] rounded-md shadow-xl z-20 overflow-hidden">
-                <div className="px-4 py-3 border-b border-[#1B1F29] text-sm font-medium text-[#E8E6DE]">Notifications</div>
-                <div className="max-h-96 overflow-y-auto divide-y divide-[#1B1F29]">
+              <div className="absolute right-0 top-10 w-80 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md shadow-xl z-20 overflow-hidden">
+                <div className="px-4 py-3 border-b border-[rgba(255,255,255,0.08)] text-sm font-medium text-[#eef1f4]">Notifications</div>
+                <div className="max-h-96 overflow-y-auto divide-y divide-[rgba(255,255,255,0.08)]">
                   {demandes.length > 0 && (
-                    <button onClick={() => { router.push("/analyste/toutes?statut=soumis"); setNotifOuvertes(false); }} className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
+                    <button onClick={() => { router.push("/analyste/toutes?statut=soumis"); setNotifOuvertes(false); }} className="w-full text-left px-4 py-3 hover:bg-[#212a35] transition flex items-start gap-2">
                       <span className="w-2 h-2 rounded-full bg-[#5B8DEF] mt-1.5 shrink-0" />
-                      <span className="text-xs text-[#B8BAC4]">{demandes.length} dossier{demandes.length > 1 ? "s" : ""} à traiter</span>
+                      <span className="text-xs text-[#8e99a8]">{demandes.length} dossier{demandes.length > 1 ? "s" : ""} à traiter</span>
                     </button>
                   )}
                   {clientsARetard.map((c) => (
-                    <button key={c.client_id} onClick={() => { router.push(`/analyste/clients/${c.client_id}`); setNotifOuvertes(false); }} className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#F0A0A0] mt-1.5 shrink-0" />
-                      <span className="text-xs text-[#B8BAC4]">{c.client_first_name} {c.client_last_name} — retard de paiement</span>
+                    <button key={c.client_id} onClick={() => { router.push(`/analyste/clients/${c.client_id}`); setNotifOuvertes(false); }} className="w-full text-left px-4 py-3 hover:bg-[#212a35] transition flex items-start gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#c0563b] mt-1.5 shrink-0" />
+                      <span className="text-xs text-[#8e99a8]">{c.client_first_name} {c.client_last_name} — retard de paiement</span>
                     </button>
                   ))}
                   {alertesFraude.slice(0, 5).map((a, i) => (
-                    <button key={i} onClick={() => { router.push(`/analyste/clients/${a.client_id}`); setNotifOuvertes(false); }} className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
-                      <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${a.gravite === "elevee" ? "bg-[#F0A0A0]" : "bg-[#C9A227]"}`} />
-                      <span className="text-xs text-[#B8BAC4]">⚠️ {a.client_first_name} {a.client_last_name} — {a.message}</span>
+                    <button key={i} onClick={() => { router.push(`/analyste/clients/${a.client_id}`); setNotifOuvertes(false); }} className="w-full text-left px-4 py-3 hover:bg-[#212a35] transition flex items-start gap-2">
+                      <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${a.gravite === "elevee" ? "bg-[#c0563b]" : "bg-[#c99a4b]"}`} />
+                      <span className="text-xs text-[#8e99a8]">⚠️ {a.client_first_name} {a.client_last_name} — {a.message}</span>
                     </button>
                   ))}
                   {totalNonLus > 0 && (
-                    <button onClick={() => { router.push("/analyste/messages"); setNotifOuvertes(false); }} className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
-                      <span className="w-2 h-2 rounded-full bg-[#C9A227] mt-1.5 shrink-0" />
-                      <span className="text-xs text-[#B8BAC4]">{totalNonLus} nouveau{totalNonLus > 1 ? "x" : ""} message{totalNonLus > 1 ? "s" : ""} client</span>
+                    <button onClick={() => { router.push("/analyste/messages"); setNotifOuvertes(false); }} className="w-full text-left px-4 py-3 hover:bg-[#212a35] transition flex items-start gap-2">
+                      <span className="w-2 h-2 rounded-full bg-[#c99a4b] mt-1.5 shrink-0" />
+                      <span className="text-xs text-[#8e99a8]">{totalNonLus} nouveau{totalNonLus > 1 ? "x" : ""} message{totalNonLus > 1 ? "s" : ""} client</span>
                     </button>
                   )}
                   {totalAlertes === 0 && (
-                    <p className="text-xs text-[#5A6070] text-center py-8">Aucune notification pour le moment</p>
+                    <p className="text-xs text-[#66707d] text-center py-8">Aucune notification pour le moment</p>
                   )}
                 </div>
               </div>
             )}
           </div>
 
-          <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#7C8494] hover:text-[#E8E6DE] transition p-2">
+          <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#8e99a8] hover:text-[#eef1f4] transition p-2">
             {Ic("mail", "w-5 h-5")}
             {totalNonLus > 0 && (
               <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#C24545] text-white text-[9px] flex items-center justify-center">{totalNonLus}</span>
@@ -596,8 +596,8 @@ export default function PageEspaceAnalyste() {
           </button>
 
           <div className="relative shrink-0">
-            <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[#232733] hover:border-[#3A4050] transition">
-              <span className="w-7 h-7 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center overflow-hidden shrink-0">
+            <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.16)] transition">
+              <span className="w-7 h-7 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] flex items-center justify-center overflow-hidden shrink-0">
                 {utilisateur && avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={avatarUrl} alt="" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
@@ -605,15 +605,15 @@ export default function PageEspaceAnalyste() {
                   Ic("user", "w-3.5 h-3.5")
                 )}
               </span>
-              <span className="text-xs text-[#B8BAC4] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
-              {Ic("chevronDown", "w-3 h-3 text-[#7C8494]")}
+              <span className="text-xs text-[#8e99a8] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
+              {Ic("chevronDown", "w-3 h-3 text-[#8e99a8]")}
             </button>
             {menuProfilOuvert && (
-              <div className="absolute right-0 top-10 w-44 bg-[#12151C] border border-[#232733] rounded-md shadow-xl z-10 overflow-hidden">
-                <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#B8BAC4] hover:bg-[#171B24] transition">
+              <div className="absolute right-0 top-10 w-44 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md shadow-xl z-10 overflow-hidden">
+                <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#8e99a8] hover:bg-[#212a35] transition">
                   Mon profil
                 </button>
-                <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#F0A0A0] hover:bg-[#171B24] transition">
+                <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#c0563b] hover:bg-[#212a35] transition">
                   Déconnexion
                 </button>
               </div>
@@ -622,12 +622,12 @@ export default function PageEspaceAnalyste() {
         </div>
 
         <div className="mb-6">
-          <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Tableau de bord</h1>
-          <p className="text-[#7C8494] text-sm mt-1">Vue d&apos;ensemble du portefeuille Lotafinance</p>
+          <h1 className="font-['Sora',sans-serif] text-2xl text-[#eef1f4]">Tableau de bord</h1>
+          <p className="text-[#8e99a8] text-sm mt-1">Vue d&apos;ensemble du portefeuille Lotafinance</p>
         </div>
 
         {erreur && (
-          <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+          <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
         )}
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 items-start">
@@ -646,7 +646,7 @@ export default function PageEspaceAnalyste() {
                 icone="wallet"
                 label="Bénéfice net estimé"
                 valeur={formaterMontant(beneficeEstime)}
-                accent="#3DDC97"
+                accent="#3fa873"
                 sousTexte={totalFraisRetardGlobal > 0 ? "Intérêts + frais de traitement + retards" : "Intérêts + frais de traitement"}
               />
               {(() => {
@@ -656,7 +656,7 @@ export default function PageEspaceAnalyste() {
                     icone="alert"
                     label="Échéances en retard"
                     valeur={String(echeancesEnRetardGlobal.length)}
-                    accent={critiques.length > 0 ? "#FF6B6B" : echeancesEnRetardGlobal.length > 0 ? "#F0A0A0" : "#3DDC97"}
+                    accent={critiques.length > 0 ? "#FF6B6B" : echeancesEnRetardGlobal.length > 0 ? "#c0563b" : "#3fa873"}
                     sousTexte={
                       critiques.length > 0
                         ? `⚠️ ${critiques.length} critique${critiques.length > 1 ? "s" : ""} (+${SEUIL_RETARD_CRITIQUE}j)`
@@ -671,40 +671,40 @@ export default function PageEspaceAnalyste() {
 
             {/* Donut + Jauge */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg px-5 py-4">
-                <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Répartition des dossiers par statut</p>
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-5 py-4">
+                <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-3">Répartition des dossiers par statut</p>
                 {donutCounts.length > 0 ? (
                   <DonutStatut counts={donutCounts} />
                 ) : (
-                  <p className="text-sm text-[#5A6070] py-8 text-center">Aucun dossier pour le moment.</p>
+                  <p className="text-sm text-[#66707d] py-8 text-center">Aucun dossier pour le moment.</p>
                 )}
               </div>
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg px-5 py-4 flex flex-col items-center justify-center">
-                <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3 self-start">Analyse du risque global</p>
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-5 py-4 flex flex-col items-center justify-center">
+                <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-3 self-start">Analyse du risque global</p>
                 <JaugeRisque faible={risqueGlobal.faible} moyen={risqueGlobal.moyen} eleve={risqueGlobal.eleve} />
               </div>
             </div>
 
             {/* Évolution des demandes et approbations */}
             {statistiques.length > 0 && (
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg px-5 py-4">
-                <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Évolution des demandes et approbations (6 derniers mois)</p>
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-5 py-4">
+                <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-3">Évolution des demandes et approbations (6 derniers mois)</p>
                 <LigneEvolution data={statistiques} />
               </div>
             )}
 
             {/* Demandes récentes */}
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 overflow-x-auto">
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 overflow-x-auto">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-medium text-[#E8E6DE]">Demandes récentes</h2>
-                <button onClick={() => router.push("/analyste/toutes")} className="text-xs text-[#C9A227] hover:text-[#DDB63A] transition">Voir tout</button>
+                <h2 className="text-sm font-medium text-[#eef1f4]">Demandes récentes</h2>
+                <button onClick={() => router.push("/analyste/toutes")} className="text-xs text-[#c99a4b] hover:text-[#e4b565] transition">Voir tout</button>
               </div>
               {demandesRecentes.length === 0 ? (
-                <p className="text-sm text-[#5A6070] py-4 text-center">Aucune demande pour le moment.</p>
+                <p className="text-sm text-[#66707d] py-4 text-center">Aucune demande pour le moment.</p>
               ) : (
                 <table className="w-full text-sm border-collapse min-w-[560px]">
                   <thead>
-                    <tr className="text-left text-[10px] uppercase tracking-wide text-[#7C8494] border-b border-[#232733]">
+                    <tr className="text-left text-[10px] uppercase tracking-wide text-[#8e99a8] border-b border-[rgba(255,255,255,0.08)]">
                       <th className="pb-2 font-medium">Client</th>
                       <th className="pb-2 font-medium">Montant demandé</th>
                       <th className="pb-2 font-medium">Motif</th>
@@ -723,25 +723,25 @@ export default function PageEspaceAnalyste() {
                         <tr
                           key={d.id}
                           onClick={() => router.push(`/analyste/${d.id}`)}
-                          className="border-b border-[#1B1F29] last:border-0 cursor-pointer hover:bg-[#171B24] transition"
+                          className="border-b border-[rgba(255,255,255,0.08)] last:border-0 cursor-pointer hover:bg-[#212a35] transition"
                         >
                           <td className="py-3 pr-3">
                             <div className="flex items-center gap-2.5 min-w-0">
-                              <span className="w-8 h-8 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] text-xs font-semibold flex items-center justify-center shrink-0">
+                              <span className="w-8 h-8 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] text-xs font-semibold flex items-center justify-center shrink-0">
                                 {initiales}
                               </span>
-                              <span className="text-[#E8E6DE] font-medium truncate">{nom}</span>
+                              <span className="text-[#eef1f4] font-medium truncate">{nom}</span>
                             </div>
                           </td>
-                          <td className="py-3 pr-3 font-mono text-[#B8BAC4] whitespace-nowrap">{formaterMontant(d.amount_requested)}</td>
-                          <td className="py-3 pr-3 text-[#7C8494] truncate max-w-[140px]">{d.purpose || "—"}</td>
+                          <td className="py-3 pr-3 font-mono text-[#8e99a8] whitespace-nowrap">{formaterMontant(d.amount_requested)}</td>
+                          <td className="py-3 pr-3 text-[#8e99a8] truncate max-w-[140px]">{d.purpose || "—"}</td>
                           <td className="py-3 pr-3">
                             <span className="text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: couleur.bg, color: couleur.text }}>
                               {LIBELLES_STATUT[d.status] || d.status}
                             </span>
                           </td>
-                          <td className="py-3 pr-3 text-[#5A6070] text-xs whitespace-nowrap">{formaterDate(d.submitted_at)}</td>
-                          <td className="py-3 text-[#5A6070]">{Ic("chevronRight", "w-4 h-4")}</td>
+                          <td className="py-3 pr-3 text-[#66707d] text-xs whitespace-nowrap">{formaterDate(d.submitted_at)}</td>
+                          <td className="py-3 text-[#66707d]">{Ic("chevronRight", "w-4 h-4")}</td>
                         </tr>
                       );
                     })}
@@ -752,23 +752,23 @@ export default function PageEspaceAnalyste() {
 
             {/* Clients à surveiller */}
             {clientsARetard.length > 0 && (
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
-                <h2 className="text-sm font-medium text-[#E8E6DE] mb-1">Clients à surveiller</h2>
-                <p className="text-xs text-[#7C8494] mb-3">Historique de retard sur l&apos;ensemble de leurs prêts, même déjà soldés</p>
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
+                <h2 className="text-sm font-medium text-[#eef1f4] mb-1">Clients à surveiller</h2>
+                <p className="text-xs text-[#8e99a8] mb-3">Historique de retard sur l&apos;ensemble de leurs prêts, même déjà soldés</p>
                 <div className="space-y-2">
                   {clientsARetard.slice(0, 5).map((c) => (
                     <button
                       key={c.client_id}
                       onClick={() => router.push(`/analyste/clients/${c.client_id}`)}
-                      className="w-full text-left flex items-center justify-between border border-[#4A2222] bg-[#1A0F0F] rounded-md p-3 hover:border-[#6B2E2E] transition"
+                      className="w-full text-left flex items-center justify-between border border-[rgba(192,86,59,0.3)] bg-[#1A0F0F] rounded-md p-3 hover:border-[rgba(192,86,59,0.35)] transition"
                     >
                       <div>
-                        <p className="text-sm font-medium text-[#E8E6DE]">{c.client_first_name} {c.client_last_name}</p>
-                        <p className="text-xs text-[#7C8494] mt-0.5">
+                        <p className="text-sm font-medium text-[#eef1f4]">{c.client_first_name} {c.client_last_name}</p>
+                        <p className="text-xs text-[#8e99a8] mt-0.5">
                           {c.nombre_prets_approuves} prêt{c.nombre_prets_approuves > 1 ? "s" : ""} approuvé{c.nombre_prets_approuves > 1 ? "s" : ""} · {formaterMontant(c.montant_total_emprunte)} emprunté au total
                         </p>
                       </div>
-                      <span className="text-xs font-medium text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-full px-2.5 py-1 shrink-0">
+                      <span className="text-xs font-medium text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-full px-2.5 py-1 shrink-0">
                         {c.echeances_en_retard} retard{c.echeances_en_retard > 1 ? "s" : ""}
                       </span>
                     </button>
@@ -781,8 +781,8 @@ export default function PageEspaceAnalyste() {
 
           {/* Colonne latérale droite */}
           <div className="space-y-4">
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg px-5 py-4">
-              <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Actions rapides</p>
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-5 py-4">
+              <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-3">Actions rapides</p>
               <div className="grid grid-cols-2 gap-2">
                 <ActionRapide icone="target" label="Évaluer un dossier" couleur="gold" onClick={() => router.push("/analyste/toutes?statut=soumis")} />
                 <ActionRapide icone="chart" label="Générer un rapport" couleur="blue" onClick={() => router.push("/analyste/rapports")} />
@@ -791,55 +791,55 @@ export default function PageEspaceAnalyste() {
               </div>
             </div>
 
-            <div className="bg-[#1B1706] border border-[#3A3013] rounded-lg px-5 py-4">
-              <p className="flex items-center gap-2 text-xs text-[#C9A227] uppercase tracking-wide mb-2">{Ic("trend", "w-4 h-4")} Performance du portefeuille</p>
-              <p className="text-2xl font-mono font-semibold text-[#E8E6DE]">{formaterMontant(capitalEngage)}</p>
-              <p className="text-xs text-[#B8BAC4] mt-1">
+            <div className="bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] rounded-lg px-5 py-4">
+              <p className="flex items-center gap-2 text-xs text-[#c99a4b] uppercase tracking-wide mb-2">{Ic("trend", "w-4 h-4")} Performance du portefeuille</p>
+              <p className="text-2xl font-mono font-semibold text-[#eef1f4]">{formaterMontant(capitalEngage)}</p>
+              <p className="text-xs text-[#8e99a8] mt-1">
                 Capital total engagé
                 {tendanceCapital != null && (
-                  <span className={tendanceCapital >= 0 ? "text-[#3DDC97]" : "text-[#F0A0A0]"}> · {tendanceCapital >= 0 ? "↑" : "↓"} {Math.abs(tendanceCapital)}% vs mois dernier</span>
+                  <span className={tendanceCapital >= 0 ? "text-[#3fa873]" : "text-[#c0563b]"}> · {tendanceCapital >= 0 ? "↑" : "↓"} {Math.abs(tendanceCapital)}% vs mois dernier</span>
                 )}
               </p>
             </div>
 
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-4 border-b border-[#232733]">
-                <p className="flex items-center gap-2 text-sm font-medium text-[#E8E6DE]">{Ic("bell", "w-4 h-4")} Alertes & Notifications</p>
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-[rgba(255,255,255,0.08)]">
+                <p className="flex items-center gap-2 text-sm font-medium text-[#eef1f4]">{Ic("bell", "w-4 h-4")} Alertes & Notifications</p>
                 {totalAlertes > alertesVuesCompte && (
                   <span className="w-5 h-5 rounded-full bg-[#C24545] text-white text-[10px] flex items-center justify-center">{totalAlertes}</span>
                 )}
               </div>
-              <div className="divide-y divide-[#1B1F29]">
+              <div className="divide-y divide-[rgba(255,255,255,0.08)]">
                 {demandes.length > 0 && (
-                  <button onClick={() => router.push("/analyste/toutes?statut=soumis")} className="w-full text-left px-5 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
+                  <button onClick={() => router.push("/analyste/toutes?statut=soumis")} className="w-full text-left px-5 py-3 hover:bg-[#212a35] transition flex items-start gap-2">
                     <span className="w-2 h-2 rounded-full bg-[#5B8DEF] mt-1.5 shrink-0" />
-                    <span className="text-xs text-[#B8BAC4]">{demandes.length} dossier{demandes.length > 1 ? "s" : ""} à traiter</span>
+                    <span className="text-xs text-[#8e99a8]">{demandes.length} dossier{demandes.length > 1 ? "s" : ""} à traiter</span>
                   </button>
                 )}
                 {clientsARetard.map((c) => (
-                  <button key={c.client_id} onClick={() => router.push(`/analyste/clients/${c.client_id}`)} className="w-full text-left px-5 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#F0A0A0] mt-1.5 shrink-0" />
-                    <span className="text-xs text-[#B8BAC4]">{c.client_first_name} {c.client_last_name} — retard de paiement</span>
+                  <button key={c.client_id} onClick={() => router.push(`/analyste/clients/${c.client_id}`)} className="w-full text-left px-5 py-3 hover:bg-[#212a35] transition flex items-start gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#c0563b] mt-1.5 shrink-0" />
+                    <span className="text-xs text-[#8e99a8]">{c.client_first_name} {c.client_last_name} — retard de paiement</span>
                   </button>
                 ))}
                 {totalNonLus > 0 && (
-                  <button onClick={() => router.push("/analyste/messages")} className="w-full text-left px-5 py-3 hover:bg-[#171B24] transition flex items-start gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#C9A227] mt-1.5 shrink-0" />
-                    <span className="text-xs text-[#B8BAC4]">{totalNonLus} nouveau{totalNonLus > 1 ? "x" : ""} message{totalNonLus > 1 ? "s" : ""} client</span>
+                  <button onClick={() => router.push("/analyste/messages")} className="w-full text-left px-5 py-3 hover:bg-[#212a35] transition flex items-start gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#c99a4b] mt-1.5 shrink-0" />
+                    <span className="text-xs text-[#8e99a8]">{totalNonLus} nouveau{totalNonLus > 1 ? "x" : ""} message{totalNonLus > 1 ? "s" : ""} client</span>
                   </button>
                 )}
                 {alertesFraude.slice(0, 5).map((a, i) => (
                   <button
                     key={i}
                     onClick={() => router.push(`/analyste/clients/${a.client_id}`)}
-                    className="w-full text-left px-5 py-3 hover:bg-[#171B24] transition flex items-start gap-2"
+                    className="w-full text-left px-5 py-3 hover:bg-[#212a35] transition flex items-start gap-2"
                   >
-                    <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${a.gravite === "elevee" ? "bg-[#F0A0A0]" : "bg-[#C9A227]"}`} />
-                    <span className="text-xs text-[#B8BAC4]">⚠️ {a.client_first_name} {a.client_last_name} — {a.message}</span>
+                    <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${a.gravite === "elevee" ? "bg-[#c0563b]" : "bg-[#c99a4b]"}`} />
+                    <span className="text-xs text-[#8e99a8]">⚠️ {a.client_first_name} {a.client_last_name} — {a.message}</span>
                   </button>
                 ))}
                 {totalAlertes === 0 && (
-                  <p className="text-xs text-[#5A6070] text-center py-6">Aucune alerte pour le moment</p>
+                  <p className="text-xs text-[#66707d] text-center py-6">Aucune alerte pour le moment</p>
                 )}
               </div>
             </div>
@@ -853,11 +853,11 @@ export default function PageEspaceAnalyste() {
 function ActionRapide({ icone, label, couleur, onClick }: { icone: keyof typeof ICONES; label: string; couleur: CouleurLotafinance; onClick: () => void }) {
   const IconeRiche = ICONES_RICHES[icone];
   return (
-    <button onClick={onClick} className="flex flex-col items-center gap-1.5 bg-[#0B0E14] border border-[#232733] rounded-md px-2 py-3 hover:border-[#3A4050] transition">
+    <button onClick={onClick} className="flex flex-col items-center gap-1.5 bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-2 py-3 hover:border-[rgba(255,255,255,0.16)] transition">
       <IconCircle color={couleur} size={36}>
         {IconeRiche ? <IconeRiche size={18} /> : Ic(icone, "w-4 h-4")}
       </IconCircle>
-      <span className="text-[10px] text-[#B8BAC4] text-center leading-tight">{label}</span>
+      <span className="text-[10px] text-[#8e99a8] text-center leading-tight">{label}</span>
     </button>
   );
 }

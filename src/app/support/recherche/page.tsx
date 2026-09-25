@@ -5,15 +5,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { recupererMonProfilUtilisateur, rechercherTicketsSupport, Ticket } from "@/lib/api";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
 
 const LIBELLES_STATUT: Record<string, string> = { nouveau: "Nouveau", en_cours: "En cours", en_attente: "En attente", resolu: "Résolu" };
 function couleurStatut(statut: string): { bg: string; text: string } {
-  if (statut === "resolu") return { bg: "#0F2420", text: "#3DDC97" };
-  if (statut === "en_cours") return { bg: "#1B1706", text: "#C9A227" };
+  if (statut === "resolu") return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" };
+  if (statut === "en_cours") return { bg: "rgba(201,154,75,0.15)", text: "#c99a4b" };
   if (statut === "en_attente") return { bg: "#241B33", text: "#C9A6F0" };
   return { bg: "#12203A", text: "#5B8DEF" };
 }
@@ -60,25 +60,25 @@ function PageRechercheSupportContenu() {
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen px-4 sm:px-8 py-6">
       <div className="max-w-2xl mx-auto">
-        <button onClick={() => router.push("/support")} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] mb-4 transition">
+        <button onClick={() => router.push("/support")} className="text-sm text-[#8e99a8] hover:text-[#eef1f4] mb-4 transition">
           ← Retour au tableau de bord
         </button>
 
-        <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
-          <h1 className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE] mb-1">Résultats de recherche</h1>
-          <p className="text-[#7C8494] text-sm mb-6">
+        <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
+          <h1 className="font-['Sora',sans-serif] text-xl text-[#eef1f4] mb-1">Résultats de recherche</h1>
+          <p className="text-[#8e99a8] text-sm mb-6">
             {q ? `Pour « ${q} »` : "Tape une recherche"}
             {!chargement && q ? ` — ${resultats.length} résultat${resultats.length > 1 ? "s" : ""}` : ""}
           </p>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
           {chargement ? (
-            <p className="text-sm text-[#7C8494] font-mono text-center py-8">Recherche...</p>
+            <p className="text-sm text-[#8e99a8] font-mono text-center py-8">Recherche...</p>
           ) : resultats.length === 0 ? (
-            <p className="text-sm text-[#5A6070] py-8 text-center">Aucun résultat.</p>
+            <p className="text-sm text-[#66707d] py-8 text-center">Aucun résultat.</p>
           ) : (
             <div className="space-y-2">
               {resultats.map((t) => {
@@ -87,11 +87,11 @@ function PageRechercheSupportContenu() {
                   <button
                     key={t.id}
                     onClick={() => router.push(`/support/${t.id}`)}
-                    className="w-full text-left border border-[#232733] rounded-md p-4 hover:border-[#3A4050] transition flex items-center justify-between gap-4"
+                    className="w-full text-left border border-[rgba(255,255,255,0.08)] rounded-md p-4 hover:border-[rgba(255,255,255,0.16)] transition flex items-center justify-between gap-4"
                   >
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-[#E8E6DE] truncate">{t.sujet}</p>
-                      <p className="text-xs text-[#7C8494] mt-0.5">{formaterDate(t.cree_le)}</p>
+                      <p className="text-sm font-medium text-[#eef1f4] truncate">{t.sujet}</p>
+                      <p className="text-xs text-[#8e99a8] mt-0.5">{formaterDate(t.cree_le)}</p>
                     </div>
                     <span className="text-xs font-medium px-2.5 py-1 rounded-full shrink-0" style={{ backgroundColor: couleur.bg, color: couleur.text }}>
                       {LIBELLES_STATUT[t.statut] || t.statut}

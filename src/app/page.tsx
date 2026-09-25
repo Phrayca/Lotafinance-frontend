@@ -5,54 +5,54 @@ import { useRouter } from "next/navigation";
 import { inscrire, demanderConnexion, verifierCodeConnexion } from "@/lib/api";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
 
 const CHAMP_CLASSES =
-  "w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2.5 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition";
+  "w-full bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2.5 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition";
 
 function IllustrationFinance() {
   return (
     <svg viewBox="0 0 400 400" className="w-full max-w-sm mx-auto">
-      <ellipse cx="90" cy="300" rx="55" ry="16" fill="#C9A227" opacity="0.9" />
-      <rect x="35" y="272" width="110" height="28" fill="#C9A227" opacity="0.9" />
-      <ellipse cx="90" cy="272" rx="55" ry="16" fill="#DDB63A" />
-      <ellipse cx="90" cy="272" rx="40" ry="10" fill="none" stroke="#0B0E14" strokeWidth="1.5" opacity="0.4" />
+      <ellipse cx="90" cy="300" rx="55" ry="16" fill="#c99a4b" opacity="0.9" />
+      <rect x="35" y="272" width="110" height="28" fill="#c99a4b" opacity="0.9" />
+      <ellipse cx="90" cy="272" rx="55" ry="16" fill="#e4b565" />
+      <ellipse cx="90" cy="272" rx="40" ry="10" fill="none" stroke="#10151c" strokeWidth="1.5" opacity="0.4" />
 
-      <rect x="45" y="244" width="90" height="24" fill="#C9A227" opacity="0.85" />
-      <ellipse cx="90" cy="244" rx="45" ry="13" fill="#DDB63A" />
-      <ellipse cx="90" cy="244" rx="32" ry="8" fill="none" stroke="#0B0E14" strokeWidth="1.5" opacity="0.4" />
+      <rect x="45" y="244" width="90" height="24" fill="#c99a4b" opacity="0.85" />
+      <ellipse cx="90" cy="244" rx="45" ry="13" fill="#e4b565" />
+      <ellipse cx="90" cy="244" rx="32" ry="8" fill="none" stroke="#10151c" strokeWidth="1.5" opacity="0.4" />
 
-      <rect x="55" y="220" width="70" height="22" fill="#C9A227" />
+      <rect x="55" y="220" width="70" height="22" fill="#c99a4b" />
       <ellipse cx="90" cy="220" rx="35" ry="11" fill="#E8C34A" />
-      <ellipse cx="90" cy="220" rx="24" ry="6" fill="none" stroke="#0B0E14" strokeWidth="1.5" opacity="0.4" />
+      <ellipse cx="90" cy="220" rx="24" ry="6" fill="none" stroke="#10151c" strokeWidth="1.5" opacity="0.4" />
 
       <g transform="translate(160,130) rotate(-8)">
-        <rect x="0" y="0" width="150" height="80" rx="6" fill="#12151C" stroke="#C9A227" strokeWidth="2" />
-        <circle cx="38" cy="40" r="20" fill="none" stroke="#C9A227" strokeWidth="1.5" opacity="0.7" />
-        <text x="38" y="46" textAnchor="middle" fill="#C9A227" fontSize="14" fontFamily="serif" opacity="0.9">F</text>
-        <line x1="75" y1="14" x2="140" y2="14" stroke="#C9A227" strokeWidth="1.5" opacity="0.5" />
-        <line x1="75" y1="24" x2="130" y2="24" stroke="#C9A227" strokeWidth="1.5" opacity="0.35" />
-        <text x="120" y="66" textAnchor="end" fill="#C9A227" fontSize="16" fontWeight="bold" fontFamily="serif">10 000</text>
+        <rect x="0" y="0" width="150" height="80" rx="6" fill="#1a212b" stroke="#c99a4b" strokeWidth="2" />
+        <circle cx="38" cy="40" r="20" fill="none" stroke="#c99a4b" strokeWidth="1.5" opacity="0.7" />
+        <text x="38" y="46" textAnchor="middle" fill="#c99a4b" fontSize="14" fontFamily="serif" opacity="0.9">F</text>
+        <line x1="75" y1="14" x2="140" y2="14" stroke="#c99a4b" strokeWidth="1.5" opacity="0.5" />
+        <line x1="75" y1="24" x2="130" y2="24" stroke="#c99a4b" strokeWidth="1.5" opacity="0.35" />
+        <text x="120" y="66" textAnchor="end" fill="#c99a4b" fontSize="16" fontWeight="bold" fontFamily="serif">10 000</text>
       </g>
 
       <g transform="translate(180,175) rotate(4)">
-        <rect x="0" y="0" width="150" height="80" rx="6" fill="#171B24" stroke="#DDB63A" strokeWidth="2" />
-        <circle cx="38" cy="40" r="20" fill="none" stroke="#DDB63A" strokeWidth="1.5" opacity="0.7" />
-        <text x="38" y="46" textAnchor="middle" fill="#DDB63A" fontSize="14" fontFamily="serif" opacity="0.9">F</text>
-        <line x1="75" y1="14" x2="140" y2="14" stroke="#DDB63A" strokeWidth="1.5" opacity="0.5" />
-        <line x1="75" y1="24" x2="130" y2="24" stroke="#DDB63A" strokeWidth="1.5" opacity="0.35" />
-        <text x="120" y="66" textAnchor="end" fill="#DDB63A" fontSize="16" fontWeight="bold" fontFamily="serif">5 000</text>
+        <rect x="0" y="0" width="150" height="80" rx="6" fill="#212a35" stroke="#e4b565" strokeWidth="2" />
+        <circle cx="38" cy="40" r="20" fill="none" stroke="#e4b565" strokeWidth="1.5" opacity="0.7" />
+        <text x="38" y="46" textAnchor="middle" fill="#e4b565" fontSize="14" fontFamily="serif" opacity="0.9">F</text>
+        <line x1="75" y1="14" x2="140" y2="14" stroke="#e4b565" strokeWidth="1.5" opacity="0.5" />
+        <line x1="75" y1="24" x2="130" y2="24" stroke="#e4b565" strokeWidth="1.5" opacity="0.35" />
+        <text x="120" y="66" textAnchor="end" fill="#e4b565" fontSize="16" fontWeight="bold" fontFamily="serif">5 000</text>
       </g>
 
       <path
         d="M60 190c40-60 90-70 130-40 35 26 70 20 95-10"
-        fill="none" stroke="#3DDC97" strokeWidth="2.5" strokeLinecap="round" opacity="0.8"
+        fill="none" stroke="#3fa873" strokeWidth="2.5" strokeLinecap="round" opacity="0.8"
       />
-      <circle cx="285" cy="140" r="5" fill="#3DDC97" />
-      <path d="M270 130l15 10 15-18" fill="none" stroke="#3DDC97" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
+      <circle cx="285" cy="140" r="5" fill="#3fa873" />
+      <path d="M270 130l15 10 15-18" fill="none" stroke="#3fa873" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.9" />
     </svg>
   );
 }
@@ -142,21 +142,21 @@ export default function PageConnexion() {
       <div className="w-full max-w-4xl grid md:grid-cols-2 gap-10 items-center">
         <div className="hidden md:flex flex-col items-center text-center">
           <IllustrationFinance />
-          <p className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE] mt-4">
+          <p className="font-['Sora',sans-serif] text-xl text-[#eef1f4] mt-4">
             Plus qu&apos;un prêt, un partenaire pour votre avenir.
           </p>
-          <p className="text-sm text-[#7C8494] mt-2 max-w-xs">
+          <p className="text-sm text-[#8e99a8] mt-2 max-w-xs">
             Des solutions de financement rapides et transparentes, pensées pour vous.
           </p>
         </div>
 
         <div className="w-full max-w-sm mx-auto">
           <div className="flex flex-col items-center text-center mb-6">
-            <span className="w-14 h-14 rounded-xl bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold text-2xl font-['Source_Serif_4',serif] mb-3 shadow-lg shadow-[#C9A227]/20">
+            <span className="w-14 h-14 rounded-xl bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold text-2xl font-['Sora',sans-serif] mb-3 shadow-lg shadow-[#c99a4b]/20">
               L
             </span>
-            <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Lotafinance</h1>
-            <p className="text-[#7C8494] mt-1 text-sm">
+            <h1 className="font-['Sora',sans-serif] text-2xl text-[#eef1f4]">Lotafinance</h1>
+            <p className="text-[#8e99a8] mt-1 text-sm">
               {etape === "code"
                 ? "Vérification de votre identité"
                 : mode === "connexion"
@@ -165,15 +165,15 @@ export default function PageConnexion() {
             </p>
           </div>
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg shadow-xl p-6">
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg shadow-xl p-6">
             {etape === "identifiants" ? (
               <>
-                <div className="flex mb-6 bg-[#0B0E14] border border-[#232733] rounded-md p-1">
+                <div className="flex mb-6 bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md p-1">
                   <button
                     type="button"
                     onClick={() => setMode("connexion")}
                     className={`flex-1 py-2 text-sm font-medium rounded-md transition ${
-                      mode === "connexion" ? "bg-[#C9A227] text-[#0B0E14]" : "text-[#7C8494] hover:text-[#E8E6DE]"
+                      mode === "connexion" ? "bg-[#c99a4b] text-[#10151c]" : "text-[#8e99a8] hover:text-[#eef1f4]"
                     }`}
                   >
                     Connexion
@@ -182,7 +182,7 @@ export default function PageConnexion() {
                     type="button"
                     onClick={() => setMode("inscription")}
                     className={`flex-1 py-2 text-sm font-medium rounded-md transition ${
-                      mode === "inscription" ? "bg-[#C9A227] text-[#0B0E14]" : "text-[#7C8494] hover:text-[#E8E6DE]"
+                      mode === "inscription" ? "bg-[#c99a4b] text-[#10151c]" : "text-[#8e99a8] hover:text-[#eef1f4]"
                     }`}
                   >
                     Inscription
@@ -192,7 +192,7 @@ export default function PageConnexion() {
                 <form onSubmit={gererEnvoi} className="space-y-4">
                   {mode === "connexion" ? (
                     <div>
-                      <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Email ou téléphone</label>
+                      <label className="block text-sm font-medium text-[#8e99a8] mb-1">Email ou téléphone</label>
                       <input
                         type="text"
                         required
@@ -205,7 +205,7 @@ export default function PageConnexion() {
                   ) : (
                     <>
                       <div>
-                        <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Email</label>
+                        <label className="block text-sm font-medium text-[#8e99a8] mb-1">Email</label>
                         <input
                           type="email"
                           required
@@ -216,7 +216,7 @@ export default function PageConnexion() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Téléphone</label>
+                        <label className="block text-sm font-medium text-[#8e99a8] mb-1">Téléphone</label>
                         <input
                           type="tel"
                           required
@@ -231,12 +231,12 @@ export default function PageConnexion() {
 
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="block text-sm font-medium text-[#B8BAC4]">Mot de passe</label>
+                      <label className="block text-sm font-medium text-[#8e99a8]">Mot de passe</label>
                       {mode === "connexion" && (
                         <button
                           type="button"
                           onClick={() => setAideMotDePasseOuverte((v) => !v)}
-                          className="text-xs text-[#C9A227] hover:text-[#DDB63A] transition"
+                          className="text-xs text-[#c99a4b] hover:text-[#e4b565] transition"
                         >
                           Mot de passe oublié ?
                         </button>
@@ -255,7 +255,7 @@ export default function PageConnexion() {
                       <button
                         type="button"
                         onClick={() => setMotDePasseVisible((v) => !v)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7C8494] hover:text-[#E8E6DE] transition"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8e99a8] hover:text-[#eef1f4] transition"
                         tabIndex={-1}
                       >
                         {motDePasseVisible ? (
@@ -272,14 +272,14 @@ export default function PageConnexion() {
                   </div>
 
                   {aideMotDePasseOuverte && mode === "connexion" && (
-                    <p className="text-xs text-[#C9A227] bg-[#1B1706] border border-[#3A3013] rounded-md px-3 py-2">
+                    <p className="text-xs text-[#c99a4b] bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] rounded-md px-3 py-2">
                       La réinitialisation automatique par email arrive bientôt. En attendant, contactez directement
                       l&apos;équipe Lotafinance pour réinitialiser votre mot de passe.
                     </p>
                   )}
 
                   {erreur && (
-                    <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2">
+                    <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2">
                       {erreur}
                     </p>
                   )}
@@ -287,7 +287,7 @@ export default function PageConnexion() {
                   <button
                     type="submit"
                     disabled={chargement}
-                    className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+                    className="w-full bg-[#c99a4b] text-[#10151c] text-sm font-semibold py-2.5 rounded-md hover:bg-[#e4b565] transition disabled:opacity-50"
                   >
                     {chargement
                       ? "Veuillez patienter..."
@@ -299,12 +299,12 @@ export default function PageConnexion() {
               </>
             ) : (
               <form onSubmit={gererVerificationCode} className="space-y-4">
-                <p className="text-sm text-[#B8BAC4]">
+                <p className="text-sm text-[#8e99a8]">
                   Un code à 6 chiffres a été envoyé par email à l&apos;adresse associée à ce compte. Il est valable 10 minutes.
                 </p>
 
                 <div>
-                  <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Code de vérification</label>
+                  <label className="block text-sm font-medium text-[#8e99a8] mb-1">Code de vérification</label>
                   <input
                     type="text"
                     inputMode="numeric"
@@ -319,7 +319,7 @@ export default function PageConnexion() {
                 </div>
 
                 {erreur && (
-                  <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2">
+                  <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2">
                     {erreur}
                   </p>
                 )}
@@ -327,7 +327,7 @@ export default function PageConnexion() {
                 <button
                   type="submit"
                   disabled={chargement || code.length !== 6}
-                  className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+                  className="w-full bg-[#c99a4b] text-[#10151c] text-sm font-semibold py-2.5 rounded-md hover:bg-[#e4b565] transition disabled:opacity-50"
                 >
                   {chargement ? "Vérification..." : "Valider et me connecter"}
                 </button>
@@ -335,7 +335,7 @@ export default function PageConnexion() {
                 <button
                   type="button"
                   onClick={revenirAuxIdentifiants}
-                  className="w-full text-xs font-medium text-[#7C8494] hover:text-[#E8E6DE] transition"
+                  className="w-full text-xs font-medium text-[#8e99a8] hover:text-[#eef1f4] transition"
                 >
                   ← Revenir en arrière
                 </button>
@@ -343,7 +343,7 @@ export default function PageConnexion() {
             )}
           </div>
 
-          <p className="text-center text-xs text-[#5A6070] mt-6">
+          <p className="text-center text-xs text-[#66707d] mt-6">
             Lotafinance – Plus qu&apos;un prêt, un partenaire pour votre avenir.
           </p>
         </div>

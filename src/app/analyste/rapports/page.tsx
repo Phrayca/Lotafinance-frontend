@@ -25,7 +25,7 @@ import {
 } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
@@ -107,23 +107,23 @@ function GraphiquePortefeuille({ data }: { data: StatMois[] }) {
   return (
     <div>
       <svg viewBox={`0 0 ${largeurTotale} 175`} className="w-full" preserveAspectRatio="xMidYMid meet">
-        <line x1="10" y1="150" x2={largeurTotale - 10} y2="150" stroke="#232733" strokeWidth="1" />
+        <line x1="10" y1="150" x2={largeurTotale - 10} y2="150" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
         {data.map((d, i) => {
           const x = 25 + i * espacement;
           const hCapital = (d.capital_prete / maxValeur) * hauteurMax;
           const hEncaisse = (d.montant_encaisse / maxValeur) * hauteurMax;
           return (
             <g key={d.mois + i}>
-              <rect x={x} y={150 - hCapital} width={largeurBarre} height={Math.max(hCapital, 1)} fill="#C9A227" rx="2" />
-              <rect x={x + largeurBarre + 4} y={150 - hEncaisse} width={largeurBarre} height={Math.max(hEncaisse, 1)} fill="#3DDC97" rx="2" />
-              <text x={x + largeurBarre + 2} y="166" textAnchor="middle" fontSize="10" fill="#7C8494">{d.mois}</text>
+              <rect x={x} y={150 - hCapital} width={largeurBarre} height={Math.max(hCapital, 1)} fill="#c99a4b" rx="2" />
+              <rect x={x + largeurBarre + 4} y={150 - hEncaisse} width={largeurBarre} height={Math.max(hEncaisse, 1)} fill="#3fa873" rx="2" />
+              <text x={x + largeurBarre + 2} y="166" textAnchor="middle" fontSize="10" fill="#8e99a8">{d.mois}</text>
             </g>
           );
         })}
       </svg>
       <div className="flex items-center gap-5 mt-2 text-xs">
-        <span className="flex items-center gap-1.5 text-[#B8BAC4]"><span className="w-2.5 h-2.5 rounded-sm bg-[#C9A227]" /> Capital prêté</span>
-        <span className="flex items-center gap-1.5 text-[#B8BAC4]"><span className="w-2.5 h-2.5 rounded-sm bg-[#3DDC97]" /> Montant encaissé</span>
+        <span className="flex items-center gap-1.5 text-[#8e99a8]"><span className="w-2.5 h-2.5 rounded-sm bg-[#c99a4b]" /> Capital prêté</span>
+        <span className="flex items-center gap-1.5 text-[#8e99a8]"><span className="w-2.5 h-2.5 rounded-sm bg-[#3fa873]" /> Montant encaissé</span>
       </div>
     </div>
   );
@@ -147,14 +147,14 @@ function LigneEvolution({ data }: { data: StatMois[] }) {
     <div>
       <svg viewBox={`0 0 ${w} ${h + 20}`} className="w-full" preserveAspectRatio="xMidYMid meet">
         <polyline points={points("nombre_dossiers_traites")} fill="none" stroke="#5B8DEF" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-        <polyline points={points("nombre_approuves")} fill="none" stroke="#3DDC97" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline points={points("nombre_approuves")} fill="none" stroke="#3fa873" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         {data.map((d, i) => (
-          <text key={d.mois} x={pad + i * stepX} y={h + 14} textAnchor="middle" fontSize="10" fill="#7C8494">{d.mois}</text>
+          <text key={d.mois} x={pad + i * stepX} y={h + 14} textAnchor="middle" fontSize="10" fill="#8e99a8">{d.mois}</text>
         ))}
       </svg>
       <div className="flex items-center gap-5 mt-2 text-xs">
-        <span className="flex items-center gap-1.5 text-[#B8BAC4]"><span className="w-2.5 h-0.5 bg-[#5B8DEF]" /> Dossiers traités</span>
-        <span className="flex items-center gap-1.5 text-[#B8BAC4]"><span className="w-2.5 h-0.5 bg-[#3DDC97]" /> Approuvés</span>
+        <span className="flex items-center gap-1.5 text-[#8e99a8]"><span className="w-2.5 h-0.5 bg-[#5B8DEF]" /> Dossiers traités</span>
+        <span className="flex items-center gap-1.5 text-[#8e99a8]"><span className="w-2.5 h-0.5 bg-[#3fa873]" /> Approuvés</span>
       </div>
     </div>
   );
@@ -256,13 +256,13 @@ export default function PageRapports() {
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Espace analyste</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Espace analyste</p>
             </div>
           )}
         </div>
@@ -274,7 +274,7 @@ export default function PageRapports() {
               onClick={() => router.push(lien.href)}
               title={sidebarReduite ? lien.label : undefined}
               className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                lien.actif ? "bg-[#c99a4b] text-[#10151c] font-medium" : "text-[#8e99a8] hover:bg-[#1a212b]"
               }`}
             >
                             <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
@@ -296,7 +296,7 @@ export default function PageRapports() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -307,16 +307,16 @@ export default function PageRapports() {
         <div className="max-w-4xl">
           <div className="flex items-center gap-3 mb-6">
             <form onSubmit={gererRecherche} className="flex-1 relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6070]">{Ic("search", "w-4 h-4")}</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#66707d]">{Ic("search", "w-4 h-4")}</span>
               <input
                 value={recherche}
                 onChange={(e) => setRecherche(e.target.value)}
                 placeholder="Rechercher un dossier, client, numéro de téléphone..."
-                className="w-full bg-[#12151C] border border-[#232733] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition"
+                className="w-full bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition"
               />
             </form>
 
-            <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#7C8494] hover:text-[#E8E6DE] transition p-2">
+            <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#8e99a8] hover:text-[#eef1f4] transition p-2">
               {Ic("mail", "w-5 h-5")}
               {totalNonLus > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#C24545] text-white text-[9px] flex items-center justify-center">{totalNonLus}</span>
@@ -324,8 +324,8 @@ export default function PageRapports() {
             </button>
 
             <div className="relative shrink-0">
-              <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[#232733] hover:border-[#3A4050] transition">
-                <span className="w-7 h-7 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center overflow-hidden shrink-0">
+              <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.16)] transition">
+                <span className="w-7 h-7 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] flex items-center justify-center overflow-hidden shrink-0">
                   {utilisateur && avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={avatarUrl} alt="" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
@@ -333,15 +333,15 @@ export default function PageRapports() {
                     Ic("user", "w-3.5 h-3.5")
                   )}
                 </span>
-                <span className="text-xs text-[#B8BAC4] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
-                {Ic("chevronDown", "w-3 h-3 text-[#7C8494]")}
+                <span className="text-xs text-[#8e99a8] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
+                {Ic("chevronDown", "w-3 h-3 text-[#8e99a8]")}
               </button>
               {menuProfilOuvert && (
-                <div className="absolute right-0 top-10 w-44 bg-[#12151C] border border-[#232733] rounded-md shadow-xl z-10 overflow-hidden">
-                  <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#B8BAC4] hover:bg-[#171B24] transition">
+                <div className="absolute right-0 top-10 w-44 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md shadow-xl z-10 overflow-hidden">
+                  <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#8e99a8] hover:bg-[#212a35] transition">
                     Mon profil
                   </button>
-                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#F0A0A0] hover:bg-[#171B24] transition">
+                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#c0563b] hover:bg-[#212a35] transition">
                     Déconnexion
                   </button>
                 </div>
@@ -351,16 +351,16 @@ export default function PageRapports() {
 
           <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
             <div>
-              <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Rapports & Statistiques</h1>
-              <p className="text-[#7C8494] text-sm mt-1">Évolution du portefeuille et journal des décisions</p>
+              <h1 className="font-['Sora',sans-serif] text-2xl text-[#eef1f4]">Rapports & Statistiques</h1>
+              <p className="text-[#8e99a8] text-sm mt-1">Évolution du portefeuille et journal des décisions</p>
             </div>
             <div className="flex items-center gap-2">
-              <div className="flex bg-[#12151C] border border-[#232733] rounded-md p-1">
+              <div className="flex bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md p-1">
                 {PERIODES.map((p) => (
                   <button
                     key={p.valeur}
                     onClick={() => setPeriode(p.valeur)}
-                    className={`text-xs font-medium px-3 py-1.5 rounded-md transition ${periode === p.valeur ? "bg-[#C9A227] text-[#0B0E14]" : "text-[#7C8494] hover:text-[#E8E6DE]"}`}
+                    className={`text-xs font-medium px-3 py-1.5 rounded-md transition ${periode === p.valeur ? "bg-[#c99a4b] text-[#10151c]" : "text-[#8e99a8] hover:text-[#eef1f4]"}`}
                   >
                     {p.label}
                   </button>
@@ -369,7 +369,7 @@ export default function PageRapports() {
               <button
                 onClick={exporterCSV}
                 disabled={statistiques.length === 0}
-                className="flex items-center gap-1.5 text-xs font-medium text-[#C9A227] border border-[#3A3013] bg-[#1B1706] rounded-md px-3 py-1.5 hover:bg-[#241E09] transition disabled:opacity-40"
+                className="flex items-center gap-1.5 text-xs font-medium text-[#c99a4b] border border-[rgba(201,154,75,0.3)] bg-[rgba(201,154,75,0.15)] rounded-md px-3 py-1.5 hover:bg-[rgba(201,154,75,0.22)] transition disabled:opacity-40"
               >
                 {Ic("download", "w-3.5 h-3.5")} Exporter CSV
               </button>
@@ -377,21 +377,21 @@ export default function PageRapports() {
           </div>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
           {chargement ? (
-            <p className="text-sm text-[#7C8494] font-mono text-center py-8">Chargement...</p>
+            <p className="text-sm text-[#8e99a8] font-mono text-center py-8">Chargement...</p>
           ) : (
             <>
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg px-5 py-4 mb-4">
-                <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Évolution des demandes et approbations ({periode} mois)</p>
-                {statistiques.length > 0 ? <LigneEvolution data={statistiques} /> : <p className="text-sm text-[#5A6070] py-8 text-center">Pas assez de données.</p>}
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-5 py-4 mb-4">
+                <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-3">Évolution des demandes et approbations ({periode} mois)</p>
+                {statistiques.length > 0 ? <LigneEvolution data={statistiques} /> : <p className="text-sm text-[#66707d] py-8 text-center">Pas assez de données.</p>}
               </div>
 
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg px-5 py-4 mb-4">
-                <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Évolution du portefeuille — montants ({periode} mois)</p>
-                {statistiques.length > 0 ? <GraphiquePortefeuille data={statistiques} /> : <p className="text-sm text-[#5A6070] py-8 text-center">Pas assez de données.</p>}
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-5 py-4 mb-4">
+                <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-3">Évolution du portefeuille — montants ({periode} mois)</p>
+                {statistiques.length > 0 ? <GraphiquePortefeuille data={statistiques} /> : <p className="text-sm text-[#66707d] py-8 text-center">Pas assez de données.</p>}
               </div>
             </>
           )}

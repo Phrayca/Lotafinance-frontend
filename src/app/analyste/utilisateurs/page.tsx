@@ -26,7 +26,7 @@ import {
 } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
@@ -43,10 +43,10 @@ function libelleRole(role: string) {
   return "Client";
 }
 function couleurRole(role: string): { bg: string; text: string } {
-  if (role === "admin") return { bg: "#2A1414", text: "#F0A0A0" };
-  if (role === "analyste") return { bg: "#1B1706", text: "#C9A227" };
+  if (role === "admin") return { bg: "rgba(192,86,59,0.12)", text: "#c0563b" };
+  if (role === "analyste") return { bg: "rgba(201,154,75,0.15)", text: "#c99a4b" };
   if (role === "support") return { bg: "#12203A", text: "#5B8DEF" };
-  return { bg: "#1B2030", text: "#B8BAC4" };
+  return { bg: "#212a35", text: "#8e99a8" };
 }
 
 function Icon({ path, className }: { path: string; className?: string }) {
@@ -195,13 +195,13 @@ export default function PageGestionUtilisateurs() {
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Espace analyste</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Espace analyste</p>
             </div>
           )}
         </div>
@@ -212,7 +212,7 @@ export default function PageGestionUtilisateurs() {
               onClick={() => router.push(lien.href)}
               title={sidebarReduite ? lien.label : undefined}
               className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                lien.actif ? "bg-[#c99a4b] text-[#10151c] font-medium" : "text-[#8e99a8] hover:bg-[#1a212b]"
               }`}
             >
                             <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
@@ -230,7 +230,7 @@ export default function PageGestionUtilisateurs() {
             </button>
           ))}
         </nav>
-        <button onClick={basculerSidebar} title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"} className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition">
+        <button onClick={basculerSidebar} title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"} className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition">
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
         </button>
@@ -240,48 +240,48 @@ export default function PageGestionUtilisateurs() {
         <div className="max-w-3xl">
           <div className="flex items-center gap-3 mb-6">
             <form onSubmit={gererRecherche} className="flex-1 relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6070]">{Ic("search", "w-4 h-4")}</span>
-              <input value={recherche} onChange={(e) => setRecherche(e.target.value)} placeholder="Rechercher un dossier, client, numéro de téléphone..." className="w-full bg-[#12151C] border border-[#232733] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition" />
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#66707d]">{Ic("search", "w-4 h-4")}</span>
+              <input value={recherche} onChange={(e) => setRecherche(e.target.value)} placeholder="Rechercher un dossier, client, numéro de téléphone..." className="w-full bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition" />
             </form>
-            <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#7C8494] hover:text-[#E8E6DE] transition p-2">
+            <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#8e99a8] hover:text-[#eef1f4] transition p-2">
               {Ic("mail", "w-5 h-5")}
               {totalNonLus > 0 && <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#C24545] text-white text-[9px] flex items-center justify-center">{totalNonLus}</span>}
             </button>
             <div className="relative shrink-0">
-              <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[#232733] hover:border-[#3A4050] transition">
-                <span className="w-7 h-7 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center overflow-hidden shrink-0">
+              <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.16)] transition">
+                <span className="w-7 h-7 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] flex items-center justify-center overflow-hidden shrink-0">
                   {utilisateur && avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={avatarUrl} alt="" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
                   ) : (Ic("user", "w-3.5 h-3.5"))}
                 </span>
-                <span className="text-xs text-[#B8BAC4] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
-                {Ic("chevronDown", "w-3 h-3 text-[#7C8494]")}
+                <span className="text-xs text-[#8e99a8] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
+                {Ic("chevronDown", "w-3 h-3 text-[#8e99a8]")}
               </button>
               {menuProfilOuvert && (
-                <div className="absolute right-0 top-10 w-44 bg-[#12151C] border border-[#232733] rounded-md shadow-xl z-10 overflow-hidden">
-                  <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#B8BAC4] hover:bg-[#171B24] transition">Mon profil</button>
-                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#F0A0A0] hover:bg-[#171B24] transition">Déconnexion</button>
+                <div className="absolute right-0 top-10 w-44 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md shadow-xl z-10 overflow-hidden">
+                  <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#8e99a8] hover:bg-[#212a35] transition">Mon profil</button>
+                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#c0563b] hover:bg-[#212a35] transition">Déconnexion</button>
                 </div>
               )}
             </div>
           </div>
 
           <div className="mb-6">
-            <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Gestion des utilisateurs</h1>
-            <p className="text-[#7C8494] text-sm mt-1">Tous les comptes Lotafinance (clients, analystes, admins, service client)</p>
+            <h1 className="font-['Sora',sans-serif] text-2xl text-[#eef1f4]">Gestion des utilisateurs</h1>
+            <p className="text-[#8e99a8] text-sm mt-1">Tous les comptes Lotafinance (clients, analystes, admins, service client)</p>
           </div>
 
           {chargement ? (
-            <p className="text-sm text-[#7C8494] font-mono text-center py-8">Chargement...</p>
+            <p className="text-sm text-[#8e99a8] font-mono text-center py-8">Chargement...</p>
           ) : (
             <>
-              {erreur && <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>}
+              {erreur && <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>}
 
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
                 <table className="w-full text-sm border-collapse min-w-[500px]">
                   <thead>
-                    <tr className="text-left text-[10px] uppercase tracking-wide text-[#7C8494] border-b border-[#232733]">
+                    <tr className="text-left text-[10px] uppercase tracking-wide text-[#8e99a8] border-b border-[rgba(255,255,255,0.08)]">
                       <th className="pb-2 font-medium">Email</th>
                       <th className="pb-2 font-medium">Rôle</th>
                       <th className="pb-2 font-medium">Membre depuis</th>
@@ -292,20 +292,20 @@ export default function PageGestionUtilisateurs() {
                     {utilisateurs.map((u) => {
                       const couleur = couleurRole(u.role);
                       return (
-                        <tr key={u.id} className="border-b border-[#1B1F29] last:border-0">
-                          <td className="py-3 pr-3 text-[#E8E6DE] font-mono">{u.email}</td>
+                        <tr key={u.id} className="border-b border-[rgba(255,255,255,0.08)] last:border-0">
+                          <td className="py-3 pr-3 text-[#eef1f4] font-mono">{u.email}</td>
                           <td className="py-3 pr-3">
                             <span className="text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap" style={{ backgroundColor: couleur.bg, color: couleur.text }}>
                               {libelleRole(u.role)}
                             </span>
                           </td>
-                          <td className="py-3 pr-3 text-[#7C8494] text-xs whitespace-nowrap">{formaterDate(u.created_at)}</td>
+                          <td className="py-3 pr-3 text-[#8e99a8] text-xs whitespace-nowrap">{formaterDate(u.created_at)}</td>
                           <td className="py-3">
                             <select
                               value={u.role}
                               disabled={modificationEnCours === u.id || u.id === utilisateur?.id}
                               onChange={(e) => gererChangementRole(u, e.target.value)}
-                              className="bg-[#0B0E14] border border-[#232733] rounded-md px-2 py-1.5 text-xs text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition disabled:opacity-50"
+                              className="bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-2 py-1.5 text-xs text-[#eef1f4] focus:outline-none focus:border-[#c99a4b] transition disabled:opacity-50"
                             >
                               {ROLES.map((r) => (
                                 <option key={r} value={r}>{libelleRole(r)}</option>
@@ -317,7 +317,7 @@ export default function PageGestionUtilisateurs() {
                     })}
                   </tbody>
                 </table>
-                <p className="text-[11px] text-[#5A6070] mt-4">Tu ne peux pas modifier ton propre rôle depuis cette page (sécurité).</p>
+                <p className="text-[11px] text-[#66707d] mt-4">Tu ne peux pas modifier ton propre rôle depuis cette page (sécurité).</p>
               </div>
             </>
           )}

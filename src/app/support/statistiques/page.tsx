@@ -6,15 +6,10 @@ import { recupererMonProfilUtilisateur, obtenirTousLesTicketsSupport, TicketDeta
 import { HomeIcon, ClientsIcon, ReportsIcon, DocumentIcon, ProfileIcon, IconCircle, CouleurLotafinance } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
-
-function formaterDate(iso?: string | null) {
-  if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" });
-}
 
 function Icon({ path, className }: { path: string; className?: string }) {
   return (
@@ -54,8 +49,8 @@ const COULEURS_NAV: CouleurLotafinance[] = ["gold", "green", "blue", "purple", "
 const LIENS_NAV = [
   { href: "/support", label: "Tableau de bord", icone: "home" as const },
   { href: "/support/clients", label: "Clients", icone: "users" as const },
-  { href: "/support/statistiques", label: "Statistiques", icone: "chart" as const },
-  { href: "/support/satisfaction", label: "Satisfaction client", icone: "star" as const, actif: true },
+  { href: "/support/statistiques", label: "Statistiques", icone: "chart" as const, actif: true },
+  { href: "/support/satisfaction", label: "Satisfaction client", icone: "star" as const },
   { href: "/support/rapports", label: "Rapports", icone: "reports" as const },
   { href: "/support/modeles", label: "Modèles de réponses", icone: "document" as const },
   { href: "/support/canaux", label: "Canaux d'accès", icone: "channel" as const },
@@ -64,7 +59,61 @@ const LIENS_NAV = [
   { href: "/support/profil", label: "Mon profil", icone: "user" as const },
 ];
 
-export default function PageSatisfactionClient() {
+function DonutStatut({ counts }: { counts: { label: string; value: number; color: string }[] }) {
+  const total = counts.reduce((s, c) => s + c.value, 0);
+  const rayon = 45;
+  const circonference = 2 * Math.PI * rayon;
+  let cumule = 0;
+
+  return (
+    <div className="flex items-center gap-6 flex-wrap">
+      <div className="relative w-36 h-36 shrink-0">
+        <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
+          <circle cx="60" cy="60" r={rayon} fill="none" stroke="#212a35" strokeWidth="14" />
+          {total > 0 &&
+            counts.map((c) => {
+              const frac = c.value / total;
+              const dash = frac * circonference;
+              const el = (
+                <circle
+                  key={c.label}
+                  cx="60" cy="60" r={rayon} fill="none" stroke={c.color} strokeWidth="14"
+                  strokeDasharray={`${dash} ${circonference - dash}`}
+                  strokeDashoffset={-cumule}
+                />
+              );
+              cumule += dash;
+              return el;
+            })}
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-2xl font-mono font-semibold text-[#eef1f4]">{total}</span>
+          <span className="text-[10px] text-[#8e99a8]">Total</span>
+        </div>
+      </div>
+      <div className="space-y-1.5">
+        {counts.map((c) => (
+          <div key={c.label} className="flex items-center gap-2 text-xs">
+            <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: c.color }} />
+            <span className="text-[#8e99a8]">{c.label}</span>
+            <span className="text-[#8e99a8] font-mono">{c.value} ({total > 0 ? Math.round((c.value / total) * 100) : 0}%)</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CarteKpi({ label, valeur, couleur }: { label: string; valeur: string; couleur?: string }) {
+  return (
+    <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-4">
+      <p className="text-xs text-[#8e99a8] mb-1">{label}</p>
+      <p className="text-2xl font-mono font-semibold" style={{ color: couleur || "#eef1f4" }}>{valeur}</p>
+    </div>
+  );
+}
+
+export default function PageStatistiquesSupport() {
   const router = useRouter();
   const [sidebarReduite, setSidebarReduite] = useState(false);
   const [autorise, setAutorise] = useState(false);
@@ -114,24 +163,45 @@ export default function PageSatisfactionClient() {
   if (chargement || !autorise) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
 
-  const notes = tickets.filter((t) => t.satisfaction_note != null);
-  const moyenne = notes.length > 0 ? notes.reduce((s, t) => s + (t.satisfaction_note || 0), 0) / notes.length : null;
-  const repartition = [5, 4, 3, 2, 1].map((n) => ({ note: n, compte: notes.filter((t) => t.satisfaction_note === n).length }));
+  const parStatut = {
+    nouveau: tickets.filter((t) => t.statut === "nouveau").length,
+    en_cours: tickets.filter((t) => t.statut === "en_cours").length,
+    en_attente: tickets.filter((t) => t.statut === "en_attente").length,
+    resolu: tickets.filter((t) => t.statut === "resolu").length,
+  };
+  const donutCounts = [
+    { label: "Nouveaux", value: parStatut.nouveau, color: "#5B8DEF" },
+    { label: "En cours", value: parStatut.en_cours, color: "#c99a4b" },
+    { label: "En attente", value: parStatut.en_attente, color: "#C9A6F0" },
+    { label: "Résolus", value: parStatut.resolu, color: "#3fa873" },
+  ].filter((c) => c.value > 0);
+
+  const resolus = tickets.filter((t) => t.resolu_le);
+  const dureesEnHeures = resolus.map((t) => (new Date(t.resolu_le!).getTime() - new Date(t.cree_le).getTime()) / (1000 * 60 * 60));
+  const dureeMoyenneHeures = dureesEnHeures.length > 0 ? dureesEnHeures.reduce((s, d) => s + d, 0) / dureesEnHeures.length : null;
+  const libelleDuree =
+    dureeMoyenneHeures == null
+      ? "—"
+      : dureeMoyenneHeures < 24
+      ? `${dureeMoyenneHeures.toFixed(1)} h`
+      : `${(dureeMoyenneHeures / 24).toFixed(1)} j`;
+
+  const tauxResolution = tickets.length > 0 ? Math.round((parStatut.resolu / tickets.length) * 100) : 0;
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Service Client</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Service Client</p>
             </div>
           )}
         </div>
@@ -139,14 +209,14 @@ export default function PageSatisfactionClient() {
         <nav className="flex-1 space-y-1">
           {LIENS_NAV.map((lien, i) => (
             <div key={lien.href}>
-              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1">Gestion</p>}
-              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
-              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
+              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1">Gestion</p>}
+              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
+              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
               <button
                 onClick={() => router.push(lien.href)}
                 title={sidebarReduite ? lien.label : undefined}
                 className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                  lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                  lien.actif ? "bg-[#c99a4b] text-[#10151c] font-medium" : "text-[#8e99a8] hover:bg-[#1a212b]"
                 }`}
               >
                 <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
@@ -164,7 +234,7 @@ export default function PageSatisfactionClient() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -173,7 +243,7 @@ export default function PageSatisfactionClient() {
         <button
           onClick={seDeconnecter}
           title={sidebarReduite ? "Déconnexion" : undefined}
-          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#7C8494] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
+          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#8e99a8] hover:bg-[#1a212b] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
         >
           {Ic("logout")}
           {!sidebarReduite && "Déconnexion"}
@@ -181,53 +251,38 @@ export default function PageSatisfactionClient() {
       </aside>
 
       <div className="flex-1 px-4 sm:px-8 py-6 overflow-y-auto">
-        <div className="max-w-2xl mx-auto">
-          <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE] mb-1">Satisfaction client</h1>
-          <p className="text-[#7C8494] text-sm mb-6">Avis laissés par les clients sur leurs tickets résolus</p>
+        <div className="max-w-3xl mx-auto">
+          <h1 className="font-['Sora',sans-serif] text-2xl text-[#eef1f4] mb-1">Statistiques</h1>
+          <p className="text-[#8e99a8] text-sm mb-6">Vue d&apos;ensemble de l&apos;activité Service Client</p>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4 text-center">
-            <p className="text-4xl font-mono font-semibold text-[#F4C95D]">{moyenne != null ? moyenne.toFixed(1) : "—"}<span className="text-lg text-[#5A6070]">/5</span></p>
-            <p className="text-xl mt-1">{moyenne != null ? "⭐".repeat(Math.round(moyenne)) + "☆".repeat(5 - Math.round(moyenne)) : ""}</p>
-            <p className="text-xs text-[#7C8494] mt-2">Basé sur {notes.length} avis</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <CarteKpi label="Total tickets" valeur={String(tickets.length)} />
+            <CarteKpi label="Taux de résolution" valeur={`${tauxResolution}%`} couleur="#3fa873" />
+            <CarteKpi label="Temps moyen de résolution" valeur={libelleDuree} couleur="#c99a4b" />
           </div>
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-            <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Répartition des notes</p>
-            <div className="space-y-2">
-              {repartition.map((r) => (
-                <div key={r.note} className="flex items-center gap-3">
-                  <span className="text-xs text-[#B8BAC4] w-10 shrink-0">{r.note} ⭐</span>
-                  <div className="flex-1 h-2 bg-[#0B0E14] rounded-full overflow-hidden">
-                    <div className="h-full bg-[#F4C95D]" style={{ width: `${notes.length > 0 ? (r.compte / notes.length) * 100 : 0}%` }} />
-                  </div>
-                  <span className="text-xs text-[#7C8494] w-6 text-right shrink-0">{r.compte}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
-            <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Avis récents</p>
-            {notes.length === 0 ? (
-              <p className="text-sm text-[#5A6070] py-6 text-center">Aucun avis pour le moment.</p>
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
+            <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-4">Tickets par statut</p>
+            {donutCounts.length > 0 ? (
+              <DonutStatut counts={donutCounts} />
             ) : (
-              <div className="space-y-3">
-                {[...notes].sort((a, b) => b.cree_le.localeCompare(a.cree_le)).slice(0, 10).map((t) => (
-                  <button key={t.id} onClick={() => router.push(`/support/${t.id}`)} className="w-full text-left border border-[#232733] rounded-md p-3 hover:border-[#3A4050] transition">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm text-[#E8E6DE] truncate">{t.sujet}</p>
-                      <span className="text-xs shrink-0">{"⭐".repeat(t.satisfaction_note!)}</span>
-                    </div>
-                    {t.satisfaction_commentaire && <p className="text-xs text-[#7C8494] italic mt-1">« {t.satisfaction_commentaire} »</p>}
-                    <p className="text-[10px] text-[#5A6070] mt-1">{formaterDate(t.cree_le)}</p>
-                  </button>
-                ))}
-              </div>
+              <p className="text-sm text-[#66707d] py-8 text-center">Aucun ticket pour le moment.</p>
             )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 mt-4">
+            <button onClick={() => router.push("/support/satisfaction")} className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-4 text-left hover:border-[rgba(255,255,255,0.16)] transition">
+              <p className="text-sm text-[#eef1f4]">⭐ Voir la satisfaction client</p>
+              <p className="text-xs text-[#66707d] mt-1">Détail des avis et notes des clients</p>
+            </button>
+            <button onClick={() => router.push("/support/canaux")} className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-4 text-left hover:border-[rgba(255,255,255,0.16)] transition">
+              <p className="text-sm text-[#eef1f4]">📡 Voir les canaux d&apos;accès</p>
+              <p className="text-xs text-[#66707d] mt-1">Répartition des tickets par canal</p>
+            </button>
           </div>
         </div>
       </div>

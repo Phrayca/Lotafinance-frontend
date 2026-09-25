@@ -44,13 +44,13 @@ import {
 } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
 
 const CHAMP_CLASSES =
-  "w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition";
+  "w-full bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition";
 
 const LIBELLES_DOCUMENTS: Record<string, string> = {
   piece_identite: "Pièce d'identité",
@@ -67,9 +67,9 @@ const LIBELLES_STATUT: Record<string, string> = {
 };
 
 function couleurStatut(statut: string): { bg: string; text: string } {
-  if (statut === "approuve") return { bg: "#0F2420", text: "#3DDC97" };
-  if (statut === "refuse") return { bg: "#2A1414", text: "#F0A0A0" };
-  return { bg: "#2A2312", text: "#C9A227" };
+  if (statut === "approuve") return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" };
+  if (statut === "refuse") return { bg: "rgba(192,86,59,0.12)", text: "#c0563b" };
+  return { bg: "#2A2312", text: "#c99a4b" };
 }
 
 function formaterDate(iso?: string | null) {
@@ -129,10 +129,10 @@ const BAREME_SCORE = {
 };
 
 function niveauDeRisque(score?: number | null): { libelle: string; emoji: string; couleur: string; bg: string } {
-  if (score == null) return { libelle: "Non calculé", emoji: "⚪", couleur: "#7C8494", bg: "#1B1F29" };
-  if (score >= 80) return { libelle: "Risque faible", emoji: "🟢", couleur: "#3DDC97", bg: "#0F2420" };
-  if (score >= 60) return { libelle: "Risque moyen — vérification", emoji: "🟠", couleur: "#C9A227", bg: "#2A2312" };
-  return { libelle: "Risque élevé", emoji: "🔴", couleur: "#F0A0A0", bg: "#2A1414" };
+  if (score == null) return { libelle: "Non calculé", emoji: "⚪", couleur: "#8e99a8", bg: "rgba(255,255,255,0.08)" };
+  if (score >= 80) return { libelle: "Risque faible", emoji: "🟢", couleur: "#3fa873", bg: "rgba(63,168,115,0.12)" };
+  if (score >= 60) return { libelle: "Risque moyen — vérification", emoji: "🟠", couleur: "#c99a4b", bg: "#2A2312" };
+  return { libelle: "Risque élevé", emoji: "🔴", couleur: "#c0563b", bg: "rgba(192,86,59,0.12)" };
 }
 
 function Icon({ path, className }: { path: string; className?: string }) {
@@ -439,7 +439,7 @@ export default function PageDossierAnalyste() {
   if (chargement) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
@@ -447,7 +447,7 @@ export default function PageDossierAnalyste() {
   if (!dossier) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#F0A0A0]">{erreur || "Dossier introuvable"}</p>
+        <p className="text-sm text-[#c0563b]">{erreur || "Dossier introuvable"}</p>
       </main>
     );
   }
@@ -490,13 +490,13 @@ export default function PageDossierAnalyste() {
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Espace analyste</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Espace analyste</p>
             </div>
           )}
         </div>
@@ -507,7 +507,7 @@ export default function PageDossierAnalyste() {
               key={lien.href}
               onClick={() => router.push(lien.href)}
               title={sidebarReduite ? lien.label : undefined}
-              className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#B8BAC4] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
+              className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#8e99a8] hover:bg-[#1a212b] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
             >
                             <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={pathname === lien.href}>
                 {(() => {
@@ -528,7 +528,7 @@ export default function PageDossierAnalyste() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -539,16 +539,16 @@ export default function PageDossierAnalyste() {
         <div className="max-w-2xl">
           <div className="flex items-center gap-3 mb-4">
             <form onSubmit={gererRecherche} className="flex-1 relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6070]">{Ic("search", "w-4 h-4")}</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#66707d]">{Ic("search", "w-4 h-4")}</span>
               <input
                 value={recherche}
                 onChange={(e) => setRecherche(e.target.value)}
                 placeholder="Rechercher un dossier, client, numéro de téléphone..."
-                className="w-full bg-[#12151C] border border-[#232733] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition"
+                className="w-full bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition"
               />
             </form>
 
-            <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#7C8494] hover:text-[#E8E6DE] transition p-2">
+            <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#8e99a8] hover:text-[#eef1f4] transition p-2">
               {Ic("mail", "w-5 h-5")}
               {totalNonLus > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#C24545] text-white text-[9px] flex items-center justify-center">{totalNonLus}</span>
@@ -556,8 +556,8 @@ export default function PageDossierAnalyste() {
             </button>
 
             <div className="relative shrink-0">
-              <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[#232733] hover:border-[#3A4050] transition">
-                <span className="w-7 h-7 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center overflow-hidden shrink-0">
+              <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.16)] transition">
+                <span className="w-7 h-7 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] flex items-center justify-center overflow-hidden shrink-0">
                   {utilisateur && avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={avatarUrl} alt="" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
@@ -565,15 +565,15 @@ export default function PageDossierAnalyste() {
                     Ic("user", "w-3.5 h-3.5")
                   )}
                 </span>
-                <span className="text-xs text-[#B8BAC4] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
-                {Ic("chevronDown", "w-3 h-3 text-[#7C8494]")}
+                <span className="text-xs text-[#8e99a8] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
+                {Ic("chevronDown", "w-3 h-3 text-[#8e99a8]")}
               </button>
               {menuProfilOuvert && (
-                <div className="absolute right-0 top-10 w-44 bg-[#12151C] border border-[#232733] rounded-md shadow-xl z-10 overflow-hidden">
-                  <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#B8BAC4] hover:bg-[#171B24] transition">
+                <div className="absolute right-0 top-10 w-44 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md shadow-xl z-10 overflow-hidden">
+                  <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#8e99a8] hover:bg-[#212a35] transition">
                     Mon profil
                   </button>
-                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#F0A0A0] hover:bg-[#171B24] transition">
+                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#c0563b] hover:bg-[#212a35] transition">
                     Déconnexion
                   </button>
                 </div>
@@ -582,19 +582,19 @@ export default function PageDossierAnalyste() {
           </div>
 
           <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
-            <button onClick={() => router.back()} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] transition">
+            <button onClick={() => router.back()} className="text-sm text-[#8e99a8] hover:text-[#eef1f4] transition">
               ← Retour
             </button>
             <button
               onClick={gererTelechargementContrat}
-              className="text-sm font-medium text-[#C9A227] border border-[#3A3013] bg-[#1B1706] rounded-md px-3 py-1.5 hover:bg-[#241E09] transition flex items-center gap-1.5"
+              className="text-sm font-medium text-[#c99a4b] border border-[rgba(201,154,75,0.3)] bg-[rgba(201,154,75,0.15)] rounded-md px-3 py-1.5 hover:bg-[rgba(201,154,75,0.22)] transition flex items-center gap-1.5"
             >
               📄 Télécharger le contrat (PDF)
             </button>
           </div>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
           {echeancesEnRetard.length > 0 && (() => {
@@ -604,7 +604,7 @@ export default function PageDossierAnalyste() {
             return (
               <div
                 className={`flex items-center gap-2 rounded-md px-4 py-3 mb-4 text-sm ${
-                  critique ? "bg-[#3A1010] border border-[#7A2E2E] text-[#FFB3B3]" : "bg-[#2A1414] border border-[#4A2222] text-[#F0A0A0]"
+                  critique ? "bg-[#3A1010] border border-[#7A2E2E] text-[#d97a63]" : "bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] text-[#c0563b]"
                 }`}
               >
                 {Ic("alert", "w-4 h-4 shrink-0")}
@@ -614,22 +614,22 @@ export default function PageDossierAnalyste() {
             );
           })()}
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
             <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
-              <h1 className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE]">
+              <h1 className="font-['Sora',sans-serif] text-xl text-[#eef1f4]">
                 {dossier.client_first_name} {dossier.client_last_name}
               </h1>
               <div className="flex items-center gap-2">
                 {statutIdentite.identity_verified ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-full px-2.5 py-1">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3fa873] bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] rounded-full px-2.5 py-1">
                     {Ic("idCheck", "w-3.5 h-3.5")} Identité vérifiée
                   </span>
                 ) : statutIdentite.identity_rejected ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-full px-2.5 py-1">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-full px-2.5 py-1">
                     {Ic("idX", "w-3.5 h-3.5")} Identité rejetée
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#C9A227] bg-[#1B1706] border border-[#3A3013] rounded-full px-2.5 py-1">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#c99a4b] bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] rounded-full px-2.5 py-1">
                     {Ic("idCheck", "w-3.5 h-3.5")} Identité en attente
                   </span>
                 )}
@@ -637,7 +637,7 @@ export default function PageDossierAnalyste() {
                   <button
                     onClick={gererVerificationIdentite}
                     disabled={verificationIdentiteEnCours}
-                    className="text-xs font-medium text-[#3DDC97] border border-[#2A6B57] rounded-full px-2.5 py-1 hover:bg-[#0F2420] transition disabled:opacity-50"
+                    className="text-xs font-medium text-[#3fa873] border border-[#2A6B57] rounded-full px-2.5 py-1 hover:bg-[rgba(63,168,115,0.12)] transition disabled:opacity-50"
                   >
                     Vérifier
                   </button>
@@ -646,7 +646,7 @@ export default function PageDossierAnalyste() {
                   <button
                     onClick={() => setMotifRejetOuvert((v) => !v)}
                     disabled={verificationIdentiteEnCours}
-                    className="text-xs font-medium text-[#F0A0A0] border border-[#6B2E2E] rounded-full px-2.5 py-1 hover:bg-[#2A1414] transition disabled:opacity-50"
+                    className="text-xs font-medium text-[#c0563b] border border-[rgba(192,86,59,0.35)] rounded-full px-2.5 py-1 hover:bg-[rgba(192,86,59,0.12)] transition disabled:opacity-50"
                   >
                     Rejeter
                   </button>
@@ -654,7 +654,7 @@ export default function PageDossierAnalyste() {
                 <button
                   onClick={gererVerificationAutomatique}
                   disabled={verificationAutoEnCours}
-                  className="text-xs font-medium text-[#7DBEF0] border border-[#2A4A6B] rounded-full px-2.5 py-1 hover:bg-[#0F1F2A] transition disabled:opacity-50"
+                  className="text-xs font-medium text-[#7DBEF0] border border-[#2A4A6B] rounded-full px-2.5 py-1 hover:bg-[#212a35] transition disabled:opacity-50"
                 >
                   {verificationAutoEnCours ? "Analyse..." : "🔍 Vérification automatique"}
                 </button>
@@ -662,32 +662,32 @@ export default function PageDossierAnalyste() {
             </div>
 
             {erreurVerificationAuto && (
-              <p className="text-xs text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-3">{erreurVerificationAuto}</p>
+              <p className="text-xs text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-3">{erreurVerificationAuto}</p>
             )}
 
             {resultatVerificationAuto && (
-              <div className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-3 mb-3 text-xs">
+              <div className="bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md p-3 mb-3 text-xs">
                 {!resultatVerificationAuto.texte_lisible ? (
-                  <p className="text-[#7C8494]">
+                  <p className="text-[#8e99a8]">
                     ⚪ Le texte du document n&apos;a pas pu être lu automatiquement (photo floue, format non pris en charge, ou service indisponible). Vérifie le document manuellement.
                   </p>
                 ) : (
                   <>
-                    <p className="text-[#B8BAC4] mb-2 font-medium">Résultat de la lecture automatique — à vérifier avant de confirmer :</p>
+                    <p className="text-[#8e99a8] mb-2 font-medium">Résultat de la lecture automatique — à vérifier avant de confirmer :</p>
                     <div className="space-y-1">
                       <LigneCorrespondance label="Prénom" trouve={resultatVerificationAuto.prenom_trouve} />
                       <LigneCorrespondance label="Nom" trouve={resultatVerificationAuto.nom_trouve} />
                       <LigneCorrespondance label="Numéro de pièce" trouve={resultatVerificationAuto.numero_piece_trouve} />
                     </div>
                     {resultatVerificationAuto.extrait_texte && (
-                      <p className="text-[#5A6070] mt-2 italic">Extrait lu : « {resultatVerificationAuto.extrait_texte.slice(0, 150)}{resultatVerificationAuto.extrait_texte.length > 150 ? "…" : ""} »</p>
+                      <p className="text-[#66707d] mt-2 italic">Extrait lu : « {resultatVerificationAuto.extrait_texte.slice(0, 150)}{resultatVerificationAuto.extrait_texte.length > 150 ? "…" : ""} »</p>
                     )}
                   </>
                 )}
               </div>
             )}
             {statutIdentite.identity_rejected && statutIdentite.identity_rejection_reason && (
-              <p className="text-xs text-[#F0A0A0] mb-2">Motif du rejet : {statutIdentite.identity_rejection_reason}</p>
+              <p className="text-xs text-[#c0563b] mb-2">Motif du rejet : {statutIdentite.identity_rejection_reason}</p>
             )}
             {motifRejetOuvert && (
               <div className="flex gap-2 mb-3">
@@ -695,18 +695,18 @@ export default function PageDossierAnalyste() {
                   value={motifRejet}
                   onChange={(e) => setMotifRejet(e.target.value)}
                   placeholder="Motif du rejet (ex: photo illisible)"
-                  className="flex-1 bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-1.5 text-xs text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition"
+                  className="flex-1 bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-1.5 text-xs text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition"
                 />
                 <button
                   onClick={gererRejetIdentite}
                   disabled={verificationIdentiteEnCours}
-                  className="text-xs font-medium bg-[#4A2222] text-[#F0A0A0] border border-[#6B2E2E] rounded-md px-3 py-1.5 hover:bg-[#5A2828] transition disabled:opacity-50"
+                  className="text-xs font-medium bg-[rgba(192,86,59,0.3)] text-[#c0563b] border border-[rgba(192,86,59,0.35)] rounded-md px-3 py-1.5 hover:bg-[#5A2828] transition disabled:opacity-50"
                 >
                   Confirmer
                 </button>
               </div>
             )}
-            <p className="text-[#7C8494] text-sm mb-6 font-mono">{dossier.client_phone}</p>
+            <p className="text-[#8e99a8] text-sm mb-6 font-mono">{dossier.client_phone}</p>
 
             <div className="grid grid-cols-2 gap-4 text-sm mb-6">
               <Ligne label="Montant demandé" valeur={formaterMontant(dossier.amount_requested)} />
@@ -723,9 +723,9 @@ export default function PageDossierAnalyste() {
               <Ligne label="Capacité disponible" valeur={formaterMontant(capaciteDisponible)} />
             </div>
 
-            <div className="border-t border-[#232733] pt-4 mb-2">
+            <div className="border-t border-[rgba(255,255,255,0.08)] pt-4 mb-2">
               <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
-                <h2 className="text-sm font-medium text-[#E8E6DE]">Score de risque automatique</h2>
+                <h2 className="text-sm font-medium text-[#eef1f4]">Score de risque automatique</h2>
                 <span
                   className="inline-flex items-center gap-1.5 text-xs font-medium rounded-full px-3 py-1"
                   style={{ backgroundColor: infosRisque.bg, color: infosRisque.couleur }}
@@ -735,8 +735,8 @@ export default function PageDossierAnalyste() {
               </div>
 
               <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-3xl font-mono font-semibold text-[#E8E6DE]">{dossier.credit_score ?? "—"}</span>
-                <span className="text-sm text-[#5A6070]">/100</span>
+                <span className="text-3xl font-mono font-semibold text-[#eef1f4]">{dossier.credit_score ?? "—"}</span>
+                <span className="text-sm text-[#66707d]">/100</span>
               </div>
 
               <div className="space-y-3">
@@ -747,19 +747,19 @@ export default function PageDossierAnalyste() {
                 <BarreScore label="Historique Lotafinance" valeur={dossier.history_score} max={BAREME_SCORE.historique} />
               </div>
 
-              <div className="flex items-center justify-between gap-3 flex-wrap mt-4 text-sm bg-[#0B0E14] border border-[#1B1F29] rounded-md px-4 py-3">
-                <span className="text-[#7C8494]">Montant recommandé</span>
-                <span className="font-mono text-[#E8E6DE] font-medium">{formaterMontant(dossier.recommended_amount)}</span>
-                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${montantCoherent ? "bg-[#0F2420] text-[#3DDC97]" : "bg-[#2A2312] text-[#C9A227]"}`}>
+              <div className="flex items-center justify-between gap-3 flex-wrap mt-4 text-sm bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-4 py-3">
+                <span className="text-[#8e99a8]">Montant recommandé</span>
+                <span className="font-mono text-[#eef1f4] font-medium">{formaterMontant(dossier.recommended_amount)}</span>
+                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${montantCoherent ? "bg-[rgba(63,168,115,0.12)] text-[#3fa873]" : "bg-[#2A2312] text-[#c99a4b]"}`}>
                   {montantCoherent ? "Demande cohérente" : "Supérieur à la recommandation"}
                 </span>
               </div>
             </div>
 
             {/* Analyse Lotafinance — texte généré à partir des données réelles du dossier */}
-            <div className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-4 mt-4">
-              <p className="text-xs text-[#C9A227] uppercase tracking-wide font-medium mb-2">Analyse Lotafinance</p>
-              <p className="text-sm text-[#B8BAC4] leading-relaxed">
+            <div className="bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md p-4 mt-4">
+              <p className="text-xs text-[#c99a4b] uppercase tracking-wide font-medium mb-2">Analyse Lotafinance</p>
+              <p className="text-sm text-[#8e99a8] leading-relaxed">
                 Client {libelleCategoriePro !== "Non renseignée" ? `en situation de « ${libelleCategoriePro.toLowerCase()} »` : "à la situation professionnelle non renseignée"}
                 {dossier.client_activity_seniority_months != null ? `, ${formaterAnciennete(dossier.client_activity_seniority_months).toLowerCase()} d'ancienneté` : ""}.{" "}
                 Revenu déclaré de {formaterMontant(dossier.monthly_income)} pour {formaterMontant(dossier.monthly_expenses)} de charges
@@ -775,7 +775,7 @@ export default function PageDossierAnalyste() {
             </div>
 
             {dossier.facilite_paiement && (scoreFaible || risqueEleve) && (
-              <div className="flex items-start gap-2 bg-[#2A2312] border border-[#3A3013] rounded-md px-4 py-3 mt-4 text-[#C9A227] text-sm">
+              <div className="flex items-start gap-2 bg-[#2A2312] border border-[rgba(201,154,75,0.3)] rounded-md px-4 py-3 mt-4 text-[#c99a4b] text-sm">
                 {Ic("alert", "w-4 h-4 shrink-0 mt-0.5")}
                 <span>
                   Ce client demande la facilité de paiement mais présente un {scoreFaible ? "score faible" : ""}
@@ -787,15 +787,15 @@ export default function PageDossierAnalyste() {
           </div>
 
           {/* Historique du client */}
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-1">Historique de ce client</h2>
-            <p className="text-sm text-[#E8E6DE] mb-3 font-medium">
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+            <h2 className="text-sm font-medium text-[#eef1f4] mb-1">Historique de ce client</h2>
+            <p className="text-sm text-[#eef1f4] mb-3 font-medium">
               {dossier.client_nombre_prets_reussis} prêt{dossier.client_nombre_prets_reussis > 1 ? "s" : ""} réussi{dossier.client_nombre_prets_reussis > 1 ? "s" : ""}
               {" — "}
               {dossier.client_nombre_echeances_en_retard_historique} retard{dossier.client_nombre_echeances_en_retard_historique > 1 ? "s" : ""}
               {" — défauts non suivis actuellement"}
             </p>
-            <p className="text-xs text-[#7C8494] mb-3">
+            <p className="text-xs text-[#8e99a8] mb-3">
               {pretsPrecedents.length === 0
                 ? "Aucun autre dossier chez Lotafinance."
                 : `${pretsPrecedents.length} autre${pretsPrecedents.length > 1 ? "s" : ""} dossier${pretsPrecedents.length > 1 ? "s" : ""} (tous statuts confondus)`}
@@ -805,12 +805,12 @@ export default function PageDossierAnalyste() {
                 {pretsPrecedents.map((p) => {
                   const couleur = couleurStatut(p.status);
                   return (
-                    <div key={p.id} className="flex items-center justify-between border border-[#232733] rounded-md p-3">
+                    <div key={p.id} className="flex items-center justify-between border border-[rgba(255,255,255,0.08)] rounded-md p-3">
                       <div>
-                        <p className="text-sm font-mono text-[#E8E6DE]">
+                        <p className="text-sm font-mono text-[#eef1f4]">
                           {formaterMontant(p.amount_requested)} — {p.duration_weeks} sem.
                         </p>
-                        <p className="text-xs text-[#7C8494] mt-0.5">Demandé le {formaterDate(p.submitted_at)}</p>
+                        <p className="text-xs text-[#8e99a8] mt-0.5">Demandé le {formaterDate(p.submitted_at)}</p>
                       </div>
                       <span
                         className="text-xs font-medium px-2.5 py-1 rounded-full shrink-0"
@@ -827,15 +827,15 @@ export default function PageDossierAnalyste() {
 
           {/* Simulateur de prêt — outil d'aide à la décision, ne modifie rien tant que l'analyste n'applique pas */}
           {!dejaDecide && (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <h2 className="text-sm font-medium text-[#E8E6DE] mb-1">Simulateur de prêt</h2>
-              <p className="text-xs text-[#7C8494] mb-4">
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+              <h2 className="text-sm font-medium text-[#eef1f4] mb-1">Simulateur de prêt</h2>
+              <p className="text-xs text-[#8e99a8] mb-4">
                 Ajustez librement le montant, la durée ou le taux pour comparer différents scénarios avant de décider. Rien n&apos;est enregistré ici.
               </p>
 
               <div className="grid grid-cols-3 gap-3 mb-4">
                 <div>
-                  <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Montant (F)</label>
+                  <label className="block text-xs font-medium text-[#8e99a8] mb-1">Montant (F)</label>
                   <input
                     type="number" min={0}
                     value={simMontant}
@@ -844,7 +844,7 @@ export default function PageDossierAnalyste() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Durée</label>
+                  <label className="block text-xs font-medium text-[#8e99a8] mb-1">Durée</label>
                   <select
                     value={simDuree}
                     onChange={(e) => {
@@ -859,7 +859,7 @@ export default function PageDossierAnalyste() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Taux (%)</label>
+                  <label className="block text-xs font-medium text-[#8e99a8] mb-1">Taux (%)</label>
                   <input
                     type="number" min={0} step={0.1}
                     value={simTaux}
@@ -869,7 +869,7 @@ export default function PageDossierAnalyste() {
                 </div>
               </div>
 
-              <div className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-4 space-y-1.5 text-sm font-mono mb-4">
+              <div className="bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md p-4 space-y-1.5 text-sm font-mono mb-4">
                 <LigneCout label="Intérêts" valeur={formaterMontant(simInterets)} />
                 <LigneCout label="Total à rembourser (échéance)" valeur={formaterMontant(simTotal)} gras />
                 <LigneCout label="Capacité disponible" valeur={formaterMontant(capaciteDisponible)} />
@@ -878,7 +878,7 @@ export default function PageDossierAnalyste() {
 
               <div
                 className={`flex items-center gap-2 rounded-md px-4 py-3 mb-4 text-sm ${
-                  simMarge >= 0 ? "bg-[#0F2420] border border-[#1E4A3D] text-[#3DDC97]" : "bg-[#2A1414] border border-[#4A2222] text-[#F0A0A0]"
+                  simMarge >= 0 ? "bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] text-[#3fa873]" : "bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] text-[#c0563b]"
                 }`}
               >
                 {simMarge >= 0 ? "🟢" : "🔴"} {simMarge >= 0 ? "Capacité suffisante pour ce scénario" : "Capacité insuffisante — l'échéance dépasse la capacité disponible"}
@@ -886,7 +886,7 @@ export default function PageDossierAnalyste() {
 
               <button
                 onClick={() => setMontantApprouve(simMontant)}
-                className="w-full text-sm font-medium bg-[#1B1706] border border-[#3A3013] text-[#C9A227] py-2.5 rounded-md hover:bg-[#241E09] transition"
+                className="w-full text-sm font-medium bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] text-[#c99a4b] py-2.5 rounded-md hover:bg-[rgba(201,154,75,0.22)] transition"
               >
                 Appliquer ce montant ({formaterMontant(simMontantNombre)}) à la décision ci-dessous
               </button>
@@ -894,19 +894,19 @@ export default function PageDossierAnalyste() {
           )}
 
           {journal.length > 0 && (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <h2 className="text-sm font-medium text-[#E8E6DE] mb-3 flex items-center gap-2">{Ic("history", "w-4 h-4")} Journal des décisions</h2>
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+              <h2 className="text-sm font-medium text-[#eef1f4] mb-3 flex items-center gap-2">{Ic("history", "w-4 h-4")} Journal des décisions</h2>
               <div className="space-y-2">
                 {journal.map((j) => (
-                  <div key={j.id} className="border border-[#232733] rounded-md p-3 text-sm">
-                    <p className="text-[#E8E6DE]">
+                  <div key={j.id} className="border border-[rgba(255,255,255,0.08)] rounded-md p-3 text-sm">
+                    <p className="text-[#eef1f4]">
                       {j.ancien_statut ? `${LIBELLES_STATUT[j.ancien_statut] || j.ancien_statut} → ` : ""}
                       <strong>{LIBELLES_STATUT[j.nouveau_statut] || j.nouveau_statut}</strong>
                     </p>
-                    <p className="text-xs text-[#7C8494] mt-0.5">
+                    <p className="text-xs text-[#8e99a8] mt-0.5">
                       {formaterDate(j.cree_le)} — {j.analyst_email ? `par ${j.analyst_email}` : "décision automatique du système"}
                     </p>
-                    {j.commentaire && <p className="text-xs text-[#B8BAC4] mt-1 italic">&quot;{j.commentaire}&quot;</p>}
+                    {j.commentaire && <p className="text-xs text-[#8e99a8] mt-1 italic">&quot;{j.commentaire}&quot;</p>}
                   </div>
                 ))}
               </div>
@@ -914,8 +914,8 @@ export default function PageDossierAnalyste() {
           )}
 
           {dossier.status === "approuve" && (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Rentabilité de ce prêt</h2>
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+              <h2 className="text-sm font-medium text-[#eef1f4] mb-3">Rentabilité de ce prêt</h2>
               <div className="grid grid-cols-2 gap-3 text-sm font-mono">
                 <Ligne label="Capital versé au client" valeur={formaterMontant(Math.max(capital - FRAIS_DE_TRAITEMENT, 0))} />
                 <Ligne label="Frais de traitement encaissés" valeur={formaterMontant(FRAIS_DE_TRAITEMENT)} />
@@ -925,26 +925,26 @@ export default function PageDossierAnalyste() {
                 <Ligne label="Bénéfice net estimé (à terme)" valeur={formaterMontant(interetsPrevus + FRAIS_DE_TRAITEMENT)} />
                 <Ligne label="Risque de perte actuel" valeur={formaterMontant(resteAPercevoir)} />
               </div>
-              <p className="text-[11px] text-[#5A6070] mt-3">
+              <p className="text-[11px] text-[#66707d] mt-3">
                 Estimation basée sur les échéances confirmées. Le bénéfice inclut les {formaterMontant(FRAIS_DE_TRAITEMENT)} de frais de
                 traitement, encaissés dès le déboursement. Le risque de perte suppose que le client cesse tout remboursement à partir de maintenant.
               </p>
             </div>
           )}
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Documents fournis</h2>
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+            <h2 className="text-sm font-medium text-[#eef1f4] mb-3">Documents fournis</h2>
             {documents.length === 0 ? (
-              <p className="text-sm text-[#5A6070]">Aucun document envoyé par ce client.</p>
+              <p className="text-sm text-[#66707d]">Aucun document envoyé par ce client.</p>
             ) : (
               <div className="space-y-2">
                 {documents.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between border border-[#232733] rounded-md p-3">
+                  <div key={doc.id} className="flex items-center justify-between border border-[rgba(255,255,255,0.08)] rounded-md p-3">
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-[#E8E6DE]">{LIBELLES_DOCUMENTS[doc.document_type] || doc.document_type}</p>
-                      <p className="text-xs text-[#7C8494] truncate">{doc.original_file_name}</p>
+                      <p className="text-sm font-medium text-[#eef1f4]">{LIBELLES_DOCUMENTS[doc.document_type] || doc.document_type}</p>
+                      <p className="text-xs text-[#8e99a8] truncate">{doc.original_file_name}</p>
                     </div>
-                    <button onClick={() => gererTelechargement(doc)} className="shrink-0 text-sm font-medium text-[#C9A227] hover:text-[#DDB63A] underline">
+                    <button onClick={() => gererTelechargement(doc)} className="shrink-0 text-sm font-medium text-[#c99a4b] hover:text-[#e4b565] underline">
                       Télécharger
                     </button>
                   </div>
@@ -954,9 +954,9 @@ export default function PageDossierAnalyste() {
           </div>
 
           {dossier.status === "approuve" && echeances.length > 0 && (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Échéances — confirmation de paiement</h2>
-              <p className="text-xs text-[#7C8494] mb-3">
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+              <h2 className="text-sm font-medium text-[#eef1f4] mb-3">Échéances — confirmation de paiement</h2>
+              <p className="text-xs text-[#8e99a8] mb-3">
                 Confirmez uniquement après avoir vérifié que le paiement a bien été reçu.
               </p>
               <div className="space-y-2">
@@ -968,14 +968,14 @@ export default function PageDossierAnalyste() {
                     <div
                       key={e.id}
                       className={`flex items-center justify-between border rounded-md p-3 ${
-                        critique ? "border-[#7A2E2E] bg-[#2A0D0D]" : retard ? "border-[#4A2222] bg-[#1A0F0F]" : "border-[#232733]"
+                        critique ? "border-[#7A2E2E] bg-[#2A0D0D]" : retard ? "border-[rgba(192,86,59,0.3)] bg-[#1A0F0F]" : "border-[rgba(255,255,255,0.08)]"
                       }`}
                     >
                       <div>
-                        <p className="text-sm font-mono text-[#E8E6DE]">
+                        <p className="text-sm font-mono text-[#eef1f4]">
                           Mensualité {e.numero} — {formaterMontant(e.montant)}
                         </p>
-                        <p className={`text-xs mt-0.5 ${critique ? "text-[#FFB3B3] font-medium" : retard ? "text-[#F0A0A0]" : "text-[#7C8494]"}`}>
+                        <p className={`text-xs mt-0.5 ${critique ? "text-[#d97a63] font-medium" : retard ? "text-[#c0563b]" : "text-[#8e99a8]"}`}>
                           {e.payee
                             ? `Confirmée le ${formaterDate(e.payee_le)}`
                             : retard
@@ -984,12 +984,12 @@ export default function PageDossierAnalyste() {
                         </p>
                       </div>
                       {e.payee ? (
-                        <span className="text-[#3DDC97] font-medium text-sm">✓ Confirmée</span>
+                        <span className="text-[#3fa873] font-medium text-sm">✓ Confirmée</span>
                       ) : (
                         <button
                           onClick={() => gererConfirmationPaiement(e.id)}
                           disabled={confirmationEnCours === e.id}
-                          className="shrink-0 bg-[#1E4A3D] text-[#3DDC97] border border-[#2A6B57] text-sm font-medium px-3 py-1.5 rounded-md hover:bg-[#245A49] transition disabled:opacity-50"
+                          className="shrink-0 bg-[rgba(63,168,115,0.3)] text-[#3fa873] border border-[#2A6B57] text-sm font-medium px-3 py-1.5 rounded-md hover:bg-[#245A49] transition disabled:opacity-50"
                         >
                           {confirmationEnCours === e.id ? "..." : "Confirmer le paiement"}
                         </button>
@@ -1002,15 +1002,15 @@ export default function PageDossierAnalyste() {
           )}
 
           {!dejaDecide ? (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Décision</h2>
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+              <h2 className="text-sm font-medium text-[#eef1f4] mb-3">Décision</h2>
 
               {dossier.credit_score != null && dossier.credit_score < 80 && (
                 <div
                   className={`flex items-start gap-2 rounded-md px-4 py-3 mb-4 text-sm ${
                     dossier.credit_score < 60
-                      ? "bg-[#2A1414] border border-[#4A2222] text-[#F0A0A0]"
-                      : "bg-[#1B1706] border border-[#3A3013] text-[#C9A227]"
+                      ? "bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] text-[#c0563b]"
+                      : "bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] text-[#c99a4b]"
                   }`}
                 >
                   {Ic("alert", "w-4 h-4 shrink-0 mt-0.5")}
@@ -1025,12 +1025,12 @@ export default function PageDossierAnalyste() {
               )}
 
               <div className="mb-3">
-                <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Montant à approuver (F)</label>
+                <label className="block text-sm font-medium text-[#8e99a8] mb-1">Montant à approuver (F)</label>
                 <input type="number" min={0} value={montantApprouve} onChange={(e) => setMontantApprouve(e.target.value)} className={CHAMP_CLASSES} />
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Commentaire (optionnel)</label>
+                <label className="block text-sm font-medium text-[#8e99a8] mb-1">Commentaire (optionnel)</label>
                 <textarea value={commentaire} onChange={(e) => setCommentaire(e.target.value)} rows={3} className={CHAMP_CLASSES} />
               </div>
 
@@ -1038,30 +1038,30 @@ export default function PageDossierAnalyste() {
                 <button
                   onClick={() => gererDecision("approuve")}
                   disabled={decisionEnCours}
-                  className="flex-1 bg-[#1E4A3D] text-[#3DDC97] border border-[#2A6B57] text-sm font-medium py-2.5 rounded-md hover:bg-[#245A49] transition disabled:opacity-50"
+                  className="flex-1 bg-[rgba(63,168,115,0.3)] text-[#3fa873] border border-[#2A6B57] text-sm font-medium py-2.5 rounded-md hover:bg-[#245A49] transition disabled:opacity-50"
                 >
                   {decisionEnCours ? "..." : "Approuver"}
                 </button>
                 <button
                   onClick={() => gererDecision("infos_demandees")}
                   disabled={decisionEnCours}
-                  className="flex-1 bg-[#2A2312] text-[#C9A227] border border-[#3A3013] text-sm font-medium py-2.5 rounded-md hover:bg-[#332A16] transition disabled:opacity-50"
+                  className="flex-1 bg-[#2A2312] text-[#c99a4b] border border-[rgba(201,154,75,0.3)] text-sm font-medium py-2.5 rounded-md hover:bg-[#332A16] transition disabled:opacity-50"
                 >
                   {decisionEnCours ? "..." : "Demander des infos"}
                 </button>
                 <button
                   onClick={() => gererDecision("refuse")}
                   disabled={decisionEnCours}
-                  className="flex-1 bg-[#4A2222] text-[#F0A0A0] border border-[#6B2E2E] text-sm font-medium py-2.5 rounded-md hover:bg-[#5A2828] transition disabled:opacity-50"
+                  className="flex-1 bg-[rgba(192,86,59,0.3)] text-[#c0563b] border border-[rgba(192,86,59,0.35)] text-sm font-medium py-2.5 rounded-md hover:bg-[#5A2828] transition disabled:opacity-50"
                 >
                   {decisionEnCours ? "..." : "Refuser"}
                 </button>
               </div>
             </div>
           ) : (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <p className="text-sm text-[#B8BAC4]">
-                Ce dossier a déjà été traité : <strong className="text-[#E8E6DE]">{dossier.status}</strong>
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+              <p className="text-sm text-[#8e99a8]">
+                Ce dossier a déjà été traité : <strong className="text-[#eef1f4]">{dossier.status}</strong>
                 {dossier.decision_reason ? ` — ${dossier.decision_reason}` : ""}
               </p>
             </div>
@@ -1069,37 +1069,37 @@ export default function PageDossierAnalyste() {
 
           {/* Zone de suppression — réservée aux admins */}
           {monRole === "admin" && (
-            <div className="bg-[#1A0F0F] border border-[#4A2222] rounded-lg p-6">
-              <h2 className="text-sm font-medium text-[#F0A0A0] mb-2 flex items-center gap-2">{Ic("trash", "w-4 h-4")} Zone sensible</h2>
+            <div className="bg-[#1A0F0F] border border-[rgba(192,86,59,0.3)] rounded-lg p-6">
+              <h2 className="text-sm font-medium text-[#c0563b] mb-2 flex items-center gap-2">{Ic("trash", "w-4 h-4")} Zone sensible</h2>
               {!demandeSuppression ? (
                 <>
-                  <p className="text-xs text-[#B8BAC4] mb-3">
+                  <p className="text-xs text-[#8e99a8] mb-3">
                     Supprime définitivement ce dossier, son score et ses échéances. Action irréversible.
                   </p>
                   <button
                     onClick={gererSuppression}
-                    className="text-sm font-medium text-[#F0A0A0] border border-[#6B2E2E] rounded-md px-4 py-2 hover:bg-[#2A1414] transition"
+                    className="text-sm font-medium text-[#c0563b] border border-[rgba(192,86,59,0.35)] rounded-md px-4 py-2 hover:bg-[rgba(192,86,59,0.12)] transition"
                   >
                     Supprimer ce dossier
                   </button>
                 </>
               ) : (
                 <>
-                  <p className="text-sm text-[#F0A0A0] mb-3 font-medium">
+                  <p className="text-sm text-[#c0563b] mb-3 font-medium">
                     Es-tu sûr ? Cette action est définitive et ne peut pas être annulée.
                   </p>
                   <div className="flex gap-3">
                     <button
                       onClick={gererSuppression}
                       disabled={suppressionEnCours}
-                      className="bg-[#4A2222] text-[#F0A0A0] border border-[#6B2E2E] text-sm font-medium px-4 py-2 rounded-md hover:bg-[#5A2828] transition disabled:opacity-50"
+                      className="bg-[rgba(192,86,59,0.3)] text-[#c0563b] border border-[rgba(192,86,59,0.35)] text-sm font-medium px-4 py-2 rounded-md hover:bg-[#5A2828] transition disabled:opacity-50"
                     >
                       {suppressionEnCours ? "Suppression..." : "Oui, supprimer définitivement"}
                     </button>
                     <button
                       onClick={() => setDemandeSuppression(false)}
                       disabled={suppressionEnCours}
-                      className="text-sm font-medium text-[#7C8494] border border-[#232733] px-4 py-2 rounded-md hover:bg-[#12151C] transition"
+                      className="text-sm font-medium text-[#8e99a8] border border-[rgba(255,255,255,0.08)] px-4 py-2 rounded-md hover:bg-[#1a212b] transition"
                     >
                       Annuler
                     </button>
@@ -1117,16 +1117,16 @@ export default function PageDossierAnalyste() {
 function Ligne({ label, valeur }: { label: string; valeur: string }) {
   return (
     <div>
-      <p className="text-[#7C8494] text-xs">{label}</p>
-      <p className="font-medium text-[#E8E6DE] font-mono">{valeur}</p>
+      <p className="text-[#8e99a8] text-xs">{label}</p>
+      <p className="font-medium text-[#eef1f4] font-mono">{valeur}</p>
     </div>
   );
 }
 
 function LigneCorrespondance({ label, trouve }: { label: string; trouve: boolean | null }) {
-  const etat = trouve === true ? { emoji: "✅", texte: "correspond", couleur: "text-[#3DDC97]" }
-    : trouve === false ? { emoji: "⚠️", texte: "ne correspond pas au document", couleur: "text-[#F0A0A0]" }
-    : { emoji: "⚪", texte: "non renseigné dans le profil", couleur: "text-[#7C8494]" };
+  const etat = trouve === true ? { emoji: "✅", texte: "correspond", couleur: "text-[#3fa873]" }
+    : trouve === false ? { emoji: "⚠️", texte: "ne correspond pas au document", couleur: "text-[#c0563b]" }
+    : { emoji: "⚪", texte: "non renseigné dans le profil", couleur: "text-[#8e99a8]" };
   return (
     <div className={`flex items-center gap-2 ${etat.couleur}`}>
       <span>{etat.emoji}</span>
@@ -1137,9 +1137,9 @@ function LigneCorrespondance({ label, trouve }: { label: string; trouve: boolean
 
 function LigneCout({ label, valeur, gras, accent }: { label: string; valeur: string; gras?: boolean; accent?: boolean }) {
   return (
-    <div className={`flex justify-between ${gras ? "border-t border-[#232733] pt-1.5 mt-1.5" : ""}`}>
-      <span className={gras ? "text-[#E8E6DE] font-medium" : "text-[#7C8494]"}>{label}</span>
-      <span className={accent ? "text-[#3DDC97] font-medium" : gras ? "text-[#E8E6DE] font-medium" : "text-[#E8E6DE]"}>{valeur}</span>
+    <div className={`flex justify-between ${gras ? "border-t border-[rgba(255,255,255,0.08)] pt-1.5 mt-1.5" : ""}`}>
+      <span className={gras ? "text-[#eef1f4] font-medium" : "text-[#8e99a8]"}>{label}</span>
+      <span className={accent ? "text-[#3fa873] font-medium" : gras ? "text-[#eef1f4] font-medium" : "text-[#eef1f4]"}>{valeur}</span>
     </div>
   );
 }
@@ -1147,14 +1147,14 @@ function LigneCout({ label, valeur, gras, accent }: { label: string; valeur: str
 function BarreScore({ label, valeur, max }: { label: string; valeur?: number | null; max: number }) {
   const v = valeur ?? 0;
   const pourcentage = max > 0 ? Math.min(100, Math.round((v / max) * 100)) : 0;
-  const couleur = pourcentage >= 70 ? "#3DDC97" : pourcentage >= 40 ? "#C9A227" : "#F0A0A0";
+  const couleur = pourcentage >= 70 ? "#3fa873" : pourcentage >= 40 ? "#c99a4b" : "#c0563b";
   return (
     <div>
       <div className="flex items-center justify-between text-xs mb-1">
-        <span className="text-[#B8BAC4]">{label}</span>
-        <span className="text-[#7C8494] font-mono">{valeur != null ? valeur : "—"}/{max}</span>
+        <span className="text-[#8e99a8]">{label}</span>
+        <span className="text-[#8e99a8] font-mono">{valeur != null ? valeur : "—"}/{max}</span>
       </div>
-      <div className="h-1.5 bg-[#0B0E14] border border-[#1B1F29] rounded-full overflow-hidden">
+      <div className="h-1.5 bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-full overflow-hidden">
         <div className="h-full rounded-full" style={{ width: `${pourcentage}%`, backgroundColor: couleur }} />
       </div>
     </div>

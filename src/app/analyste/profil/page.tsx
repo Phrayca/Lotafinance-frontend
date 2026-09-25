@@ -33,13 +33,13 @@ import {
 } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
 
 const CHAMP_CLASSES =
-  "w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition";
+  "w-full bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2 text-sm text-[#eef1f4] focus:outline-none focus:border-[#c99a4b] transition";
 
 type Utilisateur = { id: string; email: string; role: string; first_name?: string; last_name?: string; created_at?: string };
 
@@ -318,20 +318,20 @@ export default function PageProfilAnalyste() {
   if (chargement) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Espace analyste</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Espace analyste</p>
             </div>
           )}
         </div>
@@ -343,7 +343,7 @@ export default function PageProfilAnalyste() {
               onClick={() => router.push(lien.href)}
               title={sidebarReduite ? lien.label : undefined}
               className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                lien.actif ? "bg-[#c99a4b] text-[#10151c] font-medium" : "text-[#8e99a8] hover:bg-[#1a212b]"
               }`}
             >
                             <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
@@ -365,7 +365,7 @@ export default function PageProfilAnalyste() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -376,16 +376,16 @@ export default function PageProfilAnalyste() {
         <div className="max-w-xl">
           <div className="flex items-center gap-3 mb-6">
             <form onSubmit={gererRecherche} className="flex-1 relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6070]">{Ic("search", "w-4 h-4")}</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#66707d]">{Ic("search", "w-4 h-4")}</span>
               <input
                 value={recherche}
                 onChange={(e) => setRecherche(e.target.value)}
                 placeholder="Rechercher un dossier, client, numéro de téléphone..."
-                className="w-full bg-[#12151C] border border-[#232733] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition"
+                className="w-full bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition"
               />
             </form>
 
-            <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#7C8494] hover:text-[#E8E6DE] transition p-2">
+            <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#8e99a8] hover:text-[#eef1f4] transition p-2">
               {Ic("mail", "w-5 h-5")}
               {totalNonLus > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#C24545] text-white text-[9px] flex items-center justify-center">{totalNonLus}</span>
@@ -393,8 +393,8 @@ export default function PageProfilAnalyste() {
             </button>
 
             <div className="relative shrink-0">
-              <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[#232733] hover:border-[#3A4050] transition">
-                <span className="w-7 h-7 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center overflow-hidden shrink-0">
+              <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.16)] transition">
+                <span className="w-7 h-7 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] flex items-center justify-center overflow-hidden shrink-0">
                   {statutCompte?.has_avatar && avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={avatarUrl} alt="" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
@@ -402,15 +402,15 @@ export default function PageProfilAnalyste() {
                     Ic("user", "w-3.5 h-3.5")
                   )}
                 </span>
-                <span className="text-xs text-[#B8BAC4] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
-                {Ic("chevronDown", "w-3 h-3 text-[#7C8494]")}
+                <span className="text-xs text-[#8e99a8] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
+                {Ic("chevronDown", "w-3 h-3 text-[#8e99a8]")}
               </button>
               {menuProfilOuvert && (
-                <div className="absolute right-0 top-10 w-44 bg-[#12151C] border border-[#232733] rounded-md shadow-xl z-10 overflow-hidden">
-                  <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#B8BAC4] hover:bg-[#171B24] transition">
+                <div className="absolute right-0 top-10 w-44 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md shadow-xl z-10 overflow-hidden">
+                  <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#8e99a8] hover:bg-[#212a35] transition">
                     Mon profil
                   </button>
-                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#F0A0A0] hover:bg-[#171B24] transition">
+                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#c0563b] hover:bg-[#212a35] transition">
                     Déconnexion
                   </button>
                 </div>
@@ -418,58 +418,58 @@ export default function PageProfilAnalyste() {
             </div>
           </div>
 
-          <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE] mb-1">Mon profil</h1>
-          <p className="text-[#7C8494] text-sm mb-6">Informations de ton compte Lotafinance</p>
+          <h1 className="font-['Sora',sans-serif] text-2xl text-[#eef1f4] mb-1">Mon profil</h1>
+          <p className="text-[#8e99a8] text-sm mb-6">Informations de ton compte Lotafinance</p>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
           {utilisateur && (
             <>
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4 flex items-center gap-4">
-                <label className="relative w-14 h-14 shrink-0 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center overflow-hidden cursor-pointer group">
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4 flex items-center gap-4">
+                <label className="relative w-14 h-14 shrink-0 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] flex items-center justify-center overflow-hidden cursor-pointer group">
                   {statutCompte?.has_avatar && avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={avatarUrl} alt="Photo de profil" className="w-full h-full object-cover" onError={() => setStatutCompte((p) => (p ? { ...p, has_avatar: false } : p))} />
                   ) : (
                     Ic("user", "w-6 h-6")
                   )}
-                  <span className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[#E8E6DE]">
+                  <span className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[#eef1f4]">
                     {Ic("camera", "w-4 h-4")}
                   </span>
                   <input type="file" accept="image/*" className="hidden" onChange={gererEnvoiPhoto} disabled={envoiPhotoEnCours} />
                 </label>
                 <div className="min-w-0">
-                  <p className="text-base font-medium text-[#E8E6DE] truncate">
+                  <p className="text-base font-medium text-[#eef1f4] truncate">
                     {utilisateur.first_name || utilisateur.last_name ? `${utilisateur.first_name || ""} ${utilisateur.last_name || ""}`.trim() : utilisateur.email}
                   </p>
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#C9A227] bg-[#1B1706] border border-[#3A3013] rounded-full px-2.5 py-1 mt-1.5">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#c99a4b] bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] rounded-full px-2.5 py-1 mt-1.5">
                     {Ic("badge", "w-3.5 h-3.5")} {libelleRole(utilisateur.role)}
                   </span>
-                  {envoiPhotoEnCours && <p className="text-[11px] text-[#7C8494] mt-1">Envoi de la photo...</p>}
-                  {erreurPhoto && <p className="text-[11px] text-[#F0A0A0] mt-1">{erreurPhoto}</p>}
+                  {envoiPhotoEnCours && <p className="text-[11px] text-[#8e99a8] mt-1">Envoi de la photo...</p>}
+                  {erreurPhoto && <p className="text-[11px] text-[#c0563b] mt-1">{erreurPhoto}</p>}
                 </div>
               </div>
 
               {/* Informations personnelles */}
-              <form onSubmit={gererEnregistrementInfos} className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-                <h2 className="text-sm font-medium text-[#E8E6DE] mb-4">Informations personnelles</h2>
+              <form onSubmit={gererEnregistrementInfos} className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+                <h2 className="text-sm font-medium text-[#eef1f4] mb-4">Informations personnelles</h2>
 
                 {erreurInfos && (
-                  <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-3">{erreurInfos}</p>
+                  <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-3">{erreurInfos}</p>
                 )}
                 {succesInfos && (
-                  <p className="text-sm text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-md px-3 py-2 mb-3">Informations mises à jour.</p>
+                  <p className="text-sm text-[#3fa873] bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] rounded-md px-3 py-2 mb-3">Informations mises à jour.</p>
                 )}
 
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div>
-                    <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Prénom</label>
+                    <label className="block text-xs font-medium text-[#8e99a8] mb-1">Prénom</label>
                     <input required value={prenom} onChange={(e) => setPrenom(e.target.value)} className={CHAMP_CLASSES} />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Nom</label>
+                    <label className="block text-xs font-medium text-[#8e99a8] mb-1">Nom</label>
                     <input required value={nom} onChange={(e) => setNom(e.target.value)} className={CHAMP_CLASSES} />
                   </div>
                 </div>
@@ -477,19 +477,19 @@ export default function PageProfilAnalyste() {
                 <button
                   type="submit"
                   disabled={enregistrementInfosEnCours}
-                  className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+                  className="w-full bg-[#c99a4b] text-[#10151c] text-sm font-semibold py-2.5 rounded-md hover:bg-[#e4b565] transition disabled:opacity-50"
                 >
                   {enregistrementInfosEnCours ? "Enregistrement..." : "Enregistrer"}
                 </button>
               </form>
 
               {/* Mes documents */}
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-                <h2 className="text-sm font-medium text-[#E8E6DE] mb-1 flex items-center gap-2">{Ic("document", "w-4 h-4")} Mes documents</h2>
-                <p className="text-xs text-[#7C8494] mb-4">Pièces justificatives de ton compte analyste, à usage interne.</p>
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+                <h2 className="text-sm font-medium text-[#eef1f4] mb-1 flex items-center gap-2">{Ic("document", "w-4 h-4")} Mes documents</h2>
+                <p className="text-xs text-[#8e99a8] mb-4">Pièces justificatives de ton compte analyste, à usage interne.</p>
 
                 {erreurDoc && (
-                  <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-3">{erreurDoc}</p>
+                  <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-3">{erreurDoc}</p>
                 )}
 
                 <div className="space-y-3">
@@ -497,21 +497,21 @@ export default function PageProfilAnalyste() {
                     const existant = documentDejaEnvoye(type.valeur);
                     const enCours = envoiDocEnCours === type.valeur;
                     return (
-                      <div key={type.valeur} className="border border-[#232733] rounded-md p-3 flex items-center justify-between gap-3 flex-wrap">
+                      <div key={type.valeur} className="border border-[rgba(255,255,255,0.08)] rounded-md p-3 flex items-center justify-between gap-3 flex-wrap">
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-[#E8E6DE]">{type.libelle}</p>
+                          <p className="text-sm font-medium text-[#eef1f4]">{type.libelle}</p>
                           {existant ? (
                             <button
                               onClick={() => gererTelechargementDocument(existant)}
-                              className="text-xs text-[#3DDC97] mt-0.5 truncate hover:underline"
+                              className="text-xs text-[#3fa873] mt-0.5 truncate hover:underline"
                             >
                               ✓ {existant.original_file_name}
                             </button>
                           ) : (
-                            <p className="text-xs text-[#5A6070] mt-0.5">Aucun fichier envoyé</p>
+                            <p className="text-xs text-[#66707d] mt-0.5">Aucun fichier envoyé</p>
                           )}
                         </div>
-                        <label className="shrink-0 cursor-pointer text-xs font-semibold bg-[#C9A227] text-[#0B0E14] px-3 py-1.5 rounded-md hover:bg-[#DDB63A] transition">
+                        <label className="shrink-0 cursor-pointer text-xs font-semibold bg-[#c99a4b] text-[#10151c] px-3 py-1.5 rounded-md hover:bg-[#e4b565] transition">
                           {enCours ? "Envoi..." : existant ? "Remplacer" : "Choisir un fichier"}
                           <input
                             type="file"
@@ -528,21 +528,21 @@ export default function PageProfilAnalyste() {
               </div>
 
               {statutCompte && (
-                <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-                  <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Statut du compte</h2>
+                <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+                  <h2 className="text-sm font-medium text-[#eef1f4] mb-3">Statut du compte</h2>
                   {statutCompte.email_verified ? (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-full px-2.5 py-1">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3fa873] bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] rounded-full px-2.5 py-1">
                       {Ic("mailCheck", "w-3.5 h-3.5")} Email vérifié
                     </span>
                   ) : (
                     <div className="flex items-center justify-between gap-3 flex-wrap">
-                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#C9A227] bg-[#1B1706] border border-[#3A3013] rounded-full px-2.5 py-1">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#c99a4b] bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] rounded-full px-2.5 py-1">
                         {Ic("mailX", "w-3.5 h-3.5")} Email non vérifié
                       </span>
                       <button
                         disabled
                         title="Bientôt disponible — l'envoi d'emails n'est pas encore configuré"
-                        className="text-xs font-medium text-[#5A6070] border border-[#232733] rounded-md px-3 py-1.5 cursor-not-allowed"
+                        className="text-xs font-medium text-[#66707d] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-1.5 cursor-not-allowed"
                       >
                         Vérifier mon email (bientôt)
                       </button>
@@ -551,47 +551,47 @@ export default function PageProfilAnalyste() {
                 </div>
               )}
 
-              <form onSubmit={gererChangementMotDePasse} className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
-                <h2 className="text-sm font-medium text-[#E8E6DE] mb-4 flex items-center gap-2">{Ic("lock", "w-4 h-4")} Changer mon mot de passe</h2>
+              <form onSubmit={gererChangementMotDePasse} className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
+                <h2 className="text-sm font-medium text-[#eef1f4] mb-4 flex items-center gap-2">{Ic("lock", "w-4 h-4")} Changer mon mot de passe</h2>
 
                 {erreurMotDePasse && (
-                  <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-3">{erreurMotDePasse}</p>
+                  <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-3">{erreurMotDePasse}</p>
                 )}
                 {succesMotDePasse && (
-                  <p className="text-sm text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-md px-3 py-2 mb-3">Mot de passe mis à jour avec succès.</p>
+                  <p className="text-sm text-[#3fa873] bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] rounded-md px-3 py-2 mb-3">Mot de passe mis à jour avec succès.</p>
                 )}
 
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Mot de passe actuel</label>
+                    <label className="block text-xs font-medium text-[#8e99a8] mb-1">Mot de passe actuel</label>
                     <input
                       type="password"
                       value={motDePasseActuel}
                       onChange={(e) => setMotDePasseActuel(e.target.value)}
                       required
-                      className="w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition"
+                      className="w-full bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2 text-sm text-[#eef1f4] focus:outline-none focus:border-[#c99a4b] transition"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Nouveau mot de passe</label>
+                    <label className="block text-xs font-medium text-[#8e99a8] mb-1">Nouveau mot de passe</label>
                     <input
                       type="password"
                       value={nouveauMotDePasse}
                       onChange={(e) => setNouveauMotDePasse(e.target.value)}
                       required
                       minLength={6}
-                      className="w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition"
+                      className="w-full bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2 text-sm text-[#eef1f4] focus:outline-none focus:border-[#c99a4b] transition"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Confirmer le nouveau mot de passe</label>
+                    <label className="block text-xs font-medium text-[#8e99a8] mb-1">Confirmer le nouveau mot de passe</label>
                     <input
                       type="password"
                       value={confirmationMotDePasse}
                       onChange={(e) => setConfirmationMotDePasse(e.target.value)}
                       required
                       minLength={6}
-                      className="w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition"
+                      className="w-full bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2 text-sm text-[#eef1f4] focus:outline-none focus:border-[#c99a4b] transition"
                     />
                   </div>
                 </div>
@@ -599,7 +599,7 @@ export default function PageProfilAnalyste() {
                 <button
                   type="submit"
                   disabled={changementEnCours}
-                  className="mt-4 w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+                  className="mt-4 w-full bg-[#c99a4b] text-[#10151c] text-sm font-semibold py-2.5 rounded-md hover:bg-[#e4b565] transition disabled:opacity-50"
                 >
                   {changementEnCours ? "..." : "Mettre à jour le mot de passe"}
                 </button>

@@ -34,7 +34,7 @@ import {
 } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
@@ -49,9 +49,9 @@ const LIBELLES_STATUT: Record<string, string> = {
 };
 
 function couleurStatut(statut: string): { bg: string; text: string } {
-  if (statut === "approuve") return { bg: "#0F2420", text: "#3DDC97" };
-  if (statut === "refuse") return { bg: "#2A1414", text: "#F0A0A0" };
-  return { bg: "#2A2312", text: "#C9A227" };
+  if (statut === "approuve") return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" };
+  if (statut === "refuse") return { bg: "rgba(192,86,59,0.12)", text: "#c0563b" };
+  return { bg: "#2A2312", text: "#c99a4b" };
 }
 
 function formaterMontant(montant?: number | null) {
@@ -123,15 +123,15 @@ function AnneauProgression({ pourcentage }: { pourcentage: number }) {
   return (
     <div className="relative w-32 h-32 shrink-0">
       <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-        <circle cx="60" cy="60" r={rayon} fill="none" stroke="#1B2030" strokeWidth="10" />
+        <circle cx="60" cy="60" r={rayon} fill="none" stroke="#212a35" strokeWidth="10" />
         <circle
-          cx="60" cy="60" r={rayon} fill="none" stroke="#C9A227" strokeWidth="10"
+          cx="60" cy="60" r={rayon} fill="none" stroke="#c99a4b" strokeWidth="10"
           strokeLinecap="round" strokeDasharray={circonference} strokeDashoffset={decalage}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-mono font-semibold text-[#E8E6DE]">{pourcentage}%</span>
-        <span className="text-[10px] text-[#7C8494] text-center leading-tight mt-1">Déjà<br />remboursé</span>
+        <span className="text-2xl font-mono font-semibold text-[#eef1f4]">{pourcentage}%</span>
+        <span className="text-[10px] text-[#8e99a8] text-center leading-tight mt-1">Déjà<br />remboursé</span>
       </div>
     </div>
   );
@@ -141,17 +141,17 @@ function AnneauProgression({ pourcentage }: { pourcentage: number }) {
 const FRAIS_DE_TRAITEMENT = 1000;
 
 const NIVEAUX = [
-  { code: "bronze", libelle: "Bronze", emoji: "🟢", couleur: "#3DDC97" },
+  { code: "bronze", libelle: "Bronze", emoji: "🟢", couleur: "#3fa873" },
   { code: "argent", libelle: "Argent", emoji: "🟣", couleur: "#C9A6F0" },
-  { code: "or", libelle: "Or", emoji: "🟡", couleur: "#C9A227" },
+  { code: "or", libelle: "Or", emoji: "🟡", couleur: "#c99a4b" },
   { code: "platine", libelle: "Platine", emoji: "💎", couleur: "#7DD3FC" },
 ];
 
 function couleurNiveau(code: string): { bg: string; text: string } {
   if (code === "platine") return { bg: "#1B2A3A", text: "#7DD3FC" };
-  if (code === "or") return { bg: "#2A2312", text: "#C9A227" };
+  if (code === "or") return { bg: "#2A2312", text: "#c99a4b" };
   if (code === "argent") return { bg: "#241B33", text: "#C9A6F0" };
-  return { bg: "#0F2420", text: "#3DDC97" }; // bronze
+  return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" }; // bronze
 }
 
 function prochainNiveau(code: string): { code: NiveauCode; libelle: string; emoji: string; seuil: number } | null {
@@ -284,9 +284,9 @@ export default function TableauDeBord() {
   if (chargement || !utilisateur) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex flex-col items-center justify-center">
-        <span className="w-16 h-16 rounded-2xl bg-[#C9A227] flex items-center justify-center text-[#0B0E14] text-3xl font-bold font-['Source_Serif_4',serif] mb-4 animate-pulse">L</span>
-        <p className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE] mb-1">Bienvenue chez Lotafinance</p>
-        <p className="text-xs text-[#7C8494] font-mono">Chargement de votre espace...</p>
+        <span className="w-16 h-16 rounded-2xl bg-[#c99a4b] flex items-center justify-center text-[#10151c] text-3xl font-bold font-['Sora',sans-serif] mb-4 animate-pulse">L</span>
+        <p className="font-['Sora',sans-serif] text-xl text-[#eef1f4] mb-1">Bienvenue chez Lotafinance</p>
+        <p className="text-xs text-[#8e99a8] font-mono">Chargement de votre espace...</p>
       </main>
     );
   }
@@ -376,13 +376,13 @@ export default function TableauDeBord() {
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
       {/* Sidebar — visible seulement à partir de tablette/desktop */}
-      <aside className={`hidden md:flex ${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`hidden md:flex ${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Votre partenaire financier</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Votre partenaire financier</p>
             </div>
           )}
         </div>
@@ -394,7 +394,7 @@ export default function TableauDeBord() {
               onClick={() => router.push(lien.href)}
               title={sidebarReduite ? lien.label : undefined}
               className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                lien.actif ? "bg-[#c99a4b] text-[#10151c] font-medium" : "text-[#8e99a8] hover:bg-[#1a212b]"
               }`}
             >
               <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
@@ -411,7 +411,7 @@ export default function TableauDeBord() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 mb-1 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 mb-1 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -420,7 +420,7 @@ export default function TableauDeBord() {
         <button
           onClick={seDeconnecter}
           title={sidebarReduite ? "Déconnexion" : undefined}
-          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#7C8494] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
+          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#8e99a8] hover:bg-[#1a212b] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
         >
           {Ic("logout")}
           {!sidebarReduite && "Déconnexion"}
@@ -431,14 +431,14 @@ export default function TableauDeBord() {
       <div className="flex-1 px-4 py-4 md:px-8 md:py-6 overflow-x-auto max-w-full pb-24 md:pb-6">
         <div className="flex items-start justify-between gap-3 mb-6">
           <div className="min-w-0">
-            <h1 className="font-['Source_Serif_4',serif] text-lg sm:text-2xl text-[#E8E6DE]">Bonjour {profilClient?.first_name || ""} 👋</h1>
-            <p className="text-[#7C8494] text-xs sm:text-sm mt-1">Voici l&apos;état de votre compte chez Lotafinance.</p>
+            <h1 className="font-['Sora',sans-serif] text-lg sm:text-2xl text-[#eef1f4]">Bonjour {profilClient?.first_name || ""} 👋</h1>
+            <p className="text-[#8e99a8] text-xs sm:text-sm mt-1">Voici l&apos;état de votre compte chez Lotafinance.</p>
           </div>
-          <div className="flex items-center gap-2 sm:gap-3 text-[#7C8494] shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 text-[#8e99a8] shrink-0">
             <div className="relative">
               <button
                 onClick={ouvrirNotifications}
-                className="relative hover:text-[#E8E6DE] transition"
+                className="relative hover:text-[#eef1f4] transition"
                 title="Notifications"
               >
                 {Ic("bell")}
@@ -450,8 +450,8 @@ export default function TableauDeBord() {
               </button>
 
               {notifOuvertes && (
-                <div className="absolute right-0 top-8 w-72 bg-[#12151C] border border-[#232733] rounded-lg shadow-xl z-10 overflow-hidden">
-                  <p className="text-xs font-medium text-[#7C8494] uppercase tracking-wide px-4 py-3 border-b border-[#232733]">
+                <div className="absolute right-0 top-8 w-72 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg shadow-xl z-10 overflow-hidden">
+                  <p className="text-xs font-medium text-[#8e99a8] uppercase tracking-wide px-4 py-3 border-b border-[rgba(255,255,255,0.08)]">
                     Notifications
                   </p>
                   <div className="max-h-72 overflow-y-auto">
@@ -459,56 +459,56 @@ export default function TableauDeBord() {
                       <button
                         key={m.id}
                         onClick={() => { setNotifOuvertes(false); router.push("/assistance"); }}
-                        className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition border-b border-[#1B1F29]"
+                        className="w-full text-left px-4 py-3 hover:bg-[#212a35] transition border-b border-[rgba(255,255,255,0.08)]"
                       >
-                        <p className="text-xs text-[#C9A227] font-medium">Nouveau message de Lotafinance</p>
-                        <p className="text-xs text-[#B8BAC4] truncate mt-0.5">{m.contenu || "Fichier envoyé"}</p>
+                        <p className="text-xs text-[#c99a4b] font-medium">Nouveau message de Lotafinance</p>
+                        <p className="text-xs text-[#8e99a8] truncate mt-0.5">{m.contenu || "Fichier envoyé"}</p>
                       </button>
                     ))}
                     {ticketsAvecNouvelleReponse.map((t) => (
                       <button
                         key={t.id}
                         onClick={() => { setNotifOuvertes(false); router.push(`/reclamations/${t.id}`); }}
-                        className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition border-b border-[#1B1F29]"
+                        className="w-full text-left px-4 py-3 hover:bg-[#212a35] transition border-b border-[rgba(255,255,255,0.08)]"
                       >
                         <p className="text-xs text-[#5B8DEF] font-medium">Réponse à votre réclamation</p>
-                        <p className="text-xs text-[#B8BAC4] truncate mt-0.5">{t.sujet}</p>
+                        <p className="text-xs text-[#8e99a8] truncate mt-0.5">{t.sujet}</p>
                       </button>
                     ))}
                     {echeancesEnRetard.map((e) => (
                       <button
                         key={e.id}
                         onClick={() => { setNotifOuvertes(false); router.push("/pret-en-cours"); }}
-                        className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition border-b border-[#1B1F29]"
+                        className="w-full text-left px-4 py-3 hover:bg-[#212a35] transition border-b border-[rgba(255,255,255,0.08)]"
                       >
-                        <p className="text-xs text-[#F0A0A0] font-medium">Échéance en retard</p>
-                        <p className="text-xs text-[#B8BAC4] mt-0.5">{formaterMontant(e.montant)} — recouvrement à jour souhaité</p>
+                        <p className="text-xs text-[#c0563b] font-medium">Échéance en retard</p>
+                        <p className="text-xs text-[#8e99a8] mt-0.5">{formaterMontant(e.montant)} — recouvrement à jour souhaité</p>
                       </button>
                     ))}
                     {echeancesAVenir.map((e) => (
                       <button
                         key={e.id}
                         onClick={() => { setNotifOuvertes(false); router.push("/pret-en-cours"); }}
-                        className="w-full text-left px-4 py-3 hover:bg-[#171B24] transition border-b border-[#1B1F29]"
+                        className="w-full text-left px-4 py-3 hover:bg-[#212a35] transition border-b border-[rgba(255,255,255,0.08)]"
                       >
-                        <p className="text-xs text-[#C9A227] font-medium">Échéance à venir</p>
-                        <p className="text-xs text-[#B8BAC4] mt-0.5">{formaterMontant(e.montant)} le {formaterDate(e.date_echeance)}</p>
+                        <p className="text-xs text-[#c99a4b] font-medium">Échéance à venir</p>
+                        <p className="text-xs text-[#8e99a8] mt-0.5">{formaterMontant(e.montant)} le {formaterDate(e.date_echeance)}</p>
                       </button>
                     ))}
                     {messagesNonLus.length === 0 && echeancesNonPayeesDuPret.length === 0 && (
-                      <p className="text-xs text-[#5A6070] text-center py-6">Aucune notification</p>
+                      <p className="text-xs text-[#66707d] text-center py-6">Aucune notification</p>
                     )}
                   </div>
                 </div>
               )}
             </div>
-            <button onClick={ouvrirAssistance} className="hover:text-[#E8E6DE] transition" title="Assistance">
+            <button onClick={ouvrirAssistance} className="hover:text-[#eef1f4] transition" title="Assistance">
               {Ic("headset")}
             </button>
-            <button onClick={basculerPleinEcran} className="hover:text-[#E8E6DE] transition" title="Plein écran">
+            <button onClick={basculerPleinEcran} className="hover:text-[#eef1f4] transition" title="Plein écran">
               {Ic("expand")}
             </button>
-            <button onClick={() => router.push("/profil")} className="hover:text-[#E8E6DE] transition" title="Modifier mon profil">
+            <button onClick={() => router.push("/profil")} className="hover:text-[#eef1f4] transition" title="Modifier mon profil">
               {Ic("gear")}
             </button>
           </div>
@@ -517,36 +517,92 @@ export default function TableauDeBord() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Colonne principale */}
           <div className="col-span-1 md:col-span-2 space-y-4">
-            {/* Compte */}
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg px-5 py-4 flex items-center justify-between">
+            {/* Rappel d'échéance imminente */}
+            {prochaine && (() => {
+              const joursRestants = Math.ceil((new Date(prochaine.date_echeance).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+              if (joursRestants > 3 || joursRestants < 0) return null;
+              return (
+                <div className="bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] rounded-lg px-5 py-3 flex items-center justify-between gap-3 flex-wrap">
+                  <p className="text-sm text-[#c99a4b] flex items-center gap-2">
+                    {Ic("calendarCheck", "w-4 h-4")}
+                    {joursRestants === 0
+                      ? `Votre échéance de ${formaterMontant(prochaine.montant)} est due aujourd'hui.`
+                      : `Votre échéance de ${formaterMontant(prochaine.montant)} arrive dans ${joursRestants} jour${joursRestants > 1 ? "s" : ""}.`}
+                  </p>
+                  <button onClick={() => router.push("/pret-en-cours")} className="text-xs font-semibold text-[#10151c] bg-[#c99a4b] px-3 py-1.5 rounded-md hover:bg-[#e4b565] transition shrink-0">
+                    Voir le détail
+                  </button>
+                </div>
+              );
+            })()}
+
+            {/* Hero : demander un prêt */}
+            <div className="bg-gradient-to-br from-[rgba(201,154,75,0.15)] to-[#1a212b] border border-[rgba(201,154,75,0.3)] rounded-lg px-5 py-4 flex items-center justify-between gap-4 flex-wrap">
               <div className="flex items-center gap-3">
-                <span className="w-11 h-11 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center">
+                <IconCircle color="gold" size={44}><LoanRequestIcon size={22} /></IconCircle>
+                <div>
+                  <p className="text-sm font-semibold text-[#eef1f4]">Demander un prêt</p>
+                  <p className="text-xs text-[#8e99a8]">Réalisez vos projets dès maintenant</p>
+                </div>
+              </div>
+              <button
+                onClick={() => router.push("/demande-pret")}
+                className="w-10 h-10 rounded-full bg-[#c99a4b] text-[#10151c] flex items-center justify-center hover:bg-[#e4b565] transition shrink-0"
+                title="Faire une demande"
+              >
+                {Ic("chevronRight", "w-5 h-5")}
+              </button>
+            </div>
+
+            {/* Nos offres de prêt */}
+            <div>
+              <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-2">Nos offres de prêt</p>
+              <div className="grid grid-cols-3 gap-2">
+                <OffreCard emoji="🏠" label="Projet immobilier" onClick={() => router.push("/demande-pret?motif=" + encodeURIComponent("Projet immobilier"))} />
+                <OffreCard emoji="🚗" label="Achat véhicule" onClick={() => router.push("/demande-pret?motif=" + encodeURIComponent("Achat véhicule"))} />
+                <OffreCard emoji="🎓" label="Formation" onClick={() => router.push("/demande-pret?motif=" + encodeURIComponent("Formation"))} />
+              </div>
+            </div>
+
+            {/* Bannière simulateur */}
+            <button
+              onClick={() => router.push("/simulateur")}
+              className="w-full flex items-center justify-between bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-4 py-3 hover:border-[rgba(255,255,255,0.16)] transition text-left"
+            >
+              <span className="text-sm text-[#8e99a8] flex items-center gap-2">{Ic("calculator", "w-4 h-4 text-[#c99a4b]")} Besoin d&apos;un montant spécifique ? Notre simulateur vous accompagne.</span>
+              <span className="text-[#8e99a8] shrink-0">{Ic("chevronRight", "w-4 h-4")}</span>
+            </button>
+
+            {/* Compte */}
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-5 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="w-11 h-11 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] flex items-center justify-center">
                   {Ic("user")}
                 </span>
                 <div>
-                  <p className="text-sm font-medium text-[#E8E6DE] capitalize">{nomComplet}</p>
-                  <p className="text-xs text-[#7C8494]">
+                  <p className="text-sm font-medium text-[#eef1f4] capitalize">{nomComplet}</p>
+                  <p className="text-xs text-[#8e99a8]">
                     Client depuis le {utilisateur.created_at ? formaterDate(utilisateur.created_at) : "—"}
                   </p>
                 </div>
               </div>
-              <span className="text-xs font-medium text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-full px-3 py-1 flex items-center gap-1">
+              <span className="text-xs font-medium text-[#3fa873] bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] rounded-full px-3 py-1 flex items-center gap-1">
                 {Ic("check", "w-3 h-3")} Compte actif
               </span>
             </div>
 
             {/* Mon profil Lotafinance — gamification */}
             {plafond && (
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg px-5 py-5">
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-5 py-5">
                 <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
                   <div className="flex items-center gap-3">
                     <NiveauBadge niveau={plafond.niveau_code as NiveauCode} size={56} />
                     <div>
-                      <p className="text-xs text-[#7C8494]">Mon profil Lotafinance</p>
+                      <p className="text-xs text-[#8e99a8]">Mon profil Lotafinance</p>
                       <p className="text-lg font-semibold" style={{ color: couleurNiveau(plafond.niveau_code).text }}>
                         Niveau {plafond.niveau_libelle}
                       </p>
-                      <p className="text-xs text-[#7C8494] mt-0.5">
+                      <p className="text-xs text-[#8e99a8] mt-0.5">
                         {plafond.nombre_prets_reussis} prêt{plafond.nombre_prets_reussis > 1 ? "s" : ""} remboursé{plafond.nombre_prets_reussis > 1 ? "s" : ""} avec succès
                         {" · "}
                         {plafond.a_eu_un_retard ? "avec un retard signalé" : "sans aucun retard"}
@@ -556,9 +612,9 @@ export default function TableauDeBord() {
 
                   {dernierScore != null && (
                     <div className="text-right">
-                      <p className="text-xs text-[#7C8494]">Score Lotafinance</p>
-                      <p className="text-2xl font-mono font-semibold text-[#E8E6DE]">{dernierScore}<span className="text-sm text-[#5A6070]">/100</span></p>
-                      <p className="text-xs mt-0.5" style={{ color: dernierScore >= 80 ? "#3DDC97" : dernierScore >= 60 ? "#C9A227" : "#F0A0A0" }}>
+                      <p className="text-xs text-[#8e99a8]">Score Lotafinance</p>
+                      <p className="text-2xl font-mono font-semibold text-[#eef1f4]">{dernierScore}<span className="text-sm text-[#66707d]">/100</span></p>
+                      <p className="text-xs mt-0.5" style={{ color: dernierScore >= 80 ? "#3fa873" : dernierScore >= 60 ? "#c99a4b" : "#c0563b" }}>
                         {dernierScore >= 80 ? "Excellent" : dernierScore >= 60 ? "Bon" : "À améliorer"}
                       </p>
                     </div>
@@ -573,12 +629,12 @@ export default function TableauDeBord() {
                       <div
                         key={n.code}
                         className="flex-1 h-1.5 rounded-full"
-                        style={{ backgroundColor: estAtteint ? n.couleur : "#1B2030" }}
+                        style={{ backgroundColor: estAtteint ? n.couleur : "#212a35" }}
                       />
                     );
                   })}
                 </div>
-                <div className="flex justify-between text-[10px] text-[#7C8494] mb-4 -mt-3">
+                <div className="flex justify-between text-[10px] text-[#8e99a8] mb-4 -mt-3">
                   {NIVEAUX.map((n) => (
                     <span key={n.code} className={`flex items-center gap-1 ${plafond.niveau_code === n.code ? "font-semibold" : ""}`} style={plafond.niveau_code === n.code ? { color: n.couleur } : undefined}>
                       <NiveauBadge niveau={n.code as NiveauCode} size={14} /> {n.libelle}
@@ -597,12 +653,12 @@ export default function TableauDeBord() {
 
                   return (
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-3">
-                        <p className="text-xs text-[#7C8494] mb-1">Prochain niveau</p>
+                      <div className="bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md p-3">
+                        <p className="text-xs text-[#8e99a8] mb-1">Prochain niveau</p>
                         {prochain ? (
                           <>
-                            <p className="text-sm font-medium text-[#E8E6DE] flex items-center gap-1.5"><NiveauBadge niveau={prochain.code} size={16} /> {prochain.libelle}</p>
-                            <p className="text-[11px] text-[#7C8494] mt-0.5">
+                            <p className="text-sm font-medium text-[#eef1f4] flex items-center gap-1.5"><NiveauBadge niveau={prochain.code} size={16} /> {prochain.libelle}</p>
+                            <p className="text-[11px] text-[#8e99a8] mt-0.5">
                               Encore {prochain.seuil - plafond.nombre_prets_reussis} prêt{prochain.seuil - plafond.nombre_prets_reussis > 1 ? "s" : ""} remboursé{prochain.seuil - plafond.nombre_prets_reussis > 1 ? "s" : ""}
                             </p>
                           </>
@@ -610,44 +666,57 @@ export default function TableauDeBord() {
                           <p className="text-sm font-medium text-[#7DD3FC] flex items-center gap-1.5"><NiveauBadge niveau="platine" size={16} /> Niveau maximum atteint</p>
                         )}
                       </div>
-                      <div className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-3">
-                        <p className="text-xs text-[#7C8494] mb-1">Votre plafond de prêt</p>
+                      <div className="bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md p-3">
+                        <p className="text-xs text-[#8e99a8] mb-1">Votre plafond de prêt</p>
                         {salaire > 0 ? (
                           <>
-                            <p className="text-sm font-medium text-[#E8E6DE]">{formaterMontant(plafondActuel)}</p>
-                            <p className="text-[11px] mt-0.5" style={{ color: augmentationPossible ? "#3DDC97" : "#7C8494" }}>
+                            <p className="text-sm font-medium text-[#eef1f4]">{formaterMontant(plafondActuel)}</p>
+                            <p className="text-[11px] mt-0.5" style={{ color: augmentationPossible ? "#3fa873" : "#8e99a8" }}>
                               {augmentationPossible ? `↑ ${formaterMontant(plafondSuivant)} au prochain prêt réussi (+${pourcentage}%)` : "Plafond maximum atteint (niveau Platine, 60% du salaire)"}
                             </p>
                           </>
                         ) : (
-                          <p className="text-xs text-[#5A6070]">Renseignez votre revenu mensuel pour voir votre plafond</p>
+                          <p className="text-xs text-[#66707d]">Renseignez votre revenu mensuel pour voir votre plafond</p>
                         )}
                       </div>
                     </div>
                   );
                 })()}
 
-                <div className="border-t border-[#1B1F29] mt-4 pt-3">
-                  <p className="text-[11px] text-[#7C8494] mb-2">Avantages en progressant dans les niveaux</p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-[#B8BAC4]">
-                    <span className="flex items-center gap-1">{Ic("check", "w-3 h-3 text-[#3DDC97]")} Montant maximum plus élevé à chaque niveau</span>
-                    <span className="flex items-center gap-1">{Ic("check", "w-3 h-3 text-[#3DDC97]")} Reconnaissance de votre fiabilité</span>
-                    <span className="flex items-center gap-1">{Ic("check", "w-3 h-3 text-[#3DDC97]")} Traitement prioritaire (à venir)</span>
+                <div className="border-t border-[rgba(255,255,255,0.08)] mt-4 pt-3">
+                  <p className="text-[11px] text-[#8e99a8] mb-2">Vos avantages actuels — Niveau {plafond.niveau_libelle}</p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-[#8e99a8] mb-3">
+                    <span className="flex items-center gap-1">{Ic("check", "w-3 h-3 text-[#3fa873]")} Plafond de {plafond.plafond ? `${Math.round((plafond.plafond / (profilClient?.monthly_income || 1)) * 100)}%` : "10-30%"} de votre salaire</span>
+                    <span className="flex items-center gap-1">{Ic("check", "w-3 h-3 text-[#3fa873]")} Reconnaissance de votre fiabilité</span>
+                    {plafond.niveau_code !== "bronze" && (
+                      <span className="flex items-center gap-1">{Ic("check", "w-3 h-3 text-[#3fa873]")} Badge {plafond.niveau_libelle} visible sur votre profil</span>
+                    )}
+                    {(plafond.niveau_code === "or" || plafond.niveau_code === "platine") && (
+                      <span className="flex items-center gap-1">{Ic("check", "w-3 h-3 text-[#3fa873]")} Accès prioritaire à l&apos;analyse de vos dossiers</span>
+                    )}
+                    {plafond.niveau_code === "platine" && (
+                      <span className="flex items-center gap-1">{Ic("check", "w-3 h-3 text-[#3fa873]")} Plafond maximum débloqué (60% du salaire)</span>
+                    )}
                   </div>
+                  {prochainNiveau(plafond.niveau_code) && (
+                    <p className="text-[11px] text-[#66707d]">
+                      Au niveau {prochainNiveau(plafond.niveau_code)!.libelle} : plafond plus élevé et badge {prochainNiveau(plafond.niveau_code)!.libelle} débloqué.
+                    </p>
+                  )}
                 </div>
               </div>
             )}
 
             {/* Portefeuille */}
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg px-5 py-4">
-              <div className="flex items-center gap-2 mb-4 text-[#E8E6DE]">
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-5 py-4">
+              <div className="flex items-center gap-2 mb-4 text-[#eef1f4]">
                 {Ic("coins")}
                 <h2 className="text-sm font-medium">Mon portefeuille</h2>
-                {pretEnCours && <span className="text-xs text-[#5A6070] font-normal">— prêt en cours</span>}
+                {pretEnCours && <span className="text-xs text-[#66707d] font-normal">— prêt en cours</span>}
               </div>
 
               {!pretEnCours ? (
-                <p className="text-sm text-[#5A6070] py-4 text-center">Aucun prêt approuvé pour le moment.</p>
+                <p className="text-sm text-[#66707d] py-4 text-center">Aucun prêt approuvé pour le moment.</p>
               ) : (
                 <>
                   <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
@@ -662,7 +731,7 @@ export default function TableauDeBord() {
                   {echeancesTotalCount > 0 && (
                     <button
                       onClick={() => router.push("/pret-en-cours")}
-                      className="mt-4 w-full flex items-center justify-between text-sm bg-[#1B1706] border border-[#3A3013] text-[#C9A227] rounded-md px-4 py-2.5 hover:bg-[#241E09] transition"
+                      className="mt-4 w-full flex items-center justify-between text-sm bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] text-[#c99a4b] rounded-md px-4 py-2.5 hover:bg-[rgba(201,154,75,0.22)] transition"
                     >
                       <span className="flex items-center gap-2">{Ic("calendarCheck", "w-4 h-4")} Remboursement en cours • {echeancesPayeesCount}/{echeancesTotalCount}</span>
                       {Ic("chevronRight", "w-4 h-4")}
@@ -674,25 +743,25 @@ export default function TableauDeBord() {
 
             {/* 3 cartes */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg px-4 py-4">
-                <p className="flex items-center gap-2 text-xs text-[#7C8494] mb-2">{Ic("coins", "w-4 h-4")} Prêt en cours</p>
-                <p className="text-lg font-mono font-medium text-[#E8E6DE]">{formaterMontant(totalEmprunte)}</p>
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-4">
+                <p className="flex items-center gap-2 text-xs text-[#8e99a8] mb-2">{Ic("coins", "w-4 h-4")} Prêt en cours</p>
+                <p className="text-lg font-mono font-medium text-[#eef1f4]">{formaterMontant(totalEmprunte)}</p>
                 {pretEnCours && (
                   <>
-                    <p className="text-xs text-[#7C8494] mt-1">Reste à rembourser : {formaterMontant(soldeRestant)}</p>
-                    <div className="h-1.5 bg-[#1B2030] rounded-full mt-2 overflow-hidden">
-                      <div className="h-full bg-[#C9A227]" style={{ width: `${tauxProgression}%` }} />
+                    <p className="text-xs text-[#8e99a8] mt-1">Reste à rembourser : {formaterMontant(soldeRestant)}</p>
+                    <div className="h-1.5 bg-[#212a35] rounded-full mt-2 overflow-hidden">
+                      <div className="h-full bg-[#c99a4b]" style={{ width: `${tauxProgression}%` }} />
                     </div>
                   </>
                 )}
               </div>
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg px-4 py-4">
-                <p className="flex items-center gap-2 text-xs text-[#7C8494] mb-2">{Ic("calendarCheck", "w-4 h-4")} Prochaine échéance</p>
-                <p className="text-lg font-mono font-medium text-[#E8E6DE]">{prochaine ? formaterDate(prochaine.date_echeance) : "—"}</p>
-                <p className="text-xs text-[#7C8494] mt-1">Montant : {prochaine ? formaterMontant(prochaine.montant) : "—"}</p>
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-4">
+                <p className="flex items-center gap-2 text-xs text-[#8e99a8] mb-2">{Ic("calendarCheck", "w-4 h-4")} Prochaine échéance</p>
+                <p className="text-lg font-mono font-medium text-[#eef1f4]">{prochaine ? formaterDate(prochaine.date_echeance) : "—"}</p>
+                <p className="text-xs text-[#8e99a8] mt-1">Montant : {prochaine ? formaterMontant(prochaine.montant) : "—"}</p>
               </div>
-              <div className="bg-[#12151C] border border-[#232733] rounded-lg px-4 py-4">
-                <p className="flex items-center gap-2 text-xs text-[#7C8494] mb-2">{Ic("loans", "w-4 h-4")} Statut de mon dossier</p>
+              <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-4">
+                <p className="flex items-center gap-2 text-xs text-[#8e99a8] mb-2">{Ic("loans", "w-4 h-4")} Statut de mon dossier</p>
                 {derniereDemande ? (
                   <>
                     <span
@@ -701,16 +770,16 @@ export default function TableauDeBord() {
                     >
                       {LIBELLES_STATUT[derniereDemande.status] || derniereDemande.status}
                     </span>
-                    <p className="text-xs text-[#7C8494] mt-2">Demandé : {formaterMontant(derniereDemande.amount_requested)}</p>
+                    <p className="text-xs text-[#8e99a8] mt-2">Demandé : {formaterMontant(derniereDemande.amount_requested)}</p>
                     {derniereDemande.status === "approuve" && (
-                      <p className="text-xs text-[#3DDC97] mt-0.5">
+                      <p className="text-xs text-[#3fa873] mt-0.5">
                         Approuvé : {formaterMontant(derniereDemande.approved_amount)}
                         {derniereDemande.approved_amount != null && derniereDemande.approved_amount < derniereDemande.amount_requested && " (montant réduit)"}
                       </p>
                     )}
                   </>
                 ) : (
-                  <p className="text-xs text-[#5A6070]">Aucun dossier</p>
+                  <p className="text-xs text-[#66707d]">Aucun dossier</p>
                 )}
               </div>
             </div>
@@ -718,8 +787,8 @@ export default function TableauDeBord() {
 
           {/* Colonne latérale */}
           <div className="space-y-4">
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg px-5 py-4">
-              <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-3">Actions rapides</p>
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-5 py-4">
+              <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-3">Accès rapides</p>
               <div className="grid grid-cols-2 gap-2">
                 <ActionRapide icone="plus" label="Information Lotafinance" couleur="gold" onClick={() => router.push("/informations")} />
                 <ActionRapide icone="loans" label="Mes prêts" couleur="blue" onClick={() => router.push("/mes-demandes")} />
@@ -732,22 +801,17 @@ export default function TableauDeBord() {
               </div>
             </div>
 
-            <div className="bg-[#1B1706] border border-[#3A3013] rounded-lg px-5 py-5 text-center">
-              <svg viewBox="0 0 100 70" className="w-24 h-16 mx-auto mb-3">
-                <circle cx="50" cy="18" r="12" fill="#C9A227" />
-                <path d="M50 10v16M45 14l5-4 5 4M45 22l5 4 5-4" stroke="#0B0E14" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                <path
-                  d="M18 55c6-14 20-18 32-16 10 2 18 8 26 4 4-2 6-5 6-5s-2 8-10 12c-9 4-19 2-27-2-9-4-18-2-27 7Z"
-                  fill="none" stroke="#C9A227" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                />
-              </svg>
-              <p className="font-['Source_Serif_4',serif] text-lg text-[#E8E6DE] mb-2">Ensemble vers vos projets !</p>
-              <p className="text-xs text-[#B8BAC4] mb-4">
-                Lotafinance vous accompagne dans la réalisation de vos projets grâce à des solutions de financement adaptées à vos besoins.
-              </p>
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-5 py-4">
+              <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-3">Pourquoi choisir Lotafinance ?</p>
+              <div className="space-y-3">
+                <PourquoiItem emoji="⚡" label="Traitement rapide" description="Réponse en moins de 24h" />
+                <PourquoiItem emoji="🛡️" label="Sécurisé" description="Vos données sont protégées" />
+                <PourquoiItem emoji="📈" label="Taux attractifs" description="Conditions adaptées à vos besoins" />
+                <PourquoiItem emoji="📱" label="100% en ligne" description="Depuis votre téléphone" />
+              </div>
               <button
                 onClick={() => router.push("/demande-pret")}
-                className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition"
+                className="w-full mt-4 bg-[#c99a4b] text-[#10151c] text-sm font-semibold py-2.5 rounded-md hover:bg-[#e4b565] transition"
               >
                 Faire une demande
               </button>
@@ -755,11 +819,11 @@ export default function TableauDeBord() {
           </div>
         </div>
 
-        <p className="text-center text-xs text-[#5A6070] mt-8">Lotafinance – Plus qu&apos;un prêt, un partenaire pour votre avenir.</p>
+        <p className="text-center text-xs text-[#66707d] mt-8">Lotafinance – Plus qu&apos;un prêt, un partenaire pour votre avenir.</p>
       </div>
 
       {/* Barre de navigation mobile — visible seulement en dessous de md */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0B0E14]/95 backdrop-blur border-t border-[#1B1F29] flex items-center justify-around py-2 px-1">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#10151c]/95 backdrop-blur border-t border-[rgba(255,255,255,0.08)] flex items-center justify-around py-2 px-1">
         {[
           { href: "/tableau-de-bord", label: "Accueil", icone: "home" as const },
           { href: "/mes-demandes", label: "Mes prêts", icone: "loans" as const },
@@ -776,10 +840,10 @@ export default function TableauDeBord() {
               onClick={() => router.push(lien.href)}
               className="flex flex-col items-center gap-0.5 flex-1 py-1"
             >
-              <span className={estActif ? "text-[#C9A227]" : "text-[#7C8494]"}>
+              <span className={estActif ? "text-[#c99a4b]" : "text-[#8e99a8]"}>
                 {IconeRiche ? <IconeRiche size={20} /> : Ic(lien.icone, "w-5 h-5")}
               </span>
-              <span className={`text-[9px] ${estActif ? "text-[#C9A227] font-medium" : "text-[#7C8494]"}`}>{lien.label}</span>
+              <span className={`text-[9px] ${estActif ? "text-[#c99a4b] font-medium" : "text-[#8e99a8]"}`}>{lien.label}</span>
             </button>
           );
         })}
@@ -791,11 +855,11 @@ export default function TableauDeBord() {
 function StatPortefeuille({ icone, label, valeur, sousTexte }: { icone: keyof typeof ICONES; label: string; valeur: string; sousTexte?: string }) {
   return (
     <div className="flex items-start gap-2">
-      <span className="text-[#C9A227] shrink-0 mt-0.5">{Ic(icone, "w-4 h-4")}</span>
+      <span className="text-[#c99a4b] shrink-0 mt-0.5">{Ic(icone, "w-4 h-4")}</span>
       <div>
-        <p className="text-[10px] text-[#7C8494]">{label}</p>
-        <p className="text-sm font-mono font-medium text-[#E8E6DE]">{valeur}</p>
-        {sousTexte && <p className="text-[10px] text-[#C9A227] mt-0.5">{sousTexte}</p>}
+        <p className="text-[10px] text-[#8e99a8]">{label}</p>
+        <p className="text-sm font-mono font-medium text-[#eef1f4]">{valeur}</p>
+        {sousTexte && <p className="text-[10px] text-[#c99a4b] mt-0.5">{sousTexte}</p>}
       </div>
     </div>
   );
@@ -804,11 +868,32 @@ function StatPortefeuille({ icone, label, valeur, sousTexte }: { icone: keyof ty
 function ActionRapide({ icone, label, couleur, onClick }: { icone: keyof typeof ICONES; label: string; couleur: CouleurLotafinance; onClick: () => void }) {
   const IconeRiche = ICONES_RICHES[icone];
   return (
-    <button onClick={onClick} className="flex flex-col items-center gap-1.5 bg-[#0B0E14] border border-[#232733] rounded-md px-2 py-3 hover:border-[#3A4050] transition">
+    <button onClick={onClick} className="flex flex-col items-center gap-1.5 bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-2 py-3 hover:border-[rgba(255,255,255,0.16)] transition">
       <IconCircle color={couleur} size={36}>
         {IconeRiche ? <IconeRiche size={18} /> : Ic(icone, "w-4 h-4")}
       </IconCircle>
-      <span className="text-[10px] text-[#B8BAC4] text-center leading-tight">{label}</span>
+      <span className="text-[10px] text-[#8e99a8] text-center leading-tight">{label}</span>
     </button>
+  );
+}
+
+function OffreCard({ emoji, label, onClick }: { emoji: string; label: string; onClick: () => void }) {
+  return (
+    <button onClick={onClick} className="flex flex-col items-center gap-1.5 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md px-2 py-4 hover:border-[rgba(255,255,255,0.16)] transition text-center">
+      <span className="text-2xl">{emoji}</span>
+      <span className="text-[11px] text-[#8e99a8] leading-tight">{label}</span>
+    </button>
+  );
+}
+
+function PourquoiItem({ emoji, label, description }: { emoji: string; label: string; description: string }) {
+  return (
+    <div className="flex items-start gap-2.5">
+      <span className="text-lg shrink-0">{emoji}</span>
+      <div>
+        <p className="text-sm text-[#eef1f4] font-medium leading-tight">{label}</p>
+        <p className="text-xs text-[#8e99a8] mt-0.5">{description}</p>
+      </div>
+    </div>
   );
 }

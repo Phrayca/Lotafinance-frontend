@@ -33,13 +33,13 @@ import {
 } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
 
 const CHAMP_CLASSES =
-  "w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition";
+  "w-full bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition";
 
 type Utilisateur = { id: string; email: string; role: string; created_at?: string };
 
@@ -69,9 +69,9 @@ const ANCIENNETES_RESIDENCE = [
 
 function couleurNiveau(code: string): { bg: string; text: string } {
   if (code === "platine") return { bg: "#1B2A3A", text: "#7DD3FC" };
-  if (code === "or") return { bg: "#2A2312", text: "#C9A227" };
+  if (code === "or") return { bg: "#2A2312", text: "#c99a4b" };
   if (code === "argent") return { bg: "#241B33", text: "#C9A6F0" };
-  return { bg: "#0F2420", text: "#3DDC97" }; // bronze
+  return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" }; // bronze
 }
 
 function Icon({ path, className }: { path: string; className?: string }) {
@@ -127,6 +127,7 @@ const LIENS_NAV_MOBILE = [
   { href: "/mes-demandes", label: "Mes prêts", Icone: LoanIcon },
   { href: "/demande-pret", label: "Demander", Icone: LoanRequestIcon },
   { href: "/remboursements", label: "Rembours.", Icone: RepaymentIcon },
+  { href: "/documents", label: "Docs", Icone: DocumentIcon },
   { href: "/profil", label: "Profil", Icone: ProfileIcon },
 ];
 
@@ -324,7 +325,7 @@ function PageProfilClientContenu() {
   if (chargement || !utilisateur) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
@@ -334,13 +335,13 @@ function PageProfilClientContenu() {
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
       {/* Sidebar — visible seulement à partir de tablette/desktop */}
-      <aside className={`hidden md:flex ${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`hidden md:flex ${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Votre partenaire financier</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Votre partenaire financier</p>
             </div>
           )}
         </div>
@@ -352,7 +353,7 @@ function PageProfilClientContenu() {
               onClick={() => router.push(lien.href)}
               title={sidebarReduite ? lien.label : undefined}
               className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                lien.actif ? "bg-[#c99a4b] text-[#10151c] font-medium" : "text-[#8e99a8] hover:bg-[#1a212b]"
               }`}
             >
               <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
@@ -369,7 +370,7 @@ function PageProfilClientContenu() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 mb-1 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 mb-1 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -378,7 +379,7 @@ function PageProfilClientContenu() {
         <button
           onClick={seDeconnecter}
           title={sidebarReduite ? "Déconnexion" : undefined}
-          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#7C8494] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
+          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#8e99a8] hover:bg-[#1a212b] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
         >
           {Ic("logout")}
           {!sidebarReduite && "Déconnexion"}
@@ -387,65 +388,65 @@ function PageProfilClientContenu() {
 
       <div className="flex-1 px-4 py-4 md:px-8 md:py-6 overflow-y-auto pb-28 md:pb-6">
         <div className="max-w-xl">
-          <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE] mb-1">{modeOnboarding ? "Complétez votre profil (étape 2/3)" : "Mon profil"}</h1>
-          <p className="text-[#7C8494] text-sm mb-6">
+          <h1 className="font-['Sora',sans-serif] text-2xl text-[#eef1f4] mb-1">{modeOnboarding ? "Complétez votre profil (étape 2/3)" : "Mon profil"}</h1>
+          <p className="text-[#8e99a8] text-sm mb-6">
             {modeOnboarding
               ? "Ces informations sont nécessaires pour calculer votre score de solvabilité dès votre première demande."
               : "Vos informations personnelles chez Lotafinance"}
           </p>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
           {/* Photo + identité */}
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4 flex items-center gap-4 flex-wrap">
-            <label className="relative w-14 h-14 shrink-0 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center overflow-hidden cursor-pointer group">
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4 flex items-center gap-4 flex-wrap">
+            <label className="relative w-14 h-14 shrink-0 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] flex items-center justify-center overflow-hidden cursor-pointer group">
               {statutCompte?.has_avatar && avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={avatarUrl} alt="Photo de profil" className="w-full h-full object-cover" onError={() => setStatutCompte((p) => (p ? { ...p, has_avatar: false } : p))} />
               ) : (
                 Ic("user", "w-6 h-6")
               )}
-              <span className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[#E8E6DE]">
+              <span className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-[#eef1f4]">
                 {Ic("camera", "w-4 h-4")}
               </span>
               <input type="file" accept="image/*" className="hidden" onChange={gererEnvoiPhoto} disabled={envoiPhotoEnCours} />
             </label>
             <div className="min-w-0 flex-1">
-              <p className="text-base font-medium text-[#E8E6DE] truncate">{utilisateur.email}</p>
+              <p className="text-base font-medium text-[#eef1f4] truncate">{utilisateur.email}</p>
               <div className="flex flex-wrap gap-2 mt-1.5">
                 {statutCompte && (
                   statutCompte.email_verified ? (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-full px-2.5 py-1">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3fa873] bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] rounded-full px-2.5 py-1">
                       {Ic("mailCheck", "w-3.5 h-3.5")} Email vérifié
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#C9A227] bg-[#1B1706] border border-[#3A3013] rounded-full px-2.5 py-1">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#c99a4b] bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] rounded-full px-2.5 py-1">
                       {Ic("mailX", "w-3.5 h-3.5")} Email non vérifié
                     </span>
                   )
                 )}
                 {statutIdentite.identity_verified ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-full px-2.5 py-1">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3fa873] bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] rounded-full px-2.5 py-1">
                     {Ic("idCheck", "w-3.5 h-3.5")} Identité vérifiée
                   </span>
                 ) : statutIdentite.identity_rejected ? (
                   <button
                     onClick={() => router.push("/documents")}
                     title={statutIdentite.identity_rejection_reason}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-full px-2.5 py-1 hover:bg-[#3A1A1A] transition"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-full px-2.5 py-1 hover:bg-[#3A1A1A] transition"
                   >
                     {Ic("idX", "w-3.5 h-3.5")} Identité rejetée — renvoyer
                   </button>
                 ) : identiteEnvoyee ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#C9A227] bg-[#1B1706] border border-[#3A3013] rounded-full px-2.5 py-1">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#c99a4b] bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] rounded-full px-2.5 py-1">
                     {Ic("idCheck", "w-3.5 h-3.5")} Identité envoyée — en attente de vérification
                   </span>
                 ) : (
                   <button
                     onClick={() => router.push("/documents")}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-full px-2.5 py-1 hover:bg-[#3A1A1A] transition"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-full px-2.5 py-1 hover:bg-[#3A1A1A] transition"
                   >
                     {Ic("idX", "w-3.5 h-3.5")} Identité non envoyée — envoyer
                   </button>
@@ -460,10 +461,10 @@ function PageProfilClientContenu() {
                   </span>
                 )}
               </div>
-              {envoiPhotoEnCours && <p className="text-[11px] text-[#7C8494] mt-1">Envoi de la photo...</p>}
-              {erreurPhoto && <p className="text-[11px] text-[#F0A0A0] mt-1">{erreurPhoto}</p>}
+              {envoiPhotoEnCours && <p className="text-[11px] text-[#8e99a8] mt-1">Envoi de la photo...</p>}
+              {erreurPhoto && <p className="text-[11px] text-[#c0563b] mt-1">{erreurPhoto}</p>}
               {statutIdentite.identity_rejected && statutIdentite.identity_rejection_reason && (
-                <p className="text-[11px] text-[#F0A0A0] mt-1.5">Motif : {statutIdentite.identity_rejection_reason}</p>
+                <p className="text-[11px] text-[#c0563b] mt-1.5">Motif : {statutIdentite.identity_rejection_reason}</p>
               )}
             </div>
           </div>
@@ -471,70 +472,70 @@ function PageProfilClientContenu() {
           {/* Déconnexion — visible sur mobile seulement (la sidebar desktop a déjà ce bouton) */}
           <button
             onClick={seDeconnecter}
-            className="md:hidden w-full flex items-center justify-center gap-2 bg-[#12151C] border border-[#232733] text-[#F0A0A0] text-sm font-medium py-2.5 rounded-lg mb-4 hover:bg-[#171B24] transition"
+            className="md:hidden w-full flex items-center justify-center gap-2 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] text-[#c0563b] text-sm font-medium py-2.5 rounded-lg mb-4 hover:bg-[#212a35] transition"
           >
             {Ic("logout", "w-4 h-4")} Déconnexion
           </button>
 
           {/* Infos personnelles et professionnelles */}
-          <form onSubmit={gererEnregistrementProfil} className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-4">Informations personnelles</h2>
+          <form onSubmit={gererEnregistrementProfil} className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+            <h2 className="text-sm font-medium text-[#eef1f4] mb-4">Informations personnelles</h2>
 
             {erreurProfil && (
-              <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-3">{erreurProfil}</p>
+              <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-3">{erreurProfil}</p>
             )}
             {succesProfil && (
-              <p className="text-sm text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-md px-3 py-2 mb-3">Profil mis à jour avec succès.</p>
+              <p className="text-sm text-[#3fa873] bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] rounded-md px-3 py-2 mb-3">Profil mis à jour avec succès.</p>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Prénom *</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Prénom *</label>
                 <input required value={profil.first_name} onChange={(e) => majChamp("first_name", e.target.value)} className={CHAMP_CLASSES} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Nom *</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Nom *</label>
                 <input required value={profil.last_name} onChange={(e) => majChamp("last_name", e.target.value)} className={CHAMP_CLASSES} />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Téléphone *</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Téléphone *</label>
                 <input required value={profil.phone} onChange={(e) => majChamp("phone", e.target.value)} className={CHAMP_CLASSES} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Date de naissance</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Date de naissance</label>
                 <input type="date" value={profil.birth_date || ""} onChange={(e) => majChamp("birth_date", e.target.value)} className={CHAMP_CLASSES} />
               </div>
             </div>
 
             <div className="mb-3">
-              <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Adresse</label>
+              <label className="block text-xs font-medium text-[#8e99a8] mb-1">Adresse</label>
               <input value={profil.address || ""} onChange={(e) => majChamp("address", e.target.value)} className={CHAMP_CLASSES} />
             </div>
 
             <div className="mb-5">
-              <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Numéro de pièce d'identité</label>
+              <label className="block text-xs font-medium text-[#8e99a8] mb-1">Numéro de pièce d'identité</label>
               <input value={profil.national_id_number || ""} onChange={(e) => majChamp("national_id_number", e.target.value)} className={CHAMP_CLASSES} />
             </div>
 
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-4 border-t border-[#232733] pt-4">Informations professionnelles</h2>
+            <h2 className="text-sm font-medium text-[#eef1f4] mb-4 border-t border-[rgba(255,255,255,0.08)] pt-4">Informations professionnelles</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Profession</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Profession</label>
                 <input value={profil.profession || ""} onChange={(e) => majChamp("profession", e.target.value)} className={CHAMP_CLASSES} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Employeur</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Employeur</label>
                 <input value={profil.employer || ""} onChange={(e) => majChamp("employer", e.target.value)} className={CHAMP_CLASSES} />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Type d'emploi</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Type d'emploi</label>
                 <select value={profil.employment_type || ""} onChange={(e) => majChamp("employment_type", e.target.value)} className={CHAMP_CLASSES}>
                   {TYPES_EMPLOI.map((t) => (
                     <option key={t.valeur} value={t.valeur}>{t.libelle}</option>
@@ -542,7 +543,7 @@ function PageProfilClientContenu() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Ancienneté (mois)</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Ancienneté (mois)</label>
                 <input
                   type="number" min={0}
                   value={profil.activity_seniority_months ?? ""}
@@ -554,16 +555,16 @@ function PageProfilClientContenu() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Catégorie professionnelle</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Catégorie professionnelle</label>
                 <select value={profil.categorie_professionnelle || ""} onChange={(e) => majChamp("categorie_professionnelle", e.target.value)} className={CHAMP_CLASSES}>
                   {CATEGORIES_PROFESSIONNELLES.map((c) => (
                     <option key={c.valeur} value={c.valeur}>{c.libelle}</option>
                   ))}
                 </select>
-                <p className="text-[10px] text-[#5A6070] mt-1">Utilisée pour le calcul de votre score Lotafinance.</p>
+                <p className="text-[10px] text-[#66707d] mt-1">Utilisée pour le calcul de votre score Lotafinance.</p>
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Ancienneté à votre adresse</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Ancienneté à votre adresse</label>
                 <select value={profil.anciennete_residence || ""} onChange={(e) => majChamp("anciennete_residence", e.target.value)} className={CHAMP_CLASSES}>
                   {ANCIENNETES_RESIDENCE.map((a) => (
                     <option key={a.valeur} value={a.valeur}>{a.libelle}</option>
@@ -574,7 +575,7 @@ function PageProfilClientContenu() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Revenu mensuel (F)</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Revenu mensuel (F)</label>
                 <input
                   type="number" min={0}
                   value={profil.monthly_income ?? ""}
@@ -583,7 +584,7 @@ function PageProfilClientContenu() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Charges mensuelles (F)</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Charges mensuelles (F)</label>
                 <input
                   type="number" min={0}
                   value={profil.monthly_expenses ?? ""}
@@ -592,7 +593,7 @@ function PageProfilClientContenu() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Autres crédits mensuels (F)</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Autres crédits mensuels (F)</label>
                 <input
                   type="number" min={0}
                   value={profil.autres_credits_mensuels ?? ""}
@@ -604,14 +605,14 @@ function PageProfilClientContenu() {
             </div>
 
             <div className="mb-5">
-              <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Code de parrainage (optionnel)</label>
+              <label className="block text-xs font-medium text-[#8e99a8] mb-1">Code de parrainage (optionnel)</label>
               <input
                 value={profil.code_parrainage_utilise ?? ""}
                 onChange={(e) => majChamp("code_parrainage_utilise", e.target.value.toUpperCase())}
                 className={CHAMP_CLASSES}
                 placeholder="Ex: A1B2C3D4"
               />
-              <p className="text-[10px] text-[#5A6070] mt-1">
+              <p className="text-[10px] text-[#66707d] mt-1">
                 Si un proche vous a partagé son code, indiquez-le ici. Utilisable une seule fois, à la création de votre profil.
               </p>
             </div>
@@ -619,34 +620,34 @@ function PageProfilClientContenu() {
             <button
               type="submit"
               disabled={enregistrementEnCours}
-              className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+              className="w-full bg-[#c99a4b] text-[#10151c] text-sm font-semibold py-2.5 rounded-md hover:bg-[#e4b565] transition disabled:opacity-50"
             >
               {enregistrementEnCours ? "Enregistrement..." : modeOnboarding ? "Continuer vers les documents" : "Enregistrer mon profil"}
             </button>
           </form>
 
           {/* Mot de passe */}
-          <form onSubmit={gererChangementMotDePasse} className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-4 flex items-center gap-2">{Ic("lock", "w-4 h-4")} Changer mon mot de passe</h2>
+          <form onSubmit={gererChangementMotDePasse} className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
+            <h2 className="text-sm font-medium text-[#eef1f4] mb-4 flex items-center gap-2">{Ic("lock", "w-4 h-4")} Changer mon mot de passe</h2>
 
             {erreurMotDePasse && (
-              <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-3">{erreurMotDePasse}</p>
+              <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-3">{erreurMotDePasse}</p>
             )}
             {succesMotDePasse && (
-              <p className="text-sm text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-md px-3 py-2 mb-3">Mot de passe mis à jour avec succès.</p>
+              <p className="text-sm text-[#3fa873] bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] rounded-md px-3 py-2 mb-3">Mot de passe mis à jour avec succès.</p>
             )}
 
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Mot de passe actuel</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Mot de passe actuel</label>
                 <input type="password" required value={motDePasseActuel} onChange={(e) => setMotDePasseActuel(e.target.value)} className={CHAMP_CLASSES} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Nouveau mot de passe</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Nouveau mot de passe</label>
                 <input type="password" required minLength={6} value={nouveauMotDePasse} onChange={(e) => setNouveauMotDePasse(e.target.value)} className={CHAMP_CLASSES} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Confirmer le nouveau mot de passe</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Confirmer le nouveau mot de passe</label>
                 <input type="password" required minLength={6} value={confirmationMotDePasse} onChange={(e) => setConfirmationMotDePasse(e.target.value)} className={CHAMP_CLASSES} />
               </div>
             </div>
@@ -654,50 +655,50 @@ function PageProfilClientContenu() {
             <button
               type="submit"
               disabled={changementEnCours}
-              className="mt-4 w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+              className="mt-4 w-full bg-[#c99a4b] text-[#10151c] text-sm font-semibold py-2.5 rounded-md hover:bg-[#e4b565] transition disabled:opacity-50"
             >
               {changementEnCours ? "..." : "Mettre à jour le mot de passe"}
             </button>
           </form>
 
           {!modeOnboarding && (
-            <div className="bg-[#2A1414] border border-[#4A2222] rounded-lg p-6 mt-4">
-              <h2 className="text-sm font-semibold text-[#F0A0A0] mb-1">Zone sensible</h2>
+            <div className="bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-lg p-6 mt-4">
+              <h2 className="text-sm font-semibold text-[#c0563b] mb-1">Zone sensible</h2>
               <p className="text-xs text-[#B8807E] mb-4">
                 La suppression de votre compte est définitive et irréversible : profil, documents, historique de
                 prêts et messages seront effacés. Impossible si un prêt est en cours de remboursement.
               </p>
 
               {erreurSuppression && (
-                <p className="text-sm text-[#F0A0A0] bg-[#1A0F0F] border border-[#4A2222] rounded-md px-3 py-2 mb-3">{erreurSuppression}</p>
+                <p className="text-sm text-[#c0563b] bg-[#1A0F0F] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-3">{erreurSuppression}</p>
               )}
 
               {!confirmationSuppressionOuverte ? (
                 <button
                   onClick={() => setConfirmationSuppressionOuverte(true)}
-                  className="text-sm font-medium text-[#F0A0A0] border border-[#6B2E2E] rounded-md px-4 py-2 hover:bg-[#3A1A1A] transition"
+                  className="text-sm font-medium text-[#c0563b] border border-[rgba(192,86,59,0.35)] rounded-md px-4 py-2 hover:bg-[#3A1A1A] transition"
                 >
                   Supprimer mon compte
                 </button>
               ) : (
                 <div className="space-y-2">
-                  <label className="block text-xs font-medium text-[#F0A0A0]">Tapez SUPPRIMER pour confirmer</label>
+                  <label className="block text-xs font-medium text-[#c0563b]">Tapez SUPPRIMER pour confirmer</label>
                   <input
                     value={texteConfirmationSuppression}
                     onChange={(e) => setTexteConfirmationSuppression(e.target.value)}
-                    className="w-full bg-[#1A0F0F] border border-[#4A2222] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#F0A0A0] transition"
+                    className="w-full bg-[#1A0F0F] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 text-sm text-[#eef1f4] focus:outline-none focus:border-[#c0563b] transition"
                   />
                   <div className="flex gap-2">
                     <button
                       onClick={gererSuppressionCompte}
                       disabled={texteConfirmationSuppression !== "SUPPRIMER" || suppressionEnCours}
-                      className="flex-1 bg-[#4A2222] text-[#F0A0A0] border border-[#6B2E2E] text-sm font-semibold py-2 rounded-md hover:bg-[#5A2828] transition disabled:opacity-40"
+                      className="flex-1 bg-[rgba(192,86,59,0.3)] text-[#c0563b] border border-[rgba(192,86,59,0.35)] text-sm font-semibold py-2 rounded-md hover:bg-[#5A2828] transition disabled:opacity-40"
                     >
                       {suppressionEnCours ? "Suppression..." : "Confirmer la suppression définitive"}
                     </button>
                     <button
                       onClick={() => { setConfirmationSuppressionOuverte(false); setTexteConfirmationSuppression(""); setErreurSuppression(""); }}
-                      className="text-sm font-medium text-[#7C8494] px-3 py-2 hover:text-[#E8E6DE] transition"
+                      className="text-sm font-medium text-[#8e99a8] px-3 py-2 hover:text-[#eef1f4] transition"
                     >
                       Annuler
                     </button>
@@ -711,7 +712,7 @@ function PageProfilClientContenu() {
 
       {/* Barre de navigation mobile — masquée pendant l'onboarding */}
       {!modeOnboarding && (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0B0E14]/95 backdrop-blur border-t border-[#1B1F29] flex items-center justify-around py-2 px-1">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#10151c]/95 backdrop-blur border-t border-[rgba(255,255,255,0.08)] flex items-center justify-around py-2 px-1">
           {LIENS_NAV_MOBILE.map((lien) => {
             const estActif = lien.href === "/profil";
             const Icone = lien.Icone;
@@ -721,10 +722,10 @@ function PageProfilClientContenu() {
                 onClick={() => router.push(lien.href)}
                 className="flex flex-col items-center gap-0.5 flex-1 py-1"
               >
-                <span className={estActif ? "text-[#C9A227]" : "text-[#7C8494]"}>
+                <span className={estActif ? "text-[#c99a4b]" : "text-[#8e99a8]"}>
                   <Icone size={20} />
                 </span>
-                <span className={`text-[9px] ${estActif ? "text-[#C9A227] font-medium" : "text-[#7C8494]"}`}>{lien.label}</span>
+                <span className={`text-[9px] ${estActif ? "text-[#c99a4b] font-medium" : "text-[#8e99a8]"}`}>{lien.label}</span>
               </button>
             );
           })}

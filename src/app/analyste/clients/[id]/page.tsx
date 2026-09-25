@@ -39,7 +39,7 @@ import {
 } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
@@ -61,9 +61,9 @@ const LIBELLES_DOCUMENTS: Record<string, string> = {
 };
 
 function couleurStatut(statut: string): { bg: string; text: string } {
-  if (statut === "approuve") return { bg: "#0F2420", text: "#3DDC97" };
-  if (statut === "refuse") return { bg: "#2A1414", text: "#F0A0A0" };
-  return { bg: "#2A2312", text: "#C9A227" };
+  if (statut === "approuve") return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" };
+  if (statut === "refuse") return { bg: "rgba(192,86,59,0.12)", text: "#c0563b" };
+  return { bg: "#2A2312", text: "#c99a4b" };
 }
 
 function formaterDate(iso?: string | null) {
@@ -80,9 +80,9 @@ function formaterDuree(semaines: number) {
 }
 function couleurNiveau(code: string): { bg: string; text: string } {
   if (code === "platine") return { bg: "#1B2A3A", text: "#7DD3FC" };
-  if (code === "or") return { bg: "#2A2312", text: "#C9A227" };
+  if (code === "or") return { bg: "#2A2312", text: "#c99a4b" };
   if (code === "argent") return { bg: "#241B33", text: "#C9A6F0" };
-  return { bg: "#0F2420", text: "#3DDC97" }; // bronze
+  return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" }; // bronze
 }
 
 function Icon({ path, className }: { path: string; className?: string }) {
@@ -298,7 +298,7 @@ export default function PageFicheClient() {
   if (chargement) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
@@ -306,7 +306,7 @@ export default function PageFicheClient() {
   if (!client) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#F0A0A0]">{erreur || "Client introuvable"}</p>
+        <p className="text-sm text-[#c0563b]">{erreur || "Client introuvable"}</p>
       </main>
     );
   }
@@ -318,13 +318,13 @@ export default function PageFicheClient() {
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Espace analyste</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Espace analyste</p>
             </div>
           )}
         </div>
@@ -335,7 +335,7 @@ export default function PageFicheClient() {
               key={lien.href}
               onClick={() => router.push(lien.href)}
               title={sidebarReduite ? lien.label : undefined}
-              className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#B8BAC4] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
+              className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#8e99a8] hover:bg-[#1a212b] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
             >
                             <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
                 {(() => {
@@ -356,7 +356,7 @@ export default function PageFicheClient() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -367,16 +367,16 @@ export default function PageFicheClient() {
         <div className="max-w-2xl">
           <div className="flex items-center gap-3 mb-4">
             <form onSubmit={gererRecherche} className="flex-1 relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#5A6070]">{Ic("search", "w-4 h-4")}</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#66707d]">{Ic("search", "w-4 h-4")}</span>
               <input
                 value={recherche}
                 onChange={(e) => setRecherche(e.target.value)}
                 placeholder="Rechercher un dossier, client, numéro de téléphone..."
-                className="w-full bg-[#12151C] border border-[#232733] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition"
+                className="w-full bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md pl-9 pr-3 py-2.5 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition"
               />
             </form>
 
-            <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#7C8494] hover:text-[#E8E6DE] transition p-2">
+            <button onClick={() => router.push("/analyste/messages")} title="Messages" className="relative shrink-0 text-[#8e99a8] hover:text-[#eef1f4] transition p-2">
               {Ic("mail", "w-5 h-5")}
               {totalNonLus > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-[#C24545] text-white text-[9px] flex items-center justify-center">{totalNonLus}</span>
@@ -384,8 +384,8 @@ export default function PageFicheClient() {
             </button>
 
             <div className="relative shrink-0">
-              <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[#232733] hover:border-[#3A4050] transition">
-                <span className="w-7 h-7 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center overflow-hidden shrink-0">
+              <button onClick={() => setMenuProfilOuvert((v) => !v)} className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-full border border-[rgba(255,255,255,0.08)] hover:border-[rgba(255,255,255,0.16)] transition">
+                <span className="w-7 h-7 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] flex items-center justify-center overflow-hidden shrink-0">
                   {utilisateur && avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={avatarUrl} alt="" className="w-full h-full object-cover" onError={(e) => (e.currentTarget.style.display = "none")} />
@@ -393,15 +393,15 @@ export default function PageFicheClient() {
                     Ic("user", "w-3.5 h-3.5")
                   )}
                 </span>
-                <span className="text-xs text-[#B8BAC4] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
-                {Ic("chevronDown", "w-3 h-3 text-[#7C8494]")}
+                <span className="text-xs text-[#8e99a8] hidden md:inline">{utilisateur?.email?.split("@")[0]}</span>
+                {Ic("chevronDown", "w-3 h-3 text-[#8e99a8]")}
               </button>
               {menuProfilOuvert && (
-                <div className="absolute right-0 top-10 w-44 bg-[#12151C] border border-[#232733] rounded-md shadow-xl z-10 overflow-hidden">
-                  <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#B8BAC4] hover:bg-[#171B24] transition">
+                <div className="absolute right-0 top-10 w-44 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md shadow-xl z-10 overflow-hidden">
+                  <button onClick={() => router.push("/analyste/profil")} className="w-full text-left px-3 py-2 text-sm text-[#8e99a8] hover:bg-[#212a35] transition">
                     Mon profil
                   </button>
-                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#F0A0A0] hover:bg-[#171B24] transition">
+                  <button onClick={seDeconnecter} className="w-full text-left px-3 py-2 text-sm text-[#c0563b] hover:bg-[#212a35] transition">
                     Déconnexion
                   </button>
                 </div>
@@ -409,23 +409,23 @@ export default function PageFicheClient() {
             </div>
           </div>
 
-          <button onClick={() => router.push("/analyste/clients")} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] mb-4 transition">
+          <button onClick={() => router.push("/analyste/clients")} className="text-sm text-[#8e99a8] hover:text-[#eef1f4] mb-4 transition">
             ← Retour aux clients
           </button>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
           {alertesFraude.length > 0 && (
-            <div className="bg-[#2A1414] border border-[#4A2222] rounded-lg p-4 mb-4">
-              <p className="text-sm font-semibold text-[#F0A0A0] flex items-center gap-2 mb-2">
+            <div className="bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-lg p-4 mb-4">
+              <p className="text-sm font-semibold text-[#c0563b] flex items-center gap-2 mb-2">
                 ⚠️ Alerte fraude potentielle
               </p>
               <ul className="space-y-1.5">
                 {alertesFraude.map((a, i) => (
-                  <li key={i} className="text-xs text-[#F0A0A0] flex items-start gap-1.5">
-                    <span className={`mt-0.5 shrink-0 w-1.5 h-1.5 rounded-full ${a.gravite === "elevee" ? "bg-[#F0A0A0]" : "bg-[#C9A227]"}`} />
+                  <li key={i} className="text-xs text-[#c0563b] flex items-start gap-1.5">
+                    <span className={`mt-0.5 shrink-0 w-1.5 h-1.5 rounded-full ${a.gravite === "elevee" ? "bg-[#c0563b]" : "bg-[#c99a4b]"}`} />
                     {a.message}
                   </li>
                 ))}
@@ -435,9 +435,9 @@ export default function PageFicheClient() {
           )}
 
           {/* Identité + infos principales */}
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
             <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
-              <h1 className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE]">{client.first_name} {client.last_name}</h1>
+              <h1 className="font-['Sora',sans-serif] text-xl text-[#eef1f4]">{client.first_name} {client.last_name}</h1>
               <div className="flex items-center gap-2">
                 {plafond && (
                   <span
@@ -449,28 +449,28 @@ export default function PageFicheClient() {
                   </span>
                 )}
                 {client.identity_verified ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-full px-2.5 py-1">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#3fa873] bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] rounded-full px-2.5 py-1">
                     {Ic("idCheck", "w-3.5 h-3.5")} Identité vérifiée
                   </span>
                 ) : (
-                  <span className={`inline-flex items-center gap-1.5 text-xs font-medium rounded-full px-2.5 py-1 ${client.identity_rejected ? "text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222]" : "text-[#C9A227] bg-[#1B1706] border border-[#3A3013]"}`}>
+                  <span className={`inline-flex items-center gap-1.5 text-xs font-medium rounded-full px-2.5 py-1 ${client.identity_rejected ? "text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)]" : "text-[#c99a4b] bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)]"}`}>
                     {Ic(client.identity_rejected ? "idX" : "idCheck", "w-3.5 h-3.5")} {client.identity_rejected ? "Identité rejetée" : "Identité en attente"}
                   </span>
                 )}
                 {!client.identity_verified && (
-                  <button onClick={gererVerification} disabled={verificationEnCours} className="text-xs font-medium text-[#3DDC97] border border-[#2A6B57] rounded-full px-2.5 py-1 hover:bg-[#0F2420] transition disabled:opacity-50">
+                  <button onClick={gererVerification} disabled={verificationEnCours} className="text-xs font-medium text-[#3fa873] border border-[#2A6B57] rounded-full px-2.5 py-1 hover:bg-[rgba(63,168,115,0.12)] transition disabled:opacity-50">
                     Vérifier
                   </button>
                 )}
                 {!client.identity_rejected && (
-                  <button onClick={() => setMotifRejetOuvert((v) => !v)} disabled={verificationEnCours} className="text-xs font-medium text-[#F0A0A0] border border-[#6B2E2E] rounded-full px-2.5 py-1 hover:bg-[#2A1414] transition disabled:opacity-50">
+                  <button onClick={() => setMotifRejetOuvert((v) => !v)} disabled={verificationEnCours} className="text-xs font-medium text-[#c0563b] border border-[rgba(192,86,59,0.35)] rounded-full px-2.5 py-1 hover:bg-[rgba(192,86,59,0.12)] transition disabled:opacity-50">
                     Rejeter
                   </button>
                 )}
               </div>
             </div>
             {client.identity_rejected && client.identity_rejection_reason && (
-              <p className="text-xs text-[#F0A0A0] mb-2">Motif du rejet : {client.identity_rejection_reason}</p>
+              <p className="text-xs text-[#c0563b] mb-2">Motif du rejet : {client.identity_rejection_reason}</p>
             )}
             {motifRejetOuvert && (
               <div className="flex gap-2 mb-3">
@@ -478,21 +478,21 @@ export default function PageFicheClient() {
                   value={motifRejet}
                   onChange={(e) => setMotifRejet(e.target.value)}
                   placeholder="Motif du rejet (ex: photo illisible)"
-                  className="flex-1 bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-1.5 text-xs text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition"
+                  className="flex-1 bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-1.5 text-xs text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition"
                 />
-                <button onClick={gererRejet} disabled={verificationEnCours} className="text-xs font-medium bg-[#4A2222] text-[#F0A0A0] border border-[#6B2E2E] rounded-md px-3 py-1.5 hover:bg-[#5A2828] transition disabled:opacity-50">
+                <button onClick={gererRejet} disabled={verificationEnCours} className="text-xs font-medium bg-[rgba(192,86,59,0.3)] text-[#c0563b] border border-[rgba(192,86,59,0.35)] rounded-md px-3 py-1.5 hover:bg-[#5A2828] transition disabled:opacity-50">
                   Confirmer
                 </button>
               </div>
             )}
-            <p className="text-[#7C8494] text-sm mb-1 font-mono">{client.phone} · {client.email}</p>
+            <p className="text-[#8e99a8] text-sm mb-1 font-mono">{client.phone} · {client.email}</p>
             {plafond && plafond.plafond != null && (
-              <p className="text-xs text-[#7C8494] mb-5">
-                Plafond actuel : <span className="text-[#C9A227] font-medium">{formaterMontant(plafond.plafond)}</span> ({plafond.nombre_prets_reussis} prêt{plafond.nombre_prets_reussis > 1 ? "s" : ""} remboursé{plafond.nombre_prets_reussis > 1 ? "s" : ""} avec succès)
+              <p className="text-xs text-[#8e99a8] mb-5">
+                Plafond actuel : <span className="text-[#c99a4b] font-medium">{formaterMontant(plafond.plafond)}</span> ({plafond.nombre_prets_reussis} prêt{plafond.nombre_prets_reussis > 1 ? "s" : ""} remboursé{plafond.nombre_prets_reussis > 1 ? "s" : ""} avec succès)
               </p>
             )}
 
-            <div className="grid grid-cols-2 gap-4 text-sm border-t border-[#232733] pt-4">
+            <div className="grid grid-cols-2 gap-4 text-sm border-t border-[rgba(255,255,255,0.08)] pt-4">
               <Champ label="Adresse" valeur={client.address || "—"} />
               <Champ label="Date de naissance" valeur={formaterDate(client.birth_date)} />
               <Champ label="Numéro de pièce d'identité" valeur={client.national_id_number || "—"} />
@@ -508,34 +508,34 @@ export default function PageFicheClient() {
 
           {/* Résumé solvabilité */}
           <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg px-4 py-4">
-              <p className="text-xs text-[#7C8494] mb-1">Dernier score</p>
-              <p className="text-lg font-mono font-medium text-[#E8E6DE]">{dernierScore ?? "—"}</p>
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-4">
+              <p className="text-xs text-[#8e99a8] mb-1">Dernier score</p>
+              <p className="text-lg font-mono font-medium text-[#eef1f4]">{dernierScore ?? "—"}</p>
             </div>
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg px-4 py-4">
-              <p className="text-xs text-[#7C8494] mb-1">Dernier risque</p>
-              <p className="text-lg font-medium text-[#E8E6DE]">{dernierRisque ?? "—"}</p>
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-4">
+              <p className="text-xs text-[#8e99a8] mb-1">Dernier risque</p>
+              <p className="text-lg font-medium text-[#eef1f4]">{dernierRisque ?? "—"}</p>
             </div>
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg px-4 py-4">
-              <p className="text-xs text-[#7C8494] mb-1">Capital emprunté (approuvé)</p>
-              <p className="text-lg font-mono font-medium text-[#C9A227]">{formaterMontant(capitalTotal)}</p>
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg px-4 py-4">
+              <p className="text-xs text-[#8e99a8] mb-1">Capital emprunté (approuvé)</p>
+              <p className="text-lg font-mono font-medium text-[#c99a4b]">{formaterMontant(capitalTotal)}</p>
             </div>
           </div>
 
           {/* Documents */}
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Documents fournis</h2>
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+            <h2 className="text-sm font-medium text-[#eef1f4] mb-3">Documents fournis</h2>
             {documents.length === 0 ? (
-              <p className="text-sm text-[#5A6070]">Aucun document envoyé.</p>
+              <p className="text-sm text-[#66707d]">Aucun document envoyé.</p>
             ) : (
               <div className="space-y-2">
                 {documents.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between border border-[#232733] rounded-md p-3">
+                  <div key={doc.id} className="flex items-center justify-between border border-[rgba(255,255,255,0.08)] rounded-md p-3">
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-[#E8E6DE]">{LIBELLES_DOCUMENTS[doc.document_type] || doc.document_type}</p>
-                      <p className="text-xs text-[#7C8494] truncate">{doc.original_file_name}</p>
+                      <p className="text-sm font-medium text-[#eef1f4]">{LIBELLES_DOCUMENTS[doc.document_type] || doc.document_type}</p>
+                      <p className="text-xs text-[#8e99a8] truncate">{doc.original_file_name}</p>
                     </div>
-                    <button onClick={() => gererTelechargement(doc)} className="shrink-0 text-sm font-medium text-[#C9A227] hover:text-[#DDB63A] underline">
+                    <button onClick={() => gererTelechargement(doc)} className="shrink-0 text-sm font-medium text-[#c99a4b] hover:text-[#e4b565] underline">
                       Télécharger
                     </button>
                   </div>
@@ -545,11 +545,11 @@ export default function PageFicheClient() {
           </div>
 
           {/* Historique des prêts */}
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-1">Historique des prêts</h2>
-            <p className="text-xs text-[#7C8494] mb-3">{prets.length} dossier{prets.length > 1 ? "s" : ""} au total</p>
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
+            <h2 className="text-sm font-medium text-[#eef1f4] mb-1">Historique des prêts</h2>
+            <p className="text-xs text-[#8e99a8] mb-3">{prets.length} dossier{prets.length > 1 ? "s" : ""} au total</p>
             {prets.length === 0 ? (
-              <p className="text-sm text-[#5A6070]">Aucun dossier pour ce client.</p>
+              <p className="text-sm text-[#66707d]">Aucun dossier pour ce client.</p>
             ) : (
               <div className="space-y-2">
                 {prets.map((p) => {
@@ -558,11 +558,11 @@ export default function PageFicheClient() {
                     <button
                       key={p.id}
                       onClick={() => router.push(`/analyste/${p.id}`)}
-                      className="w-full text-left border border-[#232733] rounded-md p-3 hover:border-[#3A4050] transition flex items-center justify-between gap-4"
+                      className="w-full text-left border border-[rgba(255,255,255,0.08)] rounded-md p-3 hover:border-[rgba(255,255,255,0.16)] transition flex items-center justify-between gap-4"
                     >
                       <div>
-                        <p className="text-sm font-mono text-[#E8E6DE]">{formaterMontant(p.amount_requested)} — {formaterDuree(p.duration_weeks)}</p>
-                        <p className="text-xs text-[#7C8494] mt-0.5">Demandé le {formaterDate(p.submitted_at)}</p>
+                        <p className="text-sm font-mono text-[#eef1f4]">{formaterMontant(p.amount_requested)} — {formaterDuree(p.duration_weeks)}</p>
+                        <p className="text-xs text-[#8e99a8] mt-0.5">Demandé le {formaterDate(p.submitted_at)}</p>
                       </div>
                       <span className="text-xs font-medium px-2.5 py-1 rounded-full shrink-0" style={{ backgroundColor: couleur.bg, color: couleur.text }}>
                         {LIBELLES_STATUT[p.status] || p.status}
@@ -575,8 +575,8 @@ export default function PageFicheClient() {
           </div>
 
           {utilisateur?.role === "admin" && (
-            <div className="bg-[#2A1414] border border-[#4A2222] rounded-lg p-6 mt-4">
-              <h2 className="text-sm font-semibold text-[#F0A0A0] mb-1">Zone sensible — réservée aux admins</h2>
+            <div className="bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-lg p-6 mt-4">
+              <h2 className="text-sm font-semibold text-[#c0563b] mb-1">Zone sensible — réservée aux admins</h2>
               <p className="text-xs text-[#B8807E] mb-4">
                 Supprime définitivement ce compte client et toutes ses données (profil, prêts, documents, messages).
                 Contrairement à l&apos;auto-suppression du client, ceci fonctionne même avec un prêt en cours — à
@@ -586,29 +586,29 @@ export default function PageFicheClient() {
               {!confirmationSuppressionOuverte ? (
                 <button
                   onClick={() => setConfirmationSuppressionOuverte(true)}
-                  className="text-sm font-medium text-[#F0A0A0] border border-[#6B2E2E] rounded-md px-4 py-2 hover:bg-[#3A1A1A] transition"
+                  className="text-sm font-medium text-[#c0563b] border border-[rgba(192,86,59,0.35)] rounded-md px-4 py-2 hover:bg-[#3A1A1A] transition"
                 >
                   Supprimer ce compte
                 </button>
               ) : (
                 <div className="space-y-2">
-                  <label className="block text-xs font-medium text-[#F0A0A0]">Tapez SUPPRIMER pour confirmer</label>
+                  <label className="block text-xs font-medium text-[#c0563b]">Tapez SUPPRIMER pour confirmer</label>
                   <input
                     value={texteConfirmationSuppression}
                     onChange={(e) => setTexteConfirmationSuppression(e.target.value)}
-                    className="w-full bg-[#1A0F0F] border border-[#4A2222] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#F0A0A0] transition"
+                    className="w-full bg-[#1A0F0F] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 text-sm text-[#eef1f4] focus:outline-none focus:border-[#c0563b] transition"
                   />
                   <div className="flex gap-2">
                     <button
                       onClick={gererSuppressionCompte}
                       disabled={texteConfirmationSuppression !== "SUPPRIMER" || suppressionEnCours}
-                      className="flex-1 bg-[#4A2222] text-[#F0A0A0] border border-[#6B2E2E] text-sm font-semibold py-2 rounded-md hover:bg-[#5A2828] transition disabled:opacity-40"
+                      className="flex-1 bg-[rgba(192,86,59,0.3)] text-[#c0563b] border border-[rgba(192,86,59,0.35)] text-sm font-semibold py-2 rounded-md hover:bg-[#5A2828] transition disabled:opacity-40"
                     >
                       {suppressionEnCours ? "Suppression..." : "Confirmer la suppression définitive"}
                     </button>
                     <button
                       onClick={() => { setConfirmationSuppressionOuverte(false); setTexteConfirmationSuppression(""); }}
-                      className="text-sm font-medium text-[#7C8494] px-3 py-2 hover:text-[#E8E6DE] transition"
+                      className="text-sm font-medium text-[#8e99a8] px-3 py-2 hover:text-[#eef1f4] transition"
                     >
                       Annuler
                     </button>
@@ -626,8 +626,8 @@ export default function PageFicheClient() {
 function Champ({ label, valeur }: { label: string; valeur: string }) {
   return (
     <div>
-      <p className="text-[#7C8494] text-xs">{label}</p>
-      <p className="font-medium text-[#E8E6DE]">{valeur}</p>
+      <p className="text-[#8e99a8] text-xs">{label}</p>
+      <p className="font-medium text-[#eef1f4]">{valeur}</p>
     </div>
   );
 }

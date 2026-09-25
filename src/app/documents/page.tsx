@@ -6,7 +6,7 @@ import { envoyerDocument, obtenirMesDocuments, DocumentClient, TypeDocument } fr
 import { DocumentIcon, HomeIcon, LoanIcon, LoanRequestIcon, RepaymentIcon, ProfileIcon, IconCircle } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
@@ -23,6 +23,7 @@ const LIENS_NAV_MOBILE = [
   { href: "/mes-demandes", label: "Mes prêts", Icone: LoanIcon },
   { href: "/demande-pret", label: "Demander", Icone: LoanRequestIcon },
   { href: "/remboursements", label: "Rembours.", Icone: RepaymentIcon },
+  { href: "/documents", label: "Docs", Icone: DocumentIcon },
   { href: "/profil", label: "Profil", Icone: ProfileIcon },
 ];
 
@@ -87,7 +88,7 @@ function PageDocumentsContenu() {
   if (chargementInitial) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
@@ -98,30 +99,30 @@ function PageDocumentsContenu() {
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen px-4 py-10 pb-28 md:pb-10">
       <div className="max-w-xl mx-auto">
         {!modeOnboarding && (
-          <button onClick={() => router.push("/tableau-de-bord")} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] mb-4 transition">
+          <button onClick={() => router.push("/tableau-de-bord")} className="text-sm text-[#8e99a8] hover:text-[#eef1f4] mb-4 transition">
             ← Retour au tableau de bord
           </button>
         )}
 
-        <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
+        <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-1">
             <IconCircle color="blue" size={40}><DocumentIcon size={20} /></IconCircle>
-            <h1 className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE]">
+            <h1 className="font-['Sora',sans-serif] text-xl text-[#eef1f4]">
               {modeOnboarding ? "Envoyez vos documents (étape 3/3)" : "Mes documents"}
             </h1>
           </div>
-          <p className="text-[#7C8494] text-sm mb-1">
+          <p className="text-[#8e99a8] text-sm mb-1">
             {modeOnboarding
               ? "Ces pièces permettent à notre équipe de vérifier vos informations et d'accélérer vos futures demandes."
               : "Ces pièces permettent à l'analyste de vérifier vos informations."}
           </p>
           {modeOnboarding && (
-            <p className="text-xs text-[#C9A227] mb-5">{nombreEnvoyes}/{TYPES_DOCUMENTS.length} documents envoyés</p>
+            <p className="text-xs text-[#c99a4b] mb-5">{nombreEnvoyes}/{TYPES_DOCUMENTS.length} documents envoyés</p>
           )}
           {!modeOnboarding && <div className="mb-6" />}
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
           <div className="space-y-3">
@@ -130,18 +131,18 @@ function PageDocumentsContenu() {
               const enCours = envoiEnCours === type.valeur;
 
               return (
-                <div key={type.valeur} className="border border-[#232733] rounded-md p-4 flex items-center justify-between gap-4 flex-wrap">
+                <div key={type.valeur} className="border border-[rgba(255,255,255,0.08)] rounded-md p-4 flex items-center justify-between gap-4 flex-wrap">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-[#E8E6DE]">{type.libelle}</p>
-                    {type.note && <p className="text-[11px] text-[#7C8494] mt-0.5">{type.note}</p>}
+                    <p className="text-sm font-medium text-[#eef1f4]">{type.libelle}</p>
+                    {type.note && <p className="text-[11px] text-[#8e99a8] mt-0.5">{type.note}</p>}
                     {existant ? (
-                      <p className="text-xs text-[#3DDC97] mt-0.5 truncate">✓ Envoyé : {existant.original_file_name}</p>
+                      <p className="text-xs text-[#3fa873] mt-0.5 truncate">✓ Envoyé : {existant.original_file_name}</p>
                     ) : (
-                      <p className="text-xs text-[#5A6070] mt-0.5">Aucun fichier envoyé</p>
+                      <p className="text-xs text-[#66707d] mt-0.5">Aucun fichier envoyé</p>
                     )}
                   </div>
 
-                  <label className="shrink-0 cursor-pointer text-sm font-semibold bg-[#C9A227] text-[#0B0E14] px-3 py-2 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50">
+                  <label className="shrink-0 cursor-pointer text-sm font-semibold bg-[#c99a4b] text-[#10151c] px-3 py-2 rounded-md hover:bg-[#e4b565] transition disabled:opacity-50">
                     {enCours ? "Envoi..." : existant ? "Remplacer" : "Choisir un fichier"}
                     <input
                       type="file"
@@ -160,12 +161,12 @@ function PageDocumentsContenu() {
             <>
               <button
                 onClick={() => router.push("/tableau-de-bord")}
-                className="w-full mt-6 bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition"
+                className="w-full mt-6 bg-[#c99a4b] text-[#10151c] text-sm font-semibold py-2.5 rounded-md hover:bg-[#e4b565] transition"
               >
                 {nombreEnvoyes === TYPES_DOCUMENTS.length ? "Terminer et accéder à mon compte" : "Continuer plus tard vers mon compte"}
               </button>
               {nombreEnvoyes < TYPES_DOCUMENTS.length && (
-                <p className="text-[11px] text-[#5A6070] text-center mt-2">
+                <p className="text-[11px] text-[#66707d] text-center mt-2">
                   Vous pourrez compléter les documents manquants à tout moment depuis « Mes documents ».
                 </p>
               )}
@@ -176,9 +177,9 @@ function PageDocumentsContenu() {
 
       {/* Barre de navigation mobile — masquée pendant l'onboarding pour ne pas distraire du parcours */}
       {!modeOnboarding && (
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0B0E14]/95 backdrop-blur border-t border-[#1B1F29] flex items-center justify-around py-2 px-1">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#10151c]/95 backdrop-blur border-t border-[rgba(255,255,255,0.08)] flex items-center justify-around py-2 px-1">
           {LIENS_NAV_MOBILE.map((lien) => {
-            const estActif = false;
+            const estActif = lien.href === "/documents";
             const Icone = lien.Icone;
             return (
               <button
@@ -186,10 +187,10 @@ function PageDocumentsContenu() {
                 onClick={() => router.push(lien.href)}
                 className="flex flex-col items-center gap-0.5 flex-1 py-1"
               >
-                <span className={estActif ? "text-[#C9A227]" : "text-[#7C8494]"}>
+                <span className={estActif ? "text-[#c99a4b]" : "text-[#8e99a8]"}>
                   <Icone size={20} />
                 </span>
-                <span className={`text-[9px] ${estActif ? "text-[#C9A227] font-medium" : "text-[#7C8494]"}`}>{lien.label}</span>
+                <span className={`text-[9px] ${estActif ? "text-[#c99a4b] font-medium" : "text-[#8e99a8]"}`}>{lien.label}</span>
               </button>
             );
           })}

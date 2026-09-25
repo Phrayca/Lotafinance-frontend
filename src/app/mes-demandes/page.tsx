@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { obtenirMesDemandesDePret, obtenirEcheances, LoanOut, Echeance } from "@/lib/api";
-import { LoanIcon, HomeIcon, LoanRequestIcon, RepaymentIcon, ProfileIcon, IconCircle } from "@/components/icons";
+import { LoanIcon, HomeIcon, LoanRequestIcon, RepaymentIcon, DocumentIcon, ProfileIcon, IconCircle } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
@@ -19,9 +19,9 @@ const LIBELLES_STATUT: Record<string, string> = {
 };
 
 function couleurStatut(statut: string): { bg: string; text: string } {
-  if (statut === "approuve") return { bg: "#0F2420", text: "#3DDC97" };
-  if (statut === "refuse") return { bg: "#2A1414", text: "#F0A0A0" };
-  return { bg: "#2A2312", text: "#C9A227" };
+  if (statut === "approuve") return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" };
+  if (statut === "refuse") return { bg: "rgba(192,86,59,0.12)", text: "#c0563b" };
+  return { bg: "#2A2312", text: "#c99a4b" };
 }
 
 function formaterMontant(montant?: number | null) {
@@ -54,10 +54,10 @@ function calculerScoreLotafinance(demandes: LoanOut[], echeancesParPret: Record<
 }
 
 function libelleEtCouleurScore(score: number): { libelle: string; couleur: string; bg: string } {
-  if (score >= 80) return { libelle: "Excellent", couleur: "#3DDC97", bg: "#0F2420" };
-  if (score >= 60) return { libelle: "Bon", couleur: "#3DDC97", bg: "#0F2420" };
-  if (score >= 40) return { libelle: "Moyen", couleur: "#C9A227", bg: "#2A2312" };
-  return { libelle: "À surveiller", couleur: "#F0A0A0", bg: "#2A1414" };
+  if (score >= 80) return { libelle: "Excellent", couleur: "#3fa873", bg: "rgba(63,168,115,0.12)" };
+  if (score >= 60) return { libelle: "Bon", couleur: "#3fa873", bg: "rgba(63,168,115,0.12)" };
+  if (score >= 40) return { libelle: "Moyen", couleur: "#c99a4b", bg: "#2A2312" };
+  return { libelle: "À surveiller", couleur: "#c0563b", bg: "rgba(192,86,59,0.12)" };
 }
 
 function estimerCreditPotentiel(score: number, dernierMontant: number) {
@@ -71,6 +71,7 @@ const LIENS_NAV_MOBILE = [
   { href: "/mes-demandes", label: "Mes prêts", Icone: LoanIcon },
   { href: "/demande-pret", label: "Demander", Icone: LoanRequestIcon },
   { href: "/remboursements", label: "Rembours.", Icone: RepaymentIcon },
+  { href: "/documents", label: "Docs", Icone: DocumentIcon },
   { href: "/profil", label: "Profil", Icone: ProfileIcon },
 ];
 
@@ -109,7 +110,7 @@ export default function PageMesDemandes() {
   if (chargement) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
@@ -132,19 +133,19 @@ export default function PageMesDemandes() {
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen px-4 py-10 pb-28 md:pb-10">
       <div className="max-w-2xl mx-auto">
-        <button onClick={() => router.push("/tableau-de-bord")} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] mb-4 transition">
+        <button onClick={() => router.push("/tableau-de-bord")} className="text-sm text-[#8e99a8] hover:text-[#eef1f4] mb-4 transition">
           ← Retour au tableau de bord
         </button>
 
         {/* Score Lotafinance + Crédit potentiel */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
-            <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-2">Score Lotafinance</p>
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-5">
+            <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-2">Score Lotafinance</p>
             {score != null && infosScore ? (
               <>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-mono font-semibold text-[#E8E6DE]">{score}</span>
-                  <span className="text-sm text-[#5A6070]">/100</span>
+                  <span className="text-3xl font-mono font-semibold text-[#eef1f4]">{score}</span>
+                  <span className="text-sm text-[#66707d]">/100</span>
                 </div>
                 <span
                   className="inline-block mt-2 text-xs font-medium px-2.5 py-1 rounded-full"
@@ -152,51 +153,51 @@ export default function PageMesDemandes() {
                 >
                   {infosScore.libelle}
                 </span>
-                <p className="text-[11px] text-[#5A6070] mt-2">
+                <p className="text-[11px] text-[#66707d] mt-2">
                   Basé sur votre solvabilité et votre fiabilité de remboursement.
                 </p>
               </>
             ) : (
-              <p className="text-sm text-[#5A6070] mt-2">
+              <p className="text-sm text-[#66707d] mt-2">
                 Faites approuver une première demande pour obtenir votre score.
               </p>
             )}
           </div>
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-5">
-            <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-2">Crédit potentiel</p>
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-5">
+            <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-2">Crédit potentiel</p>
             {creditPotentiel != null ? (
               <>
-                <span className="text-2xl font-mono font-semibold text-[#C9A227]">{formaterMontant(creditPotentiel)}</span>
-                <p className="text-[11px] text-[#5A6070] mt-2">
+                <span className="text-2xl font-mono font-semibold text-[#c99a4b]">{formaterMontant(creditPotentiel)}</span>
+                <p className="text-[11px] text-[#66707d] mt-2">
                   Estimation indicative selon votre historique, non contractuelle.
                 </p>
               </>
             ) : (
-              <p className="text-sm text-[#5A6070] mt-2">Disponible après une première demande approuvée.</p>
+              <p className="text-sm text-[#66707d] mt-2">Disponible après une première demande approuvée.</p>
             )}
           </div>
         </div>
 
-        <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
+        <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
           <div className="flex items-center gap-3 mb-1">
             <IconCircle color="blue" size={40}><LoanIcon size={20} /></IconCircle>
-            <h1 className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE]">Mes demandes</h1>
+            <h1 className="font-['Sora',sans-serif] text-xl text-[#eef1f4]">Mes demandes</h1>
           </div>
-          <p className="text-[#7C8494] text-sm mb-6">
+          <p className="text-[#8e99a8] text-sm mb-6">
             {demandes.length} demande{demandes.length > 1 ? "s" : ""} au total
           </p>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
           {demandes.length === 0 && !erreur && (
             <div className="text-center py-8">
-              <p className="text-sm text-[#5A6070] mb-4">Vous n&apos;avez encore soumis aucune demande.</p>
+              <p className="text-sm text-[#66707d] mb-4">Vous n&apos;avez encore soumis aucune demande.</p>
               <button
                 onClick={() => router.push("/demande-pret")}
-                className="text-sm font-semibold bg-[#C9A227] text-[#0B0E14] px-4 py-2 rounded-md hover:bg-[#DDB63A] transition"
+                className="text-sm font-semibold bg-[#c99a4b] text-[#10151c] px-4 py-2 rounded-md hover:bg-[#e4b565] transition"
               >
                 Faire une demande
               </button>
@@ -223,16 +224,16 @@ export default function PageMesDemandes() {
               const progressionPret = totalDuDuPret > 0 ? Math.round((totalPayeDuPret / totalDuDuPret) * 100) : 0;
 
               return (
-                <div key={d.id} className="border border-[#232733] rounded-md p-4">
+                <div key={d.id} className="border border-[rgba(255,255,255,0.08)] rounded-md p-4">
                   <div className="flex items-start justify-between gap-4 mb-3 flex-wrap">
                     <div>
-                      <p className="text-sm font-medium text-[#E8E6DE] font-mono">
+                      <p className="text-sm font-medium text-[#eef1f4] font-mono">
                         {formaterMontant(d.amount_requested)} — {formaterDuree(d.duration_weeks)}
                       </p>
-                      <p className="text-xs text-[#5A6070] mt-0.5">Demandé le {formaterDate(d.submitted_at)}</p>
-                      {d.purpose && <p className="text-xs text-[#7C8494] mt-0.5">{d.purpose}</p>}
+                      <p className="text-xs text-[#66707d] mt-0.5">Demandé le {formaterDate(d.submitted_at)}</p>
+                      {d.purpose && <p className="text-xs text-[#8e99a8] mt-0.5">{d.purpose}</p>}
                       {d.facilite_paiement && (
-                        <p className="text-xs text-[#C9A227] mt-0.5">Facilité de paiement — 2 mensualités</p>
+                        <p className="text-xs text-[#c99a4b] mt-0.5">Facilité de paiement — 2 mensualités</p>
                       )}
                     </div>
                     <span
@@ -243,7 +244,9 @@ export default function PageMesDemandes() {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs font-mono border-t border-[#1B1F29] pt-3">
+                  <TimelinePret demande={d} echeances={echeances} />
+
+                  <div className="grid grid-cols-2 gap-2 text-xs font-mono border-t border-[rgba(255,255,255,0.08)] pt-3">
                     <ChampDetail label="Taux" valeur={d.rate_percent_applied != null ? `${d.rate_percent_applied}%` : "—"} />
                     <ChampDetail label="Total à rembourser" valeur={formaterMontant(d.total_to_repay)} />
                     <ChampDetail label="Score" valeur={d.credit_score?.toString() ?? "—"} />
@@ -256,8 +259,8 @@ export default function PageMesDemandes() {
                     )}
                     {d.decision_reason && (
                       <div className="col-span-2">
-                        <p className="text-[#7C8494]">Commentaire de l&apos;analyste</p>
-                        <p className="text-[#B8BAC4] font-sans mt-0.5">{d.decision_reason}</p>
+                        <p className="text-[#8e99a8]">Commentaire de l&apos;analyste</p>
+                        <p className="text-[#8e99a8] font-sans mt-0.5">{d.decision_reason}</p>
                       </div>
                     )}
                   </div>
@@ -265,24 +268,24 @@ export default function PageMesDemandes() {
                   {d.status === "approuve" && (
                     <>
                       {/* Progression visuelle */}
-                      <div className="border-t border-[#1B1F29] mt-3 pt-3">
+                      <div className="border-t border-[rgba(255,255,255,0.08)] mt-3 pt-3">
                         <div className="flex items-center justify-between text-xs mb-1.5">
-                          <span className="text-[#7C8494]">Progression du remboursement</span>
-                          <span className="text-[#E8E6DE] font-mono">{progressionPret}%</span>
+                          <span className="text-[#8e99a8]">Progression du remboursement</span>
+                          <span className="text-[#eef1f4] font-mono">{progressionPret}%</span>
                         </div>
-                        <div className="h-2 bg-[#0B0E14] border border-[#1B1F29] rounded-full overflow-hidden">
-                          <div className="h-full bg-[#C9A227]" style={{ width: `${progressionPret}%` }} />
+                        <div className="h-2 bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-full overflow-hidden">
+                          <div className="h-full bg-[#c99a4b]" style={{ width: `${progressionPret}%` }} />
                         </div>
-                        <div className="flex justify-between text-[11px] text-[#7C8494] mt-1.5 font-mono">
+                        <div className="flex justify-between text-[11px] text-[#8e99a8] mt-1.5 font-mono">
                           <span>Payé : {formaterMontant(totalPayeDuPret)}</span>
                           <span>Restant : {formaterMontant(resteDuPret)}</span>
                         </div>
                       </div>
 
                       {/* Coût de mon prêt */}
-                      <div className="border-t border-[#1B1F29] mt-3 pt-3">
-                        <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-2">Coût de mon prêt</p>
-                        <div className="bg-[#0B0E14] border border-[#1B1F29] rounded-md p-3 space-y-1.5 text-xs font-mono">
+                      <div className="border-t border-[rgba(255,255,255,0.08)] mt-3 pt-3">
+                        <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-2">Coût de mon prêt</p>
+                        <div className="bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md p-3 space-y-1.5 text-xs font-mono">
                           <LigneCout label="Capital" valeur={formaterMontant(capital)} />
                           <LigneCout label={`Intérêt standard (${tauxStandard}%)`} valeur={formaterMontant(interetStandard)} />
                           <LigneCout label="Total standard" valeur={formaterMontant(totalStandard)} gras />
@@ -299,23 +302,23 @@ export default function PageMesDemandes() {
                   )}
 
                   {d.status === "approuve" && echeances && echeances.length > 0 && (
-                    <div className="border-t border-[#1B1F29] mt-3 pt-3">
-                      <p className="text-xs text-[#7C8494] uppercase tracking-wide mb-2">Échéancier</p>
+                    <div className="border-t border-[rgba(255,255,255,0.08)] mt-3 pt-3">
+                      <p className="text-xs text-[#8e99a8] uppercase tracking-wide mb-2">Échéancier</p>
                       <div className="space-y-2">
                         {echeances.map((e) => (
-                          <div key={e.id} className="flex items-center justify-between text-xs bg-[#0B0E14] border border-[#1B1F29] rounded-md px-3 py-2">
+                          <div key={e.id} className="flex items-center justify-between text-xs bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2">
                             <div>
-                              <p className="text-[#E8E6DE] font-mono">
+                              <p className="text-[#eef1f4] font-mono">
                                 Mensualité {e.numero} — {formaterMontant(e.montant)}
                               </p>
-                              <p className="text-[#7C8494] mt-0.5">
+                              <p className="text-[#8e99a8] mt-0.5">
                                 {e.payee ? `Payée le ${e.payee_le ? formaterDate(e.payee_le) : ""}` : `Échéance : ${formaterDate(e.date_echeance)}`}
                               </p>
                             </div>
                             {e.payee ? (
-                              <span className="text-[#3DDC97] font-medium">✓ Payée</span>
+                              <span className="text-[#3fa873] font-medium">✓ Payée</span>
                             ) : (
-                              <span className="text-[#C9A227] font-medium">En attente de confirmation</span>
+                              <span className="text-[#c99a4b] font-medium">En attente de confirmation</span>
                             )}
                           </div>
                         ))}
@@ -330,16 +333,16 @@ export default function PageMesDemandes() {
 
         {/* Historique des remboursements */}
         {historiqueRemboursements.length > 0 && (
-          <div id="historique-remboursements" className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mt-4 scroll-mt-6">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Historique des remboursements</h2>
-            <div className="divide-y divide-[#1B1F29]">
+          <div id="historique-remboursements" className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mt-4 scroll-mt-6">
+            <h2 className="text-sm font-medium text-[#eef1f4] mb-3">Historique des remboursements</h2>
+            <div className="divide-y divide-[rgba(255,255,255,0.08)]">
               {historiqueRemboursements.map((e) => (
                 <div key={e.id} className="flex items-center justify-between py-2.5 text-sm">
                   <div>
-                    <p className="text-[#E8E6DE]">{e.loanLabel}</p>
-                    <p className="text-xs text-[#7C8494]">{e.payee_le ? formaterDate(e.payee_le) : "—"}</p>
+                    <p className="text-[#eef1f4]">{e.loanLabel}</p>
+                    <p className="text-xs text-[#8e99a8]">{e.payee_le ? formaterDate(e.payee_le) : "—"}</p>
                   </div>
-                  <span className="font-mono text-[#3DDC97]">{formaterMontant(e.montant)}</span>
+                  <span className="font-mono text-[#3fa873]">{formaterMontant(e.montant)}</span>
                 </div>
               ))}
             </div>
@@ -348,7 +351,7 @@ export default function PageMesDemandes() {
       </div>
 
       {/* Barre de navigation mobile */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0B0E14]/95 backdrop-blur border-t border-[#1B1F29] flex items-center justify-around py-2 px-1">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#10151c]/95 backdrop-blur border-t border-[rgba(255,255,255,0.08)] flex items-center justify-around py-2 px-1">
         {LIENS_NAV_MOBILE.map((lien) => {
           const estActif = lien.href === "/mes-demandes";
           const Icone = lien.Icone;
@@ -358,10 +361,10 @@ export default function PageMesDemandes() {
               onClick={() => router.push(lien.href)}
               className="flex flex-col items-center gap-0.5 flex-1 py-1"
             >
-              <span className={estActif ? "text-[#C9A227]" : "text-[#7C8494]"}>
+              <span className={estActif ? "text-[#c99a4b]" : "text-[#8e99a8]"}>
                 <Icone size={20} />
               </span>
-              <span className={`text-[9px] ${estActif ? "text-[#C9A227] font-medium" : "text-[#7C8494]"}`}>{lien.label}</span>
+              <span className={`text-[9px] ${estActif ? "text-[#c99a4b] font-medium" : "text-[#8e99a8]"}`}>{lien.label}</span>
             </button>
           );
         })}
@@ -373,17 +376,58 @@ export default function PageMesDemandes() {
 function ChampDetail({ label, valeur }: { label: string; valeur: string }) {
   return (
     <div>
-      <p className="text-[#7C8494]">{label}</p>
-      <p className="text-[#E8E6DE]">{valeur}</p>
+      <p className="text-[#8e99a8]">{label}</p>
+      <p className="text-[#eef1f4]">{valeur}</p>
     </div>
   );
 }
 
 function LigneCout({ label, valeur, gras, accent }: { label: string; valeur: string; gras?: boolean; accent?: boolean }) {
   return (
-    <div className={`flex justify-between ${gras ? "border-t border-[#232733] pt-1.5 mt-1.5" : ""}`}>
-      <span className={gras ? "text-[#E8E6DE] font-medium" : "text-[#7C8494]"}>{label}</span>
-      <span className={accent ? "text-[#C9A227] font-medium" : gras ? "text-[#E8E6DE] font-medium" : "text-[#E8E6DE]"}>{valeur}</span>
+    <div className={`flex justify-between ${gras ? "border-t border-[rgba(255,255,255,0.08)] pt-1.5 mt-1.5" : ""}`}>
+      <span className={gras ? "text-[#eef1f4] font-medium" : "text-[#8e99a8]"}>{label}</span>
+      <span className={accent ? "text-[#c99a4b] font-medium" : gras ? "text-[#eef1f4] font-medium" : "text-[#eef1f4]"}>{valeur}</span>
+    </div>
+  );
+}
+
+function TimelinePret({ demande, echeances }: { demande: LoanOut; echeances?: Echeance[] }) {
+  type Etat = "fait" | "en_cours" | "attente" | "erreur";
+  const etapes: { label: string; etat: Etat }[] = [{ label: "Soumis", etat: "fait" }];
+
+  if (demande.status === "soumis") {
+    etapes.push({ label: "En analyse", etat: "en_cours" });
+    etapes.push({ label: "Décision", etat: "attente" });
+  } else if (demande.status === "infos_demandees") {
+    etapes.push({ label: "Analysé", etat: "fait" });
+    etapes.push({ label: "Infos demandées", etat: "en_cours" });
+  } else if (demande.status === "refuse") {
+    etapes.push({ label: "Analysé", etat: "fait" });
+    etapes.push({ label: "Refusé", etat: "erreur" });
+  } else if (demande.status === "approuve") {
+    etapes.push({ label: "Analysé", etat: "fait" });
+    etapes.push({ label: "Approuvé", etat: "fait" });
+    const aDesEcheances = !!echeances && echeances.length > 0;
+    const toutesPayees = aDesEcheances && echeances!.every((e) => e.payee);
+    etapes.push({ label: "Remboursement", etat: toutesPayees ? "fait" : aDesEcheances ? "en_cours" : "attente" });
+    etapes.push({ label: "Soldé", etat: toutesPayees ? "fait" : "attente" });
+  }
+
+  return (
+    <div className="flex items-center mb-3">
+      {etapes.map((e, i) => (
+        <div key={i} className={`flex items-center ${i < etapes.length - 1 ? "flex-1" : ""}`}>
+          <div className="flex flex-col items-center gap-1 shrink-0">
+            <span
+              className={`w-2.5 h-2.5 rounded-full shrink-0 ${
+                e.etat === "fait" ? "bg-[#3fa873]" : e.etat === "en_cours" ? "bg-[#c99a4b]" : e.etat === "erreur" ? "bg-[#c0563b]" : "bg-[#212a35] border border-[rgba(255,255,255,0.08)]"
+              }`}
+            />
+            <span className={`text-[9px] whitespace-nowrap ${e.etat === "attente" ? "text-[#66707d]" : "text-[#8e99a8]"}`}>{e.label}</span>
+          </div>
+          {i < etapes.length - 1 && <div className={`h-0.5 flex-1 mx-1 mb-3.5 ${e.etat === "fait" ? "bg-[#3fa873]" : "bg-[#212a35]"}`} />}
+        </div>
+      ))}
     </div>
   );
 }

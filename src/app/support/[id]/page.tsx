@@ -25,7 +25,7 @@ import {
 import { HomeIcon, ProfileIcon, DocumentIcon, IconCircle, CouleurLotafinance } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
@@ -40,8 +40,8 @@ const LIBELLES_STATUT: Record<string, string> = {
 };
 
 function couleurStatut(statut: string): { bg: string; text: string } {
-  if (statut === "resolu") return { bg: "#0F2420", text: "#3DDC97" };
-  if (statut === "en_cours") return { bg: "#1B1706", text: "#C9A227" };
+  if (statut === "resolu") return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" };
+  if (statut === "en_cours") return { bg: "rgba(201,154,75,0.15)", text: "#c99a4b" };
   if (statut === "en_attente") return { bg: "#241B33", text: "#C9A6F0" };
   return { bg: "#12203A", text: "#5B8DEF" };
 }
@@ -237,7 +237,7 @@ export default function PageDetailTicketSupport() {
   if (chargement || !autorise) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
@@ -245,7 +245,7 @@ export default function PageDetailTicketSupport() {
   if (!ticket) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#F0A0A0]">{erreur || "Ticket introuvable"}</p>
+        <p className="text-sm text-[#c0563b]">{erreur || "Ticket introuvable"}</p>
       </main>
     );
   }
@@ -254,13 +254,13 @@ export default function PageDetailTicketSupport() {
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Service Client</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Service Client</p>
             </div>
           )}
         </div>
@@ -268,13 +268,13 @@ export default function PageDetailTicketSupport() {
         <nav className="flex-1 space-y-1">
           {LIENS_NAV.map((lien, i) => (
             <div key={lien.href}>
-              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1">Gestion</p>}
-              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
-              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
+              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1">Gestion</p>}
+              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
+              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
               <button
                 onClick={() => router.push(lien.href)}
                 title={sidebarReduite ? lien.label : undefined}
-                className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} text-[#B8BAC4] hover:bg-[#12151C]`}
+                className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} text-[#8e99a8] hover:bg-[#1a212b]`}
               >
                 <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28}>
                   {(() => {
@@ -291,7 +291,7 @@ export default function PageDetailTicketSupport() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -300,7 +300,7 @@ export default function PageDetailTicketSupport() {
         <button
           onClick={seDeconnecter}
           title={sidebarReduite ? "Déconnexion" : undefined}
-          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#7C8494] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
+          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#8e99a8] hover:bg-[#1a212b] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
         >
           {Ic("logout")}
           {!sidebarReduite && "Déconnexion"}
@@ -309,36 +309,36 @@ export default function PageDetailTicketSupport() {
 
       <div className="flex-1 px-4 sm:px-8 py-6 overflow-y-auto">
         <div className="max-w-2xl mx-auto">
-          <button onClick={() => router.push("/support")} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] mb-4 transition">
+          <button onClick={() => router.push("/support")} className="text-sm text-[#8e99a8] hover:text-[#eef1f4] mb-4 transition">
             ← Retour aux tickets
           </button>
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
             <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
-              <h1 className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE]">{ticket.sujet}</h1>
+              <h1 className="font-['Sora',sans-serif] text-xl text-[#eef1f4]">{ticket.sujet}</h1>
               <span className="text-xs font-medium px-2.5 py-1 rounded-full shrink-0" style={{ backgroundColor: couleur.bg, color: couleur.text }}>
                 {LIBELLES_STATUT[ticket.statut] || ticket.statut}
               </span>
             </div>
-            <p className="text-xs text-[#7C8494] mb-1">
+            <p className="text-xs text-[#8e99a8] mb-1">
               {ticket.client_first_name} {ticket.client_last_name} · {ticket.client_phone} · Ouvert le {formaterDateHeure(ticket.cree_le)}
             </p>
-            {ticket.categorie && <p className="text-xs text-[#5A6070] mb-4">Catégorie : {ticket.categorie}</p>}
-            <p className="text-sm text-[#B8BAC4] whitespace-pre-wrap border-t border-[#1B1F29] pt-4 mt-3">{ticket.description}</p>
+            {ticket.categorie && <p className="text-xs text-[#66707d] mb-4">Catégorie : {ticket.categorie}</p>}
+            <p className="text-sm text-[#8e99a8] whitespace-pre-wrap border-t border-[rgba(255,255,255,0.08)] pt-4 mt-3">{ticket.description}</p>
           </div>
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg mb-4 overflow-hidden">
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg mb-4 overflow-hidden">
             <button
               onClick={() => setFicheClientOuverte((v) => !v)}
-              className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-[#171B24] transition"
+              className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-[#212a35] transition"
             >
-              <span className="text-sm font-medium text-[#E8E6DE]">Fiche client</span>
-              <span className="text-[#7C8494] text-xs">{ficheClientOuverte ? "▲ Réduire" : "▼ Voir les détails"}</span>
+              <span className="text-sm font-medium text-[#eef1f4]">Fiche client</span>
+              <span className="text-[#8e99a8] text-xs">{ficheClientOuverte ? "▲ Réduire" : "▼ Voir les détails"}</span>
             </button>
             {ficheClientOuverte && (
-              <div className="px-6 pb-6 border-t border-[#1B1F29] pt-4">
+              <div className="px-6 pb-6 border-t border-[rgba(255,255,255,0.08)] pt-4">
                 {!ficheClient ? (
-                  <p className="text-xs text-[#5A6070]">Chargement de la fiche...</p>
+                  <p className="text-xs text-[#66707d]">Chargement de la fiche...</p>
                 ) : (
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <InfoClient label="Nom complet" valeur={`${ficheClient.first_name} ${ficheClient.last_name}`} />
@@ -359,16 +359,16 @@ export default function PageDetailTicketSupport() {
           </div>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Actions</h2>
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+            <h2 className="text-sm font-medium text-[#eef1f4] mb-3">Actions</h2>
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => gererChangementStatut("en_cours")}
                 disabled={changementStatutEnCours || ticket.statut === "en_cours"}
-                className="text-xs font-medium bg-[#1B1706] border border-[#3A3013] text-[#C9A227] px-3 py-1.5 rounded-md hover:bg-[#241E09] transition disabled:opacity-40"
+                className="text-xs font-medium bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] text-[#c99a4b] px-3 py-1.5 rounded-md hover:bg-[rgba(201,154,75,0.22)] transition disabled:opacity-40"
               >
                 Prendre en charge
               </button>
@@ -382,7 +382,7 @@ export default function PageDetailTicketSupport() {
               <button
                 onClick={() => gererChangementStatut("resolu")}
                 disabled={changementStatutEnCours || ticket.statut === "resolu"}
-                className="text-xs font-medium bg-[#0F2420] border border-[#1E4A3D] text-[#3DDC97] px-3 py-1.5 rounded-md hover:bg-[#153530] transition disabled:opacity-40"
+                className="text-xs font-medium bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] text-[#3fa873] px-3 py-1.5 rounded-md hover:bg-[rgba(63,168,115,0.2)] transition disabled:opacity-40"
               >
                 Marquer résolu
               </button>
@@ -390,21 +390,21 @@ export default function PageDetailTicketSupport() {
                 <button
                   onClick={() => gererChangementStatut("en_cours")}
                   disabled={changementStatutEnCours}
-                  className="text-xs font-medium bg-[#0B0E14] border border-[#232733] text-[#7C8494] px-3 py-1.5 rounded-md hover:text-[#E8E6DE] transition disabled:opacity-40"
+                  className="text-xs font-medium bg-[#10151c] border border-[rgba(255,255,255,0.08)] text-[#8e99a8] px-3 py-1.5 rounded-md hover:text-[#eef1f4] transition disabled:opacity-40"
                 >
                   Rouvrir
                 </button>
               )}
             </div>
 
-            <div className="border-t border-[#1B1F29] mt-4 pt-4 grid grid-cols-2 gap-4">
+            <div className="border-t border-[rgba(255,255,255,0.08)] mt-4 pt-4 grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1.5">Assigné à</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1.5">Assigné à</label>
                 <select
                   value={ticket.agent_id || ""}
                   disabled={assignationEnCours}
                   onChange={(e) => gererAssignation(e.target.value)}
-                  className="w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition disabled:opacity-50"
+                  className="w-full bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2 text-sm text-[#eef1f4] focus:outline-none focus:border-[#c99a4b] transition disabled:opacity-50"
                 >
                   <option value="">— Non assigné —</option>
                   {agents.map((a) => (
@@ -415,12 +415,12 @@ export default function PageDetailTicketSupport() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1.5">Canal</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1.5">Canal</label>
                 <select
                   value={ticket.canal || "app"}
                   disabled={canalEnCours}
                   onChange={(e) => gererChangementCanal(e.target.value)}
-                  className="w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition disabled:opacity-50"
+                  className="w-full bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2 text-sm text-[#eef1f4] focus:outline-none focus:border-[#c99a4b] transition disabled:opacity-50"
                 >
                   <option value="app">📱 Application</option>
                   <option value="telephone">📞 Téléphone</option>
@@ -432,20 +432,20 @@ export default function PageDetailTicketSupport() {
             </div>
 
             {ticket.satisfaction_note && (
-              <div className="border-t border-[#1B1F29] mt-4 pt-4">
-                <p className="text-xs font-medium text-[#B8BAC4] mb-1">Satisfaction client</p>
+              <div className="border-t border-[rgba(255,255,255,0.08)] mt-4 pt-4">
+                <p className="text-xs font-medium text-[#8e99a8] mb-1">Satisfaction client</p>
                 <p className="text-lg">{"⭐".repeat(ticket.satisfaction_note)}{"☆".repeat(5 - ticket.satisfaction_note)}</p>
                 {ticket.satisfaction_commentaire && (
-                  <p className="text-xs text-[#7C8494] italic mt-1">« {ticket.satisfaction_commentaire} »</p>
+                  <p className="text-xs text-[#8e99a8] italic mt-1">« {ticket.satisfaction_commentaire} »</p>
                 )}
               </div>
             )}
           </div>
 
           {historiqueClient.length > 0 && (
-            <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-              <h2 className="text-sm font-medium text-[#E8E6DE] mb-1">Historique de ce client</h2>
-              <p className="text-xs text-[#7C8494] mb-3">
+            <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+              <h2 className="text-sm font-medium text-[#eef1f4] mb-1">Historique de ce client</h2>
+              <p className="text-xs text-[#8e99a8] mb-3">
                 {historiqueClient.length} autre{historiqueClient.length > 1 ? "s" : ""} ticket{historiqueClient.length > 1 ? "s" : ""}
               </p>
               <div className="space-y-2">
@@ -455,11 +455,11 @@ export default function PageDetailTicketSupport() {
                     <button
                       key={t.id}
                       onClick={() => router.push(`/support/${t.id}`)}
-                      className="w-full text-left border border-[#232733] rounded-md p-3 hover:border-[#3A4050] transition flex items-center justify-between gap-3"
+                      className="w-full text-left border border-[rgba(255,255,255,0.08)] rounded-md p-3 hover:border-[rgba(255,255,255,0.16)] transition flex items-center justify-between gap-3"
                     >
                       <div className="min-w-0">
-                        <p className="text-sm text-[#E8E6DE] truncate">{t.sujet}</p>
-                        <p className="text-xs text-[#7C8494] mt-0.5">{formaterDateHeure(t.cree_le)}</p>
+                        <p className="text-sm text-[#eef1f4] truncate">{t.sujet}</p>
+                        <p className="text-xs text-[#8e99a8] mt-0.5">{formaterDateHeure(t.cree_le)}</p>
                       </div>
                       <span className="text-xs font-medium px-2.5 py-1 rounded-full shrink-0" style={{ backgroundColor: c.bg, color: c.text }}>
                         {LIBELLES_STATUT[t.statut] || t.statut}
@@ -471,21 +471,21 @@ export default function PageDetailTicketSupport() {
             </div>
           )}
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-3">Échanges</h2>
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+            <h2 className="text-sm font-medium text-[#eef1f4] mb-3">Échanges</h2>
             {messages.length === 0 ? (
-              <p className="text-sm text-[#5A6070] py-4 text-center">Aucun échange pour le moment.</p>
+              <p className="text-sm text-[#66707d] py-4 text-center">Aucun échange pour le moment.</p>
             ) : (
               <div className="space-y-3">
                 {messages.map((m) => (
                   <div key={m.id} className={`flex ${m.auteur === "agent" ? "justify-end" : "justify-start"}`}>
                     <div
                       className={`max-w-[80%] rounded-md px-3 py-2 text-sm ${
-                        m.auteur === "agent" ? "bg-[#1B1706] text-[#E8E6DE]" : "bg-[#0B0E14] border border-[#232733] text-[#B8BAC4]"
+                        m.auteur === "agent" ? "bg-[rgba(201,154,75,0.15)] text-[#eef1f4]" : "bg-[#10151c] border border-[rgba(255,255,255,0.08)] text-[#8e99a8]"
                       }`}
                     >
                       <p className="whitespace-pre-wrap">{m.contenu}</p>
-                      <p className="text-[10px] text-[#5A6070] mt-1">
+                      <p className="text-[10px] text-[#66707d] mt-1">
                         {m.auteur === "agent" ? "Toi" : `${ticket.client_first_name}`} · {formaterDateHeure(m.envoye_le)}
                       </p>
                     </div>
@@ -500,12 +500,12 @@ export default function PageDetailTicketSupport() {
               <button
                 type="button"
                 onClick={() => setModelesOuvert((v) => !v)}
-                className="text-xs font-medium text-[#C9A227] border border-[#3A3013] bg-[#1B1706] rounded-md px-3 py-1.5 hover:bg-[#241E09] transition"
+                className="text-xs font-medium text-[#c99a4b] border border-[rgba(201,154,75,0.3)] bg-[rgba(201,154,75,0.15)] rounded-md px-3 py-1.5 hover:bg-[rgba(201,154,75,0.22)] transition"
               >
                 📋 Utiliser un modèle de réponse
               </button>
               {modelesOuvert && (
-                <div className="absolute left-0 bottom-9 w-80 max-h-64 overflow-y-auto bg-[#12151C] border border-[#232733] rounded-md shadow-xl z-10">
+                <div className="absolute left-0 bottom-9 w-80 max-h-64 overflow-y-auto bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md shadow-xl z-10">
                   {modeles.map((m) => (
                     <button
                       key={m.id}
@@ -514,10 +514,10 @@ export default function PageDetailTicketSupport() {
                         setReponse(m.contenu);
                         setModelesOuvert(false);
                       }}
-                      className="w-full text-left px-3 py-2 hover:bg-[#171B24] transition border-b border-[#1B1F29] last:border-0"
+                      className="w-full text-left px-3 py-2 hover:bg-[#212a35] transition border-b border-[rgba(255,255,255,0.08)] last:border-0"
                     >
-                      <p className="text-xs font-medium text-[#E8E6DE]">{m.titre}</p>
-                      <p className="text-[11px] text-[#7C8494] truncate mt-0.5">{m.contenu}</p>
+                      <p className="text-xs font-medium text-[#eef1f4]">{m.titre}</p>
+                      <p className="text-[11px] text-[#8e99a8] truncate mt-0.5">{m.contenu}</p>
                     </button>
                   ))}
                 </div>
@@ -530,12 +530,12 @@ export default function PageDetailTicketSupport() {
               value={reponse}
               onChange={(e) => setReponse(e.target.value)}
               placeholder="Répondre au client..."
-              className="flex-1 bg-[#12151C] border border-[#232733] rounded-md px-3 py-2.5 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition"
+              className="flex-1 bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2.5 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition"
             />
             <button
               type="submit"
               disabled={envoiEnCours || !reponse.trim()}
-              className="bg-[#C9A227] text-[#0B0E14] text-sm font-semibold px-4 py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+              className="bg-[#c99a4b] text-[#10151c] text-sm font-semibold px-4 py-2.5 rounded-md hover:bg-[#e4b565] transition disabled:opacity-50"
             >
               Envoyer
             </button>
@@ -549,8 +549,8 @@ export default function PageDetailTicketSupport() {
 function InfoClient({ label, valeur }: { label: string; valeur: string }) {
   return (
     <div>
-      <p className="text-[#7C8494] text-xs">{label}</p>
-      <p className="text-[#E8E6DE] font-medium">{valeur}</p>
+      <p className="text-[#8e99a8] text-xs">{label}</p>
+      <p className="text-[#eef1f4] font-medium">{valeur}</p>
     </div>
   );
 }

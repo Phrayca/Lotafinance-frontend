@@ -6,13 +6,13 @@ import { recupererMonProfilUtilisateur, enregistrerMesInformations, changerMonMo
 import { HomeIcon, ProfileIcon, DocumentIcon, IconCircle, CouleurLotafinance } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
 
 const CHAMP_CLASSES =
-  "w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] focus:outline-none focus:border-[#C9A227] transition";
+  "w-full bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2 text-sm text-[#eef1f4] focus:outline-none focus:border-[#c99a4b] transition";
 
 type Utilisateur = { id: string; email: string; role: string; first_name?: string; last_name?: string };
 
@@ -175,20 +175,20 @@ export default function PageProfilAgent() {
   if (chargement) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Service Client</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Service Client</p>
             </div>
           )}
         </div>
@@ -196,14 +196,14 @@ export default function PageProfilAgent() {
         <nav className="flex-1 space-y-1">
           {LIENS_NAV.map((lien, i) => (
             <div key={lien.href}>
-              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1">Gestion</p>}
-              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
-              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
+              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1">Gestion</p>}
+              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
+              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
               <button
                 onClick={() => router.push(lien.href)}
                 title={sidebarReduite ? lien.label : undefined}
                 className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                  lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                  lien.actif ? "bg-[#c99a4b] text-[#10151c] font-medium" : "text-[#8e99a8] hover:bg-[#1a212b]"
                 }`}
               >
                 <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
@@ -221,7 +221,7 @@ export default function PageProfilAgent() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -230,7 +230,7 @@ export default function PageProfilAgent() {
         <button
           onClick={seDeconnecter}
           title={sidebarReduite ? "Déconnexion" : undefined}
-          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#7C8494] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
+          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#8e99a8] hover:bg-[#1a212b] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
         >
           {Ic("logout")}
           {!sidebarReduite && "Déconnexion"}
@@ -239,19 +239,19 @@ export default function PageProfilAgent() {
 
       <div className="flex-1 px-4 sm:px-8 py-6 overflow-y-auto">
         <div className="max-w-xl mx-auto">
-          <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE] mb-1">Mon profil</h1>
-          <p className="text-[#7C8494] text-sm mb-6">Informations de ton compte Service Client</p>
+          <h1 className="font-['Sora',sans-serif] text-2xl text-[#eef1f4] mb-1">Mon profil</h1>
+          <p className="text-[#8e99a8] text-sm mb-6">Informations de ton compte Service Client</p>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4 flex items-center gap-4">
-            <span className="w-14 h-14 shrink-0 rounded-full bg-[#1B2030] border border-[#232733] text-[#C9A227] flex items-center justify-center">
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4 flex items-center gap-4">
+            <span className="w-14 h-14 shrink-0 rounded-full bg-[#212a35] border border-[rgba(255,255,255,0.08)] text-[#c99a4b] flex items-center justify-center">
               {Ic("user", "w-6 h-6")}
             </span>
             <div className="min-w-0">
-              <p className="text-base font-medium text-[#E8E6DE] truncate">
+              <p className="text-base font-medium text-[#eef1f4] truncate">
                 {utilisateur?.first_name || utilisateur?.last_name ? `${utilisateur?.first_name || ""} ${utilisateur?.last_name || ""}`.trim() : utilisateur?.email}
               </p>
               <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5B8DEF] bg-[#12203A] border border-[#1E3A6B] rounded-full px-2.5 py-1 mt-1.5">
@@ -260,23 +260,23 @@ export default function PageProfilAgent() {
             </div>
           </div>
 
-          <form onSubmit={gererEnregistrementInfos} className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-4">Informations personnelles</h2>
+          <form onSubmit={gererEnregistrementInfos} className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
+            <h2 className="text-sm font-medium text-[#eef1f4] mb-4">Informations personnelles</h2>
 
             {erreurInfos && (
-              <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-3">{erreurInfos}</p>
+              <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-3">{erreurInfos}</p>
             )}
             {succesInfos && (
-              <p className="text-sm text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-md px-3 py-2 mb-3">Informations mises à jour.</p>
+              <p className="text-sm text-[#3fa873] bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] rounded-md px-3 py-2 mb-3">Informations mises à jour.</p>
             )}
 
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Prénom</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Prénom</label>
                 <input required value={prenom} onChange={(e) => setPrenom(e.target.value)} className={CHAMP_CLASSES} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Nom</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Nom</label>
                 <input required value={nom} onChange={(e) => setNom(e.target.value)} className={CHAMP_CLASSES} />
               </div>
             </div>
@@ -284,33 +284,33 @@ export default function PageProfilAgent() {
             <button
               type="submit"
               disabled={enregistrementInfosEnCours}
-              className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+              className="w-full bg-[#c99a4b] text-[#10151c] text-sm font-semibold py-2.5 rounded-md hover:bg-[#e4b565] transition disabled:opacity-50"
             >
               {enregistrementInfosEnCours ? "Enregistrement..." : "Enregistrer"}
             </button>
           </form>
 
-          <form onSubmit={gererChangementMotDePasse} className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
-            <h2 className="text-sm font-medium text-[#E8E6DE] mb-4 flex items-center gap-2">{Ic("lock", "w-4 h-4")} Changer mon mot de passe</h2>
+          <form onSubmit={gererChangementMotDePasse} className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
+            <h2 className="text-sm font-medium text-[#eef1f4] mb-4 flex items-center gap-2">{Ic("lock", "w-4 h-4")} Changer mon mot de passe</h2>
 
             {erreurMotDePasse && (
-              <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-3">{erreurMotDePasse}</p>
+              <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-3">{erreurMotDePasse}</p>
             )}
             {succesMotDePasse && (
-              <p className="text-sm text-[#3DDC97] bg-[#0F2420] border border-[#1E4A3D] rounded-md px-3 py-2 mb-3">Mot de passe mis à jour avec succès.</p>
+              <p className="text-sm text-[#3fa873] bg-[rgba(63,168,115,0.12)] border border-[rgba(63,168,115,0.3)] rounded-md px-3 py-2 mb-3">Mot de passe mis à jour avec succès.</p>
             )}
 
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Mot de passe actuel</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Mot de passe actuel</label>
                 <input type="password" value={motDePasseActuel} onChange={(e) => setMotDePasseActuel(e.target.value)} required className={CHAMP_CLASSES} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Nouveau mot de passe</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Nouveau mot de passe</label>
                 <input type="password" value={nouveauMotDePasse} onChange={(e) => setNouveauMotDePasse(e.target.value)} required minLength={6} className={CHAMP_CLASSES} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-[#B8BAC4] mb-1">Confirmer le nouveau mot de passe</label>
+                <label className="block text-xs font-medium text-[#8e99a8] mb-1">Confirmer le nouveau mot de passe</label>
                 <input type="password" value={confirmationMotDePasse} onChange={(e) => setConfirmationMotDePasse(e.target.value)} required minLength={6} className={CHAMP_CLASSES} />
               </div>
             </div>
@@ -318,7 +318,7 @@ export default function PageProfilAgent() {
             <button
               type="submit"
               disabled={changementEnCours}
-              className="mt-4 w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+              className="mt-4 w-full bg-[#c99a4b] text-[#10151c] text-sm font-semibold py-2.5 rounded-md hover:bg-[#e4b565] transition disabled:opacity-50"
             >
               {changementEnCours ? "..." : "Mettre à jour le mot de passe"}
             </button>

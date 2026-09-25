@@ -6,13 +6,13 @@ import { creerTicket, obtenirMesTickets, Ticket } from "@/lib/api";
 import { HomeIcon, LoanIcon, LoanRequestIcon, RepaymentIcon, DocumentIcon, ProfileIcon, IconCircle } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
 
 const CHAMP_CLASSES =
-  "w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition";
+  "w-full bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition";
 
 const CATEGORIES = [
   { valeur: "remboursement", libelle: "Remboursement" },
@@ -30,8 +30,8 @@ const LIBELLES_STATUT: Record<string, string> = {
 };
 
 function couleurStatut(statut: string): { bg: string; text: string } {
-  if (statut === "resolu") return { bg: "#0F2420", text: "#3DDC97" };
-  if (statut === "en_cours") return { bg: "#1B1706", text: "#C9A227" };
+  if (statut === "resolu") return { bg: "rgba(63,168,115,0.12)", text: "#3fa873" };
+  if (statut === "en_cours") return { bg: "rgba(201,154,75,0.15)", text: "#c99a4b" };
   if (statut === "en_attente") return { bg: "#241B33", text: "#C9A6F0" };
   return { bg: "#12203A", text: "#5B8DEF" };
 }
@@ -110,7 +110,7 @@ export default function PageReclamations() {
   if (chargement) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
@@ -118,37 +118,37 @@ export default function PageReclamations() {
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen px-4 py-10 pb-28 md:pb-10">
       <div className="max-w-xl mx-auto">
-        <button onClick={() => router.push("/tableau-de-bord")} className="text-sm text-[#7C8494] hover:text-[#E8E6DE] mb-4 transition">
+        <button onClick={() => router.push("/tableau-de-bord")} className="text-sm text-[#8e99a8] hover:text-[#eef1f4] mb-4 transition">
           ← Retour au tableau de bord
         </button>
 
-        <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4">
+        <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4">
           <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
-            <h1 className="font-['Source_Serif_4',serif] text-xl text-[#E8E6DE]">Mes réclamations</h1>
+            <h1 className="font-['Sora',sans-serif] text-xl text-[#eef1f4]">Mes réclamations</h1>
             <button
               onClick={() => setFormulaireOuvert((v) => !v)}
-              className="text-sm font-semibold bg-[#C9A227] text-[#0B0E14] px-3 py-1.5 rounded-md hover:bg-[#DDB63A] transition"
+              className="text-sm font-semibold bg-[#c99a4b] text-[#10151c] px-3 py-1.5 rounded-md hover:bg-[#e4b565] transition"
             >
               {formulaireOuvert ? "Annuler" : "+ Nouvelle réclamation"}
             </button>
           </div>
-          <p className="text-[#7C8494] text-sm">
+          <p className="text-[#8e99a8] text-sm">
             {tickets.length} réclamation{tickets.length > 1 ? "s" : ""}
           </p>
         </div>
 
         {erreur && (
-          <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+          <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
         )}
 
         {formulaireOuvert && (
-          <form onSubmit={gererCreation} className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4 space-y-4">
+          <form onSubmit={gererCreation} className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4 space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Sujet</label>
+              <label className="block text-sm font-medium text-[#8e99a8] mb-1">Sujet</label>
               <input value={sujet} onChange={(e) => setSujet(e.target.value)} className={CHAMP_CLASSES} placeholder="Ex : échéance mal prélevée" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Catégorie</label>
+              <label className="block text-sm font-medium text-[#8e99a8] mb-1">Catégorie</label>
               <select value={categorie} onChange={(e) => setCategorie(e.target.value)} className={CHAMP_CLASSES}>
                 {CATEGORIES.map((c) => (
                   <option key={c.valeur} value={c.valeur}>{c.libelle}</option>
@@ -156,7 +156,7 @@ export default function PageReclamations() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Description</label>
+              <label className="block text-sm font-medium text-[#8e99a8] mb-1">Description</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -168,16 +168,16 @@ export default function PageReclamations() {
             <button
               type="submit"
               disabled={envoiEnCours}
-              className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+              className="w-full bg-[#c99a4b] text-[#10151c] text-sm font-semibold py-2.5 rounded-md hover:bg-[#e4b565] transition disabled:opacity-50"
             >
               {envoiEnCours ? "Envoi..." : "Envoyer la réclamation"}
             </button>
           </form>
         )}
 
-        <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
+        <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
           {tickets.length === 0 ? (
-            <p className="text-sm text-[#5A6070] py-8 text-center">Aucune réclamation pour le moment.</p>
+            <p className="text-sm text-[#66707d] py-8 text-center">Aucune réclamation pour le moment.</p>
           ) : (
             <div className="space-y-2">
               {tickets.map((t) => {
@@ -188,13 +188,13 @@ export default function PageReclamations() {
                   <button
                     key={t.id}
                     onClick={() => router.push(`/reclamations/${t.id}`)}
-                    className="w-full text-left border border-[#232733] rounded-md p-4 hover:border-[#3A4050] transition flex items-center justify-between gap-4"
+                    className="w-full text-left border border-[rgba(255,255,255,0.08)] rounded-md p-4 hover:border-[rgba(255,255,255,0.16)] transition flex items-center justify-between gap-4"
                   >
                     <div className="min-w-0 flex items-center gap-2">
                       {nouvelleReponse && <span className="w-2 h-2 rounded-full bg-[#C24545] shrink-0" title="Nouvelle réponse" />}
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-[#E8E6DE] truncate">{t.sujet}</p>
-                        <p className="text-xs text-[#7C8494] mt-0.5">{formaterDate(t.cree_le)}</p>
+                        <p className="text-sm font-medium text-[#eef1f4] truncate">{t.sujet}</p>
+                        <p className="text-xs text-[#8e99a8] mt-0.5">{formaterDate(t.cree_le)}</p>
                       </div>
                     </div>
                     <span className="text-xs font-medium px-2.5 py-1 rounded-full shrink-0" style={{ backgroundColor: couleur.bg, color: couleur.text }}>
@@ -209,15 +209,15 @@ export default function PageReclamations() {
       </div>
 
       {/* Barre de navigation mobile */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#0B0E14]/95 backdrop-blur border-t border-[#1B1F29] flex items-center justify-around py-2 px-1">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-20 bg-[#10151c]/95 backdrop-blur border-t border-[rgba(255,255,255,0.08)] flex items-center justify-around py-2 px-1">
         {LIENS_NAV_MOBILE.map((lien) => {
           const Icone = lien.Icone;
           return (
             <button key={lien.href} onClick={() => router.push(lien.href)} className="flex flex-col items-center gap-0.5 flex-1 py-1">
-              <span className="text-[#7C8494]">
+              <span className="text-[#8e99a8]">
                 <Icone size={20} />
               </span>
-              <span className="text-[9px] text-[#7C8494]">{lien.label}</span>
+              <span className="text-[9px] text-[#8e99a8]">{lien.label}</span>
             </button>
           );
         })}

@@ -12,13 +12,13 @@ import {
 import { HomeIcon, ProfileIcon, IconCircle, CouleurLotafinance } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
-  backgroundColor: "#0B0E14",
+  backgroundColor: "#10151c",
   backgroundImage:
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
 
 const CHAMP_CLASSES =
-  "w-full bg-[#0B0E14] border border-[#232733] rounded-md px-3 py-2 text-sm text-[#E8E6DE] placeholder-[#5A6070] focus:outline-none focus:border-[#C9A227] transition";
+  "w-full bg-[#10151c] border border-[rgba(255,255,255,0.08)] rounded-md px-3 py-2 text-sm text-[#eef1f4] placeholder-[#66707d] focus:outline-none focus:border-[#c99a4b] transition";
 
 type Utilisateur = { id: string; email: string; role: string; first_name?: string; last_name?: string };
 
@@ -162,20 +162,20 @@ export default function PageModelesReponse() {
   if (chargement || !autorise) {
     return (
       <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex items-center justify-center">
-        <p className="text-sm text-[#7C8494] font-mono">Chargement...</p>
+        <p className="text-sm text-[#8e99a8] font-mono">Chargement...</p>
       </main>
     );
   }
 
   return (
     <main style={FOND_TEXTURE_STYLE} className="min-h-screen flex">
-      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[#1B1F29] flex flex-col py-6 px-3 transition-all duration-200`}>
+      <aside className={`${sidebarReduite ? "w-16" : "w-60"} shrink-0 border-r border-[rgba(255,255,255,0.08)] flex flex-col py-6 px-3 transition-all duration-200`}>
         <div className={`flex items-center gap-2 mb-8 ${sidebarReduite ? "justify-center px-0" : "px-2"}`}>
-          <span className="w-9 h-9 rounded-lg bg-[#C9A227] flex items-center justify-center text-[#0B0E14] font-bold font-['Source_Serif_4',serif] shrink-0">L</span>
+          <span className="w-9 h-9 rounded-lg bg-[#c99a4b] flex items-center justify-center text-[#10151c] font-bold font-['Sora',sans-serif] shrink-0">L</span>
           {!sidebarReduite && (
             <div>
-              <p className="text-sm font-semibold text-[#E8E6DE] leading-tight">Lotafinance</p>
-              <p className="text-[10px] text-[#7C8494]">Service Client</p>
+              <p className="text-sm font-semibold text-[#eef1f4] leading-tight">Lotafinance</p>
+              <p className="text-[10px] text-[#8e99a8]">Service Client</p>
             </div>
           )}
         </div>
@@ -183,14 +183,14 @@ export default function PageModelesReponse() {
         <nav className="flex-1 space-y-1">
           {LIENS_NAV.map((lien, i) => (
             <div key={lien.href}>
-              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1">Gestion</p>}
-              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
-              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#5A6070] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
+              {!sidebarReduite && i === 0 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1">Gestion</p>}
+              {!sidebarReduite && i === 2 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1 mt-3">Rapports</p>}
+              {!sidebarReduite && i === 5 && <p className="text-[10px] text-[#66707d] uppercase tracking-wide px-3 mb-1 mt-3">Outils</p>}
               <button
                 onClick={() => router.push(lien.href)}
                 title={sidebarReduite ? lien.label : undefined}
                 className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm transition ${sidebarReduite ? "justify-center px-0" : "px-3"} ${
-                  lien.actif ? "bg-[#C9A227] text-[#0B0E14] font-medium" : "text-[#B8BAC4] hover:bg-[#12151C]"
+                  lien.actif ? "bg-[#c99a4b] text-[#10151c] font-medium" : "text-[#8e99a8] hover:bg-[#1a212b]"
                 }`}
               >
                 <IconCircle color={COULEURS_NAV[i % COULEURS_NAV.length]} size={28} actif={lien.actif}>
@@ -208,7 +208,7 @@ export default function PageModelesReponse() {
         <button
           onClick={basculerSidebar}
           title={sidebarReduite ? "Déplier le menu" : "Réduire le menu"}
-          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#7C8494] hover:bg-[#12151C] hover:text-[#E8E6DE] transition"
+          className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-xs text-[#8e99a8] hover:bg-[#1a212b] hover:text-[#eef1f4] transition"
         >
           {Ic(sidebarReduite ? "chevronRight" : "chevronLeft", "w-4 h-4")}
           {!sidebarReduite && "Réduire"}
@@ -217,7 +217,7 @@ export default function PageModelesReponse() {
         <button
           onClick={seDeconnecter}
           title={sidebarReduite ? "Déconnexion" : undefined}
-          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#7C8494] hover:bg-[#12151C] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
+          className={`w-full flex items-center gap-3 py-2.5 rounded-md text-sm text-[#8e99a8] hover:bg-[#1a212b] transition ${sidebarReduite ? "justify-center px-0" : "px-3"}`}
         >
           {Ic("logout")}
           {!sidebarReduite && "Déconnexion"}
@@ -228,57 +228,57 @@ export default function PageModelesReponse() {
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center justify-between gap-3 flex-wrap mb-6">
             <div>
-              <h1 className="font-['Source_Serif_4',serif] text-2xl text-[#E8E6DE]">Modèles de réponses</h1>
-              <p className="text-[#7C8494] text-sm mt-1">Partagés par toute l&apos;équipe Service Client</p>
+              <h1 className="font-['Sora',sans-serif] text-2xl text-[#eef1f4]">Modèles de réponses</h1>
+              <p className="text-[#8e99a8] text-sm mt-1">Partagés par toute l&apos;équipe Service Client</p>
             </div>
             <button
               onClick={() => setFormulaireOuvert((v) => !v)}
-              className="text-sm font-semibold bg-[#C9A227] text-[#0B0E14] px-3 py-1.5 rounded-md hover:bg-[#DDB63A] transition"
+              className="text-sm font-semibold bg-[#c99a4b] text-[#10151c] px-3 py-1.5 rounded-md hover:bg-[#e4b565] transition"
             >
               {formulaireOuvert ? "Annuler" : "+ Nouveau modèle"}
             </button>
           </div>
 
           {erreur && (
-            <p className="text-sm text-[#F0A0A0] bg-[#2A1414] border border-[#4A2222] rounded-md px-3 py-2 mb-4">{erreur}</p>
+            <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
           )}
 
           {formulaireOuvert && (
-            <form onSubmit={gererCreation} className="bg-[#12151C] border border-[#232733] rounded-lg p-6 mb-4 space-y-3">
+            <form onSubmit={gererCreation} className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6 mb-4 space-y-3">
               <div>
-                <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Titre</label>
+                <label className="block text-sm font-medium text-[#8e99a8] mb-1">Titre</label>
                 <input value={titre} onChange={(e) => setTitre(e.target.value)} className={CHAMP_CLASSES} placeholder="Ex : Retard de paiement" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#B8BAC4] mb-1">Contenu</label>
+                <label className="block text-sm font-medium text-[#8e99a8] mb-1">Contenu</label>
                 <textarea value={contenu} onChange={(e) => setContenu(e.target.value)} rows={4} className={CHAMP_CLASSES} placeholder="Le texte que tu veux réutiliser..." />
               </div>
               <button
                 type="submit"
                 disabled={envoiEnCours}
-                className="w-full bg-[#C9A227] text-[#0B0E14] text-sm font-semibold py-2.5 rounded-md hover:bg-[#DDB63A] transition disabled:opacity-50"
+                className="w-full bg-[#c99a4b] text-[#10151c] text-sm font-semibold py-2.5 rounded-md hover:bg-[#e4b565] transition disabled:opacity-50"
               >
                 {envoiEnCours ? "Création..." : "Créer le modèle"}
               </button>
             </form>
           )}
 
-          <div className="bg-[#12151C] border border-[#232733] rounded-lg p-6">
+          <div className="bg-[#1a212b] border border-[rgba(255,255,255,0.08)] rounded-lg p-6">
             {modeles.length === 0 ? (
-              <p className="text-sm text-[#5A6070] py-8 text-center">Aucun modèle pour le moment.</p>
+              <p className="text-sm text-[#66707d] py-8 text-center">Aucun modèle pour le moment.</p>
             ) : (
               <div className="space-y-2">
                 {modeles.map((m) => (
-                  <div key={m.id} className="border border-[#232733] rounded-md p-4 flex items-start justify-between gap-3">
+                  <div key={m.id} className="border border-[rgba(255,255,255,0.08)] rounded-md p-4 flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-[#E8E6DE]">{m.titre}</p>
-                      <p className="text-xs text-[#7C8494] mt-1 whitespace-pre-wrap">{m.contenu}</p>
-                      <p className="text-[10px] text-[#5A6070] mt-1.5">Créé le {formaterDate(m.cree_le)}</p>
+                      <p className="text-sm font-medium text-[#eef1f4]">{m.titre}</p>
+                      <p className="text-xs text-[#8e99a8] mt-1 whitespace-pre-wrap">{m.contenu}</p>
+                      <p className="text-[10px] text-[#66707d] mt-1.5">Créé le {formaterDate(m.cree_le)}</p>
                     </div>
                     <button
                       onClick={() => gererSuppression(m.id)}
                       disabled={suppressionEnCours === m.id}
-                      className="shrink-0 text-[#F0A0A0] hover:text-[#FFB3B3] transition disabled:opacity-40"
+                      className="shrink-0 text-[#c0563b] hover:text-[#d97a63] transition disabled:opacity-40"
                       title="Supprimer"
                     >
                       {Ic("trash", "w-4 h-4")}
