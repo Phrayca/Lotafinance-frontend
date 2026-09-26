@@ -710,6 +710,17 @@ export async function obtenirTaux(token: string) {
   return reponse.json() as Promise<Taux[]>;
 }
 
+// Accessible à tout utilisateur connecté (clients inclus), pour les pages FAQ / Informations
+export async function obtenirTauxPublics(token: string) {
+  const reponse = await fetch(`${API_URL}/taux-publics`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!reponse.ok) {
+    throw new Error("Erreur lors de la récupération des taux");
+  }
+  return reponse.json() as Promise<Taux[]>;
+}
+
 export async function modifierTaux(token: string, tauxId: string, ratePercent: number) {
   const reponse = await fetch(`${API_URL}/analyst/parametres/taux/${tauxId}`, {
     method: "PUT",
