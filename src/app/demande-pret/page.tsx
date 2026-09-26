@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { soumettreDemandeDePret, obtenirMonProfilClient, obtenirPretEnCours, obtenirMonPlafond, DemandePret, ProfilClient } from "@/lib/api";
+import { soumettreDemandeDePret, obtenirMonProfilClient, obtenirPretEnCours, obtenirMonPlafond, obtenirMesDocuments, DemandePret, ProfilClient } from "@/lib/api";
 import { LoanRequestIcon, IconCircle } from "@/components/icons";
 
 const FOND_TEXTURE_STYLE: React.CSSProperties = {
@@ -63,6 +63,15 @@ function PageDemandePretContenu() {
   const [nombrePretsReussis, setNombrePretsReussis] = useState(0);
   const [canalVersement, setCanalVersement] = useState<"wave" | "orange_money">("wave");
   const [numeroVersement, setNumeroVersement] = useState("");
+  const [documentsEnvoyes, setDocumentsEnvoyes] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    obtenirMesDocuments(token)
+      .then((liste) => setDocumentsEnvoyes(liste.map((d) => d.document_type)))
+      .catch(() => setDocumentsEnvoyes([]));
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -89,13 +98,63 @@ function PageDemandePretContenu() {
   const totalEstime = montantNombre + interetEstime;
 
   const nomComplet = profilClient ? `${profilClient.first_name} ${profilClient.last_name}`.trim() : "";
-  const signatureValide = signature.trim().length > 1 && nomComplet
-    ? signature.trim().toLowerCase() === nomComplet.toLowerCase()
+
+  function normaliser(texte: string) {
+    return texte
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "") // enlève les accents
+      .replace(/[-']/g, " ") // tirets/apostrophes -> espace, pour tolérer les variantes d'écriture
+      .replace(/\s+/g, " ");
+  }
+
+  const signatureValide = nomComplet
+    ? signature.trim().length > 1 && normaliser(signature) === normaliser(nomComplet)
     : signature.trim().length > 1;
+
+  // Informations de profil indispensables au traitement du dossier
+  const CHAMPS_PROFIL_REQUIS: { cle: keyof ProfilClient; libelle: string }[] = [
+    { cle: "national_id_number", libelle: "Numéro de pièce d'identité" },
+    { cle: "address", libelle: "Adresse" },
+    { cle: "birth_date", libelle: "Date de naissance" },
+    { cle: "categorie_professionnelle", libelle: "Situation professionnelle" },
+    { cle: "anciennete_residence", libelle: "Ancienneté de résidence" },
+    { cle: "monthly_income", libelle: "Revenu mensuel" },
+  ];
+  const champsProfilManquants = profilClient
+    ? CHAMPS_PROFIL_REQUIS.filter((c) => {
+        const valeur = profilClient[c.cle];
+        return valeur === undefined || valeur === null || valeur === "";
+      })
+    : [];
+
+  // Documents indispensables au traitement du dossier
+  const DOCUMENTS_REQUIS = [
+    { valeur: "piece_identite", libelle: "Pièce d'identité (CNI ou passeport)" },
+    { valeur: "contrat_travail", libelle: "Contrat de travail" },
+  ];
+  const documentsManquants = documentsEnvoyes
+    ? DOCUMENTS_REQUIS.filter((d) => !documentsEnvoyes.includes(d.valeur))
+    : [];
 
   function passerAuRecap(e: React.FormEvent) {
     e.preventDefault();
     setErreur("");
+
+    if (champsProfilManquants.length > 0) {
+      setErreur(
+        `Merci de compléter d'abord ton profil (${champsProfilManquants.map((c) => c.libelle).join(", ")}) avant de soumettre une demande.`
+      );
+      return;
+    }
+
+    if (documentsManquants.length > 0) {
+      setErreur(
+        `Aucune demande ne peut être traitée tant que les documents suivants n'ont pas été envoyés : ${documentsManquants.map((d) => d.libelle).join(", ")}.`
+      );
+      return;
+    }
 
     if (!montantNombre || montantNombre <= 0) {
       setErreur("Merci d'indiquer un montant valide.");
@@ -182,6 +241,24 @@ function PageDemandePretContenu() {
                 <div className="bg-[rgba(201,154,75,0.15)] border border-[rgba(201,154,75,0.3)] rounded-md px-4 py-3 mb-5 text-sm text-[#c99a4b]">
                   Vu votre historique ({nombrePretsReussis} prêt{nombrePretsReussis > 1 ? "s" : ""} remboursé{nombrePretsReussis > 1 ? "s" : ""} avec succès), vous pouvez emprunter jusqu&apos;à{" "}
                   <strong>{formaterMontant(plafond)}</strong> pour cette demande. Ce plafond augmente à chaque prêt bien remboursé.
+                </div>
+              )}
+
+              {(champsProfilManquants.length > 0 || documentsManquants.length > 0) && (
+                <div className="bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-4 py-3 mb-5 text-sm text-[#c0563b] space-y-2">
+                  <p className="font-medium">Aucune demande ne pourra être traitée tant que ton dossier n&apos;est pas complet :</p>
+                  {champsProfilManquants.length > 0 && (
+                    <p>
+                      • Informations manquantes dans ton profil : {champsProfilManquants.map((c) => c.libelle).join(", ")}.{" "}
+                      <button type="button" onClick={() => router.push("/profil")} className="underline hover:text-[#d97a63]">Compléter mon profil</button>
+                    </p>
+                  )}
+                  {documentsManquants.length > 0 && (
+                    <p>
+                      • Documents manquants : {documentsManquants.map((d) => d.libelle).join(", ")}.{" "}
+                      <button type="button" onClick={() => router.push("/documents")} className="underline hover:text-[#d97a63]">Envoyer mes documents</button>
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -322,7 +399,18 @@ function PageDemandePretContenu() {
                   className={`${CHAMP_CLASSES} font-['Sora',sans-serif] italic`}
                   placeholder="Votre nom complet"
                 />
+                {signature.trim().length > 1 && !signatureValide && (
+                  <p className="text-xs text-[#c0563b] mt-1.5">
+                    {nomComplet
+                      ? `Le nom saisi ne correspond pas exactement à celui de ton profil (« ${nomComplet} »). Vérifie l'orthographe.`
+                      : "Merci de saisir ton nom complet."}
+                  </p>
+                )}
               </div>
+
+              {!conditionsAcceptees && (
+                <p className="text-xs text-[#8e99a8] mb-2">Coche la case ci-dessus pour pouvoir envoyer ta demande.</p>
+              )}
 
               {erreur && (
                 <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>

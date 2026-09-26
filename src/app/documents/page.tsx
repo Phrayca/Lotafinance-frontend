@@ -11,10 +11,10 @@ const FOND_TEXTURE_STYLE: React.CSSProperties = {
     "radial-gradient(ellipse 900px 420px at 50% -10%, rgba(201,162,39,0.08), transparent 60%), repeating-linear-gradient(135deg, rgba(201,162,39,0.035) 0px, rgba(201,162,39,0.035) 1px, transparent 1px, transparent 14px)",
 };
 
-const TYPES_DOCUMENTS: { valeur: TypeDocument; libelle: string; note?: string }[] = [
-  { valeur: "piece_identite", libelle: "Pièce d'identité" },
+const TYPES_DOCUMENTS: { valeur: TypeDocument; libelle: string; note?: string; requis?: boolean }[] = [
+  { valeur: "piece_identite", libelle: "Pièce d'identité (CNI ou passeport)", requis: true },
   { valeur: "carte_residence", libelle: "Carte de résidence (Dakar)" },
-  { valeur: "contrat_travail", libelle: "Contrat de travail" },
+  { valeur: "contrat_travail", libelle: "Contrat de travail", requis: true },
   { valeur: "certificat_travail", libelle: "Certificat de travail", note: "Idéalement daté de moins de 3 mois" },
 ];
 
@@ -119,7 +119,11 @@ function PageDocumentsContenu() {
           {modeOnboarding && (
             <p className="text-xs text-[#c99a4b] mb-5">{nombreEnvoyes}/{TYPES_DOCUMENTS.length} documents envoyés</p>
           )}
-          {!modeOnboarding && <div className="mb-6" />}
+          {!modeOnboarding && <div className="mb-3" />}
+
+          <p className="text-xs text-[#8e99a8] mb-5">
+            <span className="text-[#c0563b]">*</span> Documents obligatoires — aucune demande de prêt ne pourra être traitée tant qu&apos;ils ne sont pas envoyés.
+          </p>
 
           {erreur && (
             <p className="text-sm text-[#c0563b] bg-[rgba(192,86,59,0.12)] border border-[rgba(192,86,59,0.3)] rounded-md px-3 py-2 mb-4">{erreur}</p>
@@ -133,7 +137,9 @@ function PageDocumentsContenu() {
               return (
                 <div key={type.valeur} className="border border-[rgba(255,255,255,0.08)] rounded-md p-4 flex items-center justify-between gap-4 flex-wrap">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-[#eef1f4]">{type.libelle}</p>
+                    <p className="text-sm font-medium text-[#eef1f4]">
+                      {type.libelle} {type.requis && <span className="text-[#c0563b]">*</span>}
+                    </p>
                     {type.note && <p className="text-[11px] text-[#8e99a8] mt-0.5">{type.note}</p>}
                     {existant ? (
                       <p className="text-xs text-[#3fa873] mt-0.5 truncate">✓ Envoyé : {existant.original_file_name}</p>
